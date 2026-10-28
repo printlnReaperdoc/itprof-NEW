@@ -1,3 +1,4 @@
+const User = require('../models/User');
 const Course = require('../models/Course');
 const Chapter = require('../models/Chapter');
 const Quiz = require('../models/Quiz');
@@ -5,6 +6,8 @@ const Question = require('../models/Question');
 const QuestionOption = require('../models/QuestionOption');
 const Enrollment = require('../models/Enrollment');
 const ChapterProgress = require('../models/ChapterProgress');
+const QuizAttempt = require('../models/QuizAttempt');
+const { initializeStudentCourseProgress } = require('../services/progress.service');
 const {
   generateMasterGradebookXLSX,
   generateMasterGradebookCSV,
@@ -28,6 +31,22 @@ const exportMasterGradebook = async (req, res, next) => {
     }
 
     const chapters = await Chapter.find({ courseId: course._id, isPublished: true }).sort({ chapterNumber: 1 });
+
+    // Auto-enroll all active students into this course if enrollment record is missing
+    const activeStudents = await User.find({ role: 'student', isActive: true });
+    for (const st of activeStudents) {
+      const existing = await Enrollment.findOne({ courseId: course._id, studentId: st._id });
+      if (!existing) {
+        await Enrollment.create({
+          courseId: course._id,
+          studentId: st._id,
+          status: 'active',
+          enrolledAt: st.createdAt || new Date()
+        });
+        await initializeStudentCourseProgress(st._id, course._id);
+      }
+    }
+
     const enrollments = await Enrollment.find({ courseId: course._id, status: 'active' })
       .populate('studentId', 'username firstName surname')
       .sort({ 'studentId.surname': 1 });
@@ -41,6 +60,33 @@ const exportMasterGradebook = async (req, res, next) => {
       const chId = p.chapterId.toString();
       if (!progressMatrix[sId]) progressMatrix[sId] = {};
       progressMatrix[sId][chId] = p;
+    });
+
+    const allAttempts = await QuizAttempt.aggregate([
+      {
+        $match: {
+          courseId: course._id,
+          studentId: { $in: studentIds },
+          status: { $in: ['completed', 'timed_out'] }
+        }
+      },
+      {
+        $group: {
+          _id: { studentId: '$studentId', chapterId: '$chapterId' },
+          highestScore: { $max: '$correctAnswers' },
+          highestScorePercentage: { $max: '$scorePercentage' },
+          attemptsCount: { $sum: 1 },
+          latestAttemptAt: { $max: '$submittedAt' }
+        }
+      }
+    ]);
+
+    const attemptMatrix = {};
+    allAttempts.forEach(a => {
+      const sId = a._id.studentId.toString();
+      const chId = a._id.chapterId.toString();
+      if (!attemptMatrix[sId]) attemptMatrix[sId] = {};
+      attemptMatrix[sId][chId] = a;
     });
 
     const students = [];
@@ -59,14 +105,22 @@ const exportMasterGradebook = async (req, res, next) => {
 
       chapters.forEach(ch => {
         const prog = progressMatrix[sId]?.[ch._id.toString()];
-        if (prog && prog.attemptsCount > 0) {
+        const att = attemptMatrix[sId]?.[ch._id.toString()];
+
+        const attemptsCount = prog?.attemptsCount || att?.attemptsCount || 0;
+        const highestScore = prog?.highestScore ?? att?.highestScore ?? null;
+        const highestScorePercentage = prog?.highestScorePercentage ?? att?.highestScorePercentage ?? (highestScore !== null ? Math.round((highestScore / 20) * 100) : 0);
+        const isPassed = (prog && prog.status === 'passed') || (highestScore !== null && highestScore >= 15);
+        const status = isPassed ? 'passed' : (prog?.status || (attemptsCount > 0 ? 'failed' : 'locked'));
+
+        if (attemptsCount > 0 && highestScore !== null) {
           chaptersAttempted += 1;
-          sumPercentages += (prog.highestScorePercentage || 0);
-          if (prog.status === 'passed') chaptersPassed += 1;
+          sumPercentages += highestScorePercentage;
+          if (isPassed) chaptersPassed += 1;
           studentChapters[ch._id.toString()] = {
-            highestScore: prog.highestScore,
-            status: prog.status,
-            attemptsCount: prog.attemptsCount
+            highestScore,
+            status,
+            attemptsCount
           };
         } else {
           studentChapters[ch._id.toString()] = {

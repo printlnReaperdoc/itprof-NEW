@@ -158,6 +158,23 @@ const login = async (req, res, next) => {
       });
     }
 
+    // Ensure active student accounts are enrolled in active curriculum courses
+    if (user.role === 'student') {
+      try {
+        const activeCourses = await Course.find({ isActive: true });
+        for (const c of activeCourses) {
+          await Enrollment.findOneAndUpdate(
+            { courseId: c._id, studentId: user._id },
+            { $setOnInsert: { status: 'active', enrolledAt: new Date() } },
+            { upsert: true, new: true }
+          );
+          await initializeStudentCourseProgress(user._id, c._id);
+        }
+      } catch (enrollErr) {
+        console.error('Student login auto-enrollment sync warning:', enrollErr.message);
+      }
+    }
+
     // Regenerate session ID to prevent session fixation attacks
     req.session.regenerate((err) => {
       if (err) return next(err);

@@ -28,6 +28,7 @@ const dataMiningContent = require('./seedData/dataMiningContent');
 const cloudComputingContent = require('./seedData/cloudComputingContent');
 const dataMiningQuizzes = require('./seedData/dataMiningQuizzes');
 const cloudComputingQuizzes = require('./seedData/cloudComputingQuizzes');
+const { initializeStudentCourseProgress } = require('../services/progress.service');
 
 const seedDatabase = async () => {
   console.log('========================================================');
@@ -294,8 +295,269 @@ const seedDatabase = async () => {
     }
     console.log('  -> Cloud Computing: 12 Quizzes x 20 Questions = 240 questions seeded.');
 
-    // 5. Verification & Audit Logging
-    console.log('\n[5/5] Performing System Verification...');
+    // 5. Seed Student Cohort, Course Enrollments & Assessment Attempts
+    console.log('\n[5/6] Seeding Student Cohort, Course Enrollments & Assessment Attempts...');
+
+    const studentCohort = [
+      { username: 'student1', firstName: 'Alex', surname: 'Santos' },
+      { username: 'student2', firstName: 'Bea', surname: 'Gonzales' },
+      { username: 'student3', firstName: 'Carlos', surname: 'Mendoza' },
+      { username: 'student4', firstName: 'Diana', surname: 'Cruz' },
+      { username: 'student5', firstName: 'Ethan', surname: 'Reyes' },
+      { username: 'student6', firstName: 'Fiona', surname: 'Bautista' },
+      { username: 'student7', firstName: 'Gabriel', surname: 'Aquino' },
+      { username: 'student8', firstName: 'Hannah', surname: 'Dizon' }
+    ];
+
+    const studentDocs = {};
+    for (const sInfo of studentCohort) {
+      let stUser = await User.findOne({ username: sInfo.username });
+      if (!stUser) {
+        const passwordHash = await User.hashPassword('StudentPassword2026!');
+        stUser = await User.create({
+          username: sInfo.username,
+          passwordHash,
+          firstName: sInfo.firstName,
+          surname: sInfo.surname,
+          role: 'student',
+          isActive: true
+        });
+      }
+      studentDocs[sInfo.username] = stUser;
+
+      // Enroll in both courses
+      for (const crs of [dmCourse, ccCourse]) {
+        await Enrollment.findOneAndUpdate(
+          { courseId: crs._id, studentId: stUser._id },
+          { status: 'active', enrolledAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+          { upsert: true, new: true }
+        );
+        // Initialize 12 chapter progress records (Ch 1 available, Ch 2-12 locked)
+        await initializeStudentCourseProgress(stUser._id, crs._id);
+      }
+    }
+    console.log(`  -> 8 Students enrolled into both Data Mining and Cloud Computing.`);
+
+    // Preload assessment performance profile
+    const studentProfiles = {
+      // Bea Gonzales: Top honors
+      student2: {
+        dm: [
+          { chNum: 1, score: 19 },
+          { chNum: 2, score: 20 },
+          { chNum: 3, score: 18 },
+          { chNum: 4, score: 19 },
+          { chNum: 5, score: 18 },
+          { chNum: 6, score: 20 },
+          { chNum: 7, score: 19 }
+        ],
+        cc: [
+          { chNum: 1, score: 20 },
+          { chNum: 2, score: 19 },
+          { chNum: 3, score: 19 },
+          { chNum: 4, score: 18 },
+          { chNum: 5, score: 20 },
+          { chNum: 6, score: 19 }
+        ]
+      },
+      // Alex Santos: Strong performer
+      student1: {
+        dm: [
+          { chNum: 1, score: 17 },
+          { chNum: 2, score: 18 },
+          { chNum: 3, score: 16 },
+          { chNum: 4, score: 19 }
+        ],
+        cc: [
+          { chNum: 1, score: 18 },
+          { chNum: 2, score: 17 },
+          { chNum: 3, score: 19 }
+        ]
+      },
+      // Diana Cruz: Consistent
+      student4: {
+        dm: [
+          { chNum: 1, score: 16 },
+          { chNum: 2, score: 17 },
+          { chNum: 3, score: 18 },
+          { chNum: 4, score: 16 },
+          { chNum: 5, score: 17 }
+        ],
+        cc: [
+          { chNum: 1, score: 17 },
+          { chNum: 2, score: 18 },
+          { chNum: 3, score: 16 },
+          { chNum: 4, score: 18 }
+        ]
+      },
+      // Hannah Dizon: Dedicated
+      student8: {
+        dm: [
+          { chNum: 1, score: 18 },
+          { chNum: 2, score: 19 },
+          { chNum: 3, score: 17 }
+        ],
+        cc: [
+          { chNum: 1, score: 19 },
+          { chNum: 2, score: 18 },
+          { chNum: 3, score: 20 },
+          { chNum: 4, score: 17 },
+          { chNum: 5, score: 19 }
+        ]
+      },
+      // Carlos Mendoza: Moderate
+      student3: {
+        dm: [
+          { chNum: 1, score: 15 },
+          { chNum: 2, score: 16 }
+        ],
+        cc: [
+          { chNum: 1, score: 16 }
+        ]
+      },
+      // Gabriel Aquino: In progress, failed Ch 2
+      student7: {
+        dm: [
+          { chNum: 1, score: 17 },
+          { chNum: 2, score: 13 }
+        ],
+        cc: [
+          { chNum: 1, score: 16 },
+          { chNum: 2, score: 15 }
+        ]
+      },
+      // Ethan Reyes: Failed first, retook and passed Ch 1
+      student5: {
+        dm: [
+          { chNum: 1, score: 12, retakeScore: 16 }
+        ],
+        cc: [
+          { chNum: 1, score: 14 }
+        ]
+      },
+      // Fiona Bautista: Freshly enrolled, no attempts yet
+      student6: {
+        dm: [],
+        cc: []
+      }
+    };
+
+    let totalAttemptsCreated = 0;
+
+    for (const [username, profile] of Object.entries(studentProfiles)) {
+      const student = studentDocs[username];
+      if (!student) continue;
+
+      const courseConfigs = [
+        { course: dmCourse, chapters: dmChapters, attempts: profile.dm },
+        { course: ccCourse, chapters: ccChapters, attempts: profile.cc }
+      ];
+
+      for (const cfg of courseConfigs) {
+        for (const item of cfg.attempts) {
+          const chapter = cfg.chapters.find(ch => ch.chapterNumber === item.chNum);
+          if (!chapter) continue;
+
+          const quiz = await Quiz.findOne({ chapterId: chapter._id, version: 1 });
+          if (!quiz) continue;
+
+          const questions = await Question.find({ quizId: quiz._id }).sort({ position: 1 });
+          const questionIds = questions.map(q => q._id);
+          const allOptions = await QuestionOption.find({ questionId: { $in: questionIds } });
+
+          // Helper to record an attempt
+          const recordAttempt = async (score, daysAgo) => {
+            const attemptDate = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
+            const isPassed = score >= (quiz.passingScore || 15);
+            const scorePercentage = Math.round((score / (quiz.questionCount || 20)) * 100 * 10) / 10;
+
+            const attempt = await QuizAttempt.create({
+              studentId: student._id,
+              courseId: cfg.course._id,
+              chapterId: chapter._id,
+              quizId: quiz._id,
+              quizVersion: quiz.version,
+              startedAt: attemptDate,
+              deadlineAt: new Date(attemptDate.getTime() + 600 * 1000),
+              submittedAt: new Date(attemptDate.getTime() + 380 * 1000),
+              correctAnswers: score,
+              scorePercentage,
+              status: 'completed',
+              submissionType: 'manual'
+            });
+            totalAttemptsCreated++;
+
+            // Create 20 answers
+            const answersToInsert = [];
+            for (let i = 0; i < questions.length; i++) {
+              const q = questions[i];
+              const qOpts = allOptions.filter(o => o.questionId.toString() === q._id.toString());
+              const correctOpt = qOpts.find(o => o.isCorrect);
+              const wrongOpts = qOpts.filter(o => !o.isCorrect);
+
+              const shouldBeCorrect = i < score;
+              const selected = shouldBeCorrect ? correctOpt : (wrongOpts[i % wrongOpts.length] || correctOpt);
+
+              answersToInsert.push({
+                attemptId: attempt._id,
+                questionId: q._id,
+                selectedOptionId: selected?._id || null,
+                isCorrect: shouldBeCorrect,
+                answeredAt: attempt.submittedAt
+              });
+            }
+            if (answersToInsert.length > 0) {
+              await AttemptAnswer.insertMany(answersToInsert);
+            }
+
+            // Update ChapterProgress
+            let prog = await ChapterProgress.findOne({ studentId: student._id, chapterId: chapter._id });
+            if (!prog) {
+              prog = new ChapterProgress({
+                studentId: student._id,
+                courseId: cfg.course._id,
+                chapterId: chapter._id
+              });
+            }
+
+            prog.attemptsCount = (prog.attemptsCount || 0) + 1;
+            prog.highestScore = Math.max(prog.highestScore || 0, score);
+            prog.highestScorePercentage = Math.round((prog.highestScore / 20) * 100 * 10) / 10;
+            prog.latestAttemptAt = attempt.submittedAt;
+            if (isPassed) {
+              prog.status = 'passed';
+              prog.passedAt = attempt.submittedAt;
+            } else if (prog.status !== 'passed') {
+              prog.status = 'failed';
+            }
+            await prog.save();
+
+            // Unlock next chapter if passed
+            if (isPassed && chapter.chapterNumber < 12) {
+              const nextChapter = cfg.chapters.find(ch => ch.chapterNumber === chapter.chapterNumber + 1);
+              if (nextChapter) {
+                await ChapterProgress.findOneAndUpdate(
+                  { studentId: student._id, chapterId: nextChapter._id, status: 'locked' },
+                  { status: 'available' }
+                );
+              }
+            }
+          };
+
+          // Record first attempt
+          await recordAttempt(item.score, 14 - item.chNum);
+
+          // If retake exists (e.g. Ethan Reyes)
+          if (item.retakeScore !== undefined) {
+            await recordAttempt(item.retakeScore, 13 - item.chNum);
+          }
+        }
+      }
+    }
+    console.log(`  -> ${totalAttemptsCreated} authentic quiz attempts & answer submissions seeded across all chapters.`);
+
+    // 6. Verification & Audit Logging
+    console.log('\n[6/6] Performing System Verification...');
     const totalCourses = await Course.countDocuments();
     const totalModules = await Module.countDocuments();
     const totalChapters = await Chapter.countDocuments();
@@ -304,17 +566,25 @@ const seedDatabase = async () => {
     const totalQuizzes = await Quiz.countDocuments();
     const totalQuestions = await Question.countDocuments();
     const totalOptions = await QuestionOption.countDocuments();
+    const totalStudents = await User.countDocuments({ role: 'student' });
+    const totalEnrollments = await Enrollment.countDocuments();
+    const totalAttempts = await QuizAttempt.countDocuments();
+    const totalProgressRecords = await ChapterProgress.countDocuments();
 
     console.log('--------------------------------------------------------');
     console.log(`Summary of Database State:`);
-    console.log(`  Courses:       ${totalCourses} (Expected: 2)`);
-    console.log(`  Modules:       ${totalModules} (Expected: 8)`);
-    console.log(`  Chapters:      ${totalChapters} (Expected: 24)`);
-    console.log(`  Lessons:       ${totalLessons} (Expected: 24)`);
-    console.log(`  Presentations: ${totalPresentations} (Expected: 24)`);
-    console.log(`  Quizzes:       ${totalQuizzes} (Expected: 24)`);
-    console.log(`  Questions:     ${totalQuestions} (Expected: 480)`);
-    console.log(`  Options:       ${totalOptions} (Expected: 1920)`);
+    console.log(`  Courses:          ${totalCourses} (Expected: 2)`);
+    console.log(`  Modules:          ${totalModules} (Expected: 8)`);
+    console.log(`  Chapters:         ${totalChapters} (Expected: 24)`);
+    console.log(`  Lessons:          ${totalLessons} (Expected: 24)`);
+    console.log(`  Presentations:    ${totalPresentations} (Expected: 24)`);
+    console.log(`  Quizzes:          ${totalQuizzes} (Expected: 24)`);
+    console.log(`  Questions:        ${totalQuestions} (Expected: 480)`);
+    console.log(`  Options:          ${totalOptions} (Expected: 1920)`);
+    console.log(`  Students:         ${totalStudents} (Expected: 8)`);
+    console.log(`  Enrollments:      ${totalEnrollments} (Expected: 16)`);
+    console.log(`  Quiz Attempts:    ${totalAttempts}`);
+    console.log(`  Chapter Progress: ${totalProgressRecords} (Expected: 192)`);
     console.log('--------------------------------------------------------');
 
     await AuditLog.create({
@@ -325,11 +595,14 @@ const seedDatabase = async () => {
         totalCourses,
         totalChapters,
         totalQuizzes,
-        totalQuestions
+        totalQuestions,
+        totalStudents,
+        totalEnrollments,
+        totalAttempts
       }
     });
 
-    console.log('\nSUCCESS: Database seeding completed with 100% curriculum coverage!\n');
+    console.log('\nSUCCESS: Database seeding completed with 100% curriculum and student cohort coverage!\n');
     process.exit(0);
   } catch (err) {
     console.error('\nFATAL ERROR during database seeding:', err);

@@ -4,6 +4,7 @@ const Chapter = require('../models/Chapter');
 const ChapterProgress = require('../models/ChapterProgress');
 const QuizAttempt = require('../models/QuizAttempt');
 const Enrollment = require('../models/Enrollment');
+const { initializeStudentCourseProgress } = require('../services/progress.service');
 
 /**
  * Get Topic-Level Gradebook for a specific chapter (Faculty only)
@@ -18,6 +19,21 @@ const getTopicGradebook = async (req, res, next) => {
 
     if (!chapter) {
       return res.status(404).json({ success: false, message: 'Chapter not found' });
+    }
+
+    // Auto-enroll all active students into this course if enrollment record is missing
+    const activeStudents = await User.find({ role: 'student', isActive: true });
+    for (const st of activeStudents) {
+      const existing = await Enrollment.findOne({ courseId: chapter.courseId._id, studentId: st._id });
+      if (!existing) {
+        await Enrollment.create({
+          courseId: chapter.courseId._id,
+          studentId: st._id,
+          status: 'active',
+          enrolledAt: st.createdAt || new Date()
+        });
+        await initializeStudentCourseProgress(st._id, chapter.courseId._id);
+      }
     }
 
     // Get all enrolled students for this course
@@ -152,6 +168,21 @@ const getMasterGradebook = async (req, res, next) => {
     const chapters = await Chapter.find({ courseId: course._id, isPublished: true })
       .sort({ chapterNumber: 1 });
 
+    // Auto-enroll all active students into this course if enrollment record is missing
+    const activeStudents = await User.find({ role: 'student', isActive: true });
+    for (const st of activeStudents) {
+      const existing = await Enrollment.findOne({ courseId: course._id, studentId: st._id });
+      if (!existing) {
+        await Enrollment.create({
+          courseId: course._id,
+          studentId: st._id,
+          status: 'active',
+          enrolledAt: st.createdAt || new Date()
+        });
+        await initializeStudentCourseProgress(st._id, course._id);
+      }
+    }
+
     const enrollments = await Enrollment.find({ courseId: course._id, status: 'active' })
       .populate('studentId', 'username firstName surname isActive')
       .sort({ 'studentId.surname': 1 });
@@ -170,6 +201,34 @@ const getMasterGradebook = async (req, res, next) => {
       const chId = p.chapterId.toString();
       if (!progressMatrix[sId]) progressMatrix[sId] = {};
       progressMatrix[sId][chId] = p;
+    });
+
+    // Also aggregate completed/timed_out QuizAttempts as safety verification
+    const allAttempts = await QuizAttempt.aggregate([
+      {
+        $match: {
+          courseId: course._id,
+          studentId: { $in: studentIds },
+          status: { $in: ['completed', 'timed_out'] }
+        }
+      },
+      {
+        $group: {
+          _id: { studentId: '$studentId', chapterId: '$chapterId' },
+          highestScore: { $max: '$correctAnswers' },
+          highestScorePercentage: { $max: '$scorePercentage' },
+          attemptsCount: { $sum: 1 },
+          latestAttemptAt: { $max: '$submittedAt' }
+        }
+      }
+    ]);
+
+    const attemptMatrix = {};
+    allAttempts.forEach(a => {
+      const sId = a._id.studentId.toString();
+      const chId = a._id.chapterId.toString();
+      if (!attemptMatrix[sId]) attemptMatrix[sId] = {};
+      attemptMatrix[sId][chId] = a;
     });
 
     const students = [];
@@ -194,20 +253,28 @@ const getMasterGradebook = async (req, res, next) => {
 
       chapters.forEach(ch => {
         const prog = progressMatrix[sId]?.[ch._id.toString()];
-        if (prog && prog.attemptsCount > 0) {
-          chaptersAttempted += 1;
-          scorePercentagesSum += (prog.highestScorePercentage || 0);
+        const att = attemptMatrix[sId]?.[ch._id.toString()];
 
-          if (prog.status === 'passed') {
+        const attemptsCount = prog?.attemptsCount || att?.attemptsCount || 0;
+        const highestScore = prog?.highestScore ?? att?.highestScore ?? null;
+        const highestScorePercentage = prog?.highestScorePercentage ?? att?.highestScorePercentage ?? (highestScore !== null ? Math.round((highestScore / 20) * 100) : null);
+        const isPassed = (prog && prog.status === 'passed') || (highestScore !== null && highestScore >= 15);
+        const status = isPassed ? 'passed' : (prog?.status || (attemptsCount > 0 ? 'failed' : 'locked'));
+
+        if (attemptsCount > 0 && highestScore !== null) {
+          chaptersAttempted += 1;
+          scorePercentagesSum += (highestScorePercentage || 0);
+
+          if (isPassed) {
             chaptersPassed += 1;
           }
 
           studentChapters[ch._id.toString()] = {
-            highestScore: prog.highestScore,
-            highestScorePercentage: prog.highestScorePercentage,
-            attemptsCount: prog.attemptsCount,
-            status: prog.status,
-            passedAt: prog.passedAt
+            highestScore,
+            highestScorePercentage,
+            attemptsCount,
+            status,
+            passedAt: prog?.passedAt || att?.latestAttemptAt || null
           };
         } else {
           studentChapters[ch._id.toString()] = {

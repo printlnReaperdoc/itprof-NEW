@@ -107,9 +107,10 @@ const MasterGradebookTable = ({ course, chapters = [], students = [], gradeMatri
               </tr>
             ) : (
               filteredStudents.map((s) => {
-                const sData = gradeMatrix[s._id] || {};
+                const sId = s._id?.toString?.() || s._id || s.id;
+                const sData = gradeMatrix[sId] || gradeMatrix[s._id] || gradeMatrix[s.id] || {};
                 return (
-                  <tr key={s._id}>
+                  <tr key={sId}>
                     <td style={{ fontWeight: 600 }}>
                       {s.surname}, {s.firstName}
                       <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 400, fontFamily: 'var(--font-mono)' }}>
@@ -119,7 +120,8 @@ const MasterGradebookTable = ({ course, chapters = [], students = [], gradeMatri
 
                     {/* Chapter score cells */}
                     {chapters.map((ch) => {
-                      const chData = sData.chapters?.[ch.id];
+                      const chId = ch.id || ch._id;
+                      const chData = sData.chapters?.[chId] || sData.chapters?.[ch.id] || sData.chapters?.[ch._id];
                       const isAttempted = chData && chData.attemptsCount > 0;
                       const isPassed = chData?.status === 'passed';
 
