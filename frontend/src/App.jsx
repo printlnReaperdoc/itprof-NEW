@@ -78,11 +78,11 @@ function App() {
                 }
               />
 
-              {/* Faculty / Admin Protected Routes */}
+              {/* Quiz Answer Keys Repository */}
               <Route
                 path="/answer-keys"
                 element={
-                  <ProtectedRoute allowedRoles={['faculty', 'admin']}>
+                  <ProtectedRoute>
                     <FacultyAnswerKeysPage />
                   </ProtectedRoute>
                 }

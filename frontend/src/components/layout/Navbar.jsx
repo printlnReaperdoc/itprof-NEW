@@ -113,31 +113,30 @@ const Navbar = () => {
             <FileSpreadsheet size={15} /> {isFaculty ? 'Master Gradebooks' : 'My Grades'}
           </Link>
 
+          <Link
+            to="/answer-keys"
+            className="btn btn-outline"
+            style={{
+              border: isActive('/answer-keys') ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
+              backgroundColor: isActive('/answer-keys') ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+              color: isActive('/answer-keys') ? '#38bdf8' : '#cbd5e1'
+            }}
+          >
+            <KeyRound size={15} /> Answer Keys
+          </Link>
+
           {isFaculty && (
-            <>
-              <Link
-                to="/answer-keys"
-                className="btn btn-outline"
-                style={{
-                  border: isActive('/answer-keys') ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
-                  backgroundColor: isActive('/answer-keys') ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
-                  color: isActive('/answer-keys') ? '#38bdf8' : '#cbd5e1'
-                }}
-              >
-                <KeyRound size={15} /> Answer Keys
-              </Link>
-              <Link
-                to="/audit-logs"
-                className="btn btn-outline"
-                style={{
-                  border: isActive('/audit-logs') ? '1px solid rgba(192, 132, 252, 0.4)' : '1px solid transparent',
-                  backgroundColor: isActive('/audit-logs') ? 'rgba(192, 132, 252, 0.12)' : 'transparent',
-                  color: isActive('/audit-logs') ? '#c084fc' : '#cbd5e1'
-                }}
-              >
-                <ShieldCheck size={15} /> Audit Logs
-              </Link>
-            </>
+            <Link
+              to="/audit-logs"
+              className="btn btn-outline"
+              style={{
+                border: isActive('/audit-logs') ? '1px solid rgba(192, 132, 252, 0.4)' : '1px solid transparent',
+                backgroundColor: isActive('/audit-logs') ? 'rgba(192, 132, 252, 0.12)' : 'transparent',
+                color: isActive('/audit-logs') ? '#c084fc' : '#cbd5e1'
+              }}
+            >
+              <ShieldCheck size={15} /> Audit Logs
+            </Link>
           )}
         </nav>
 

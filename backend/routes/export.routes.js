@@ -8,8 +8,8 @@ const {
 const { requireAuth } = require('../middleware/auth');
 const authorize = require('../middleware/authorize');
 
-// Faculty & Admin: Export all Quiz Answer Keys PDF
-router.get('/quizzes/answer-keys/pdf', requireAuth, authorize(['faculty', 'admin']), exportQuizAnswerKeysPDF);
+// Faculty, Admin & Student: Export all Quiz Answer Keys PDF
+router.get('/quizzes/answer-keys/pdf', requireAuth, exportQuizAnswerKeysPDF);
 
 // Master & Topic gradebooks
 router.get('/master/:courseId', requireAuth, authorize(['faculty', 'admin']), exportMasterGradebook);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { quizzesApi, exportUrls } from '../api';
+import api from '../api/client';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import {
   KeyRound,
@@ -73,6 +74,39 @@ const FacultyAnswerKeysPage = () => {
     setExpandedChapters({});
   };
 
+  const [downloadingCourseId, setDownloadingCourseId] = useState(null);
+
+  const handleDownloadPDF = async (courseId = null) => {
+    try {
+      const targetId = courseId || (selectedCourseFilter !== 'ALL' ? selectedCourseFilter : null);
+      setDownloadingCourseId(targetId || 'ALL');
+      setError(null);
+
+      const url = exportUrls.answerKeysPDF(targetId || undefined);
+      // Fetch binary PDF data through authenticated Axios client
+      const response = await api.get(url, { responseType: 'blob' });
+
+      // Create download blob
+      const blob = new Blob([response], { type: 'application/pdf' });
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+
+      const courseObj = targetId ? coursesData.find(c => c.id === targetId) : null;
+      const filename = courseObj ? `${courseObj.courseCode}_Quiz_Answer_Keys.pdf` : 'IT_Prof_Electives_Master_Quiz_Answer_Keys.pdf';
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
+    } catch (err) {
+      console.error('Download error:', err);
+      setError(err.message || 'Failed to download Answer Keys PDF.');
+    } finally {
+      setDownloadingCourseId(null);
+    }
+  };
+
   const handlePrint = () => {
     // Expand all before print so complete answer key sheets are visible
     expandAll();
@@ -144,23 +178,22 @@ const FacultyAnswerKeysPage = () => {
               <Printer size={16} /> Print Sheet
             </button>
 
-            <a
-              href={exportUrls.answerKeysPDF(selectedCourseFilter !== 'ALL' ? selectedCourseFilter : undefined)}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              onClick={() => handleDownloadPDF(selectedCourseFilter !== 'ALL' ? selectedCourseFilter : null)}
+              disabled={Boolean(downloadingCourseId)}
               className="btn btn-primary"
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '0.5rem',
                 padding: '0.65rem 1.25rem',
-                textDecoration: 'none',
                 background: 'linear-gradient(135deg, #0284c7, #2563eb)',
-                boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)'
+                boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
+                cursor: downloadingCourseId ? 'not-allowed' : 'pointer'
               }}
             >
-              <FileDown size={16} /> Download Official PDF
-            </a>
+              <FileDown size={16} /> {downloadingCourseId === (selectedCourseFilter !== 'ALL' ? selectedCourseFilter : 'ALL') ? 'Generating PDF...' : 'Download Official PDF'}
+            </button>
           </div>
         </div>
 
@@ -358,15 +391,14 @@ const FacultyAnswerKeysPage = () => {
                     </div>
                   </div>
 
-                  <a
-                    href={exportUrls.answerKeysPDF(course.id)}
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    onClick={() => handleDownloadPDF(course.id)}
+                    disabled={downloadingCourseId === course.id}
                     className="btn btn-outline no-print"
-                    style={{ fontSize: '0.8rem', padding: '0.45rem 0.85rem' }}
+                    style={{ fontSize: '0.8rem', padding: '0.45rem 0.85rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}
                   >
-                    <FileDown size={14} /> Course PDF
-                  </a>
+                    <FileDown size={14} /> {downloadingCourseId === course.id ? 'Generating...' : 'Course PDF'}
+                  </button>
                 </div>
 
                 {/* Chapters List */}

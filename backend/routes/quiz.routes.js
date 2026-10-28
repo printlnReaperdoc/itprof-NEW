@@ -5,8 +5,8 @@ const { requireAuth } = require('../middleware/auth');
 const authorize = require('../middleware/authorize');
 const upload = require('../middleware/upload');
 
-// Faculty & Admin: Access all quiz answer keys
-router.get('/answer-keys', requireAuth, authorize(['faculty', 'admin']), getAllQuizAnswerKeys);
+// All authenticated users: Access all quiz answer keys
+router.get('/answer-keys', requireAuth, getAllQuizAnswerKeys);
 
 // Chapter quiz endpoints
 router.get('/chapter/:chapterId', requireAuth, getQuizByChapter);

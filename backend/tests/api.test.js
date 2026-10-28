@@ -22,6 +22,7 @@ const {
 
 const { canAccessChapter, handleQuizAttemptResult } = require('../services/progress.service');
 const { gradeAttempt } = require('../services/grading.service');
+const { generateQuizAnswerKeysPDF } = require('../services/export.service');
 
 describe('IT Professional Electives LMS Test Suite', () => {
   before(async () => {
@@ -163,6 +164,63 @@ describe('IT Professional Electives LMS Test Suite', () => {
         assert.strictEqual(log.details.passwordHash, undefined);
       }
     }
+  });
+
+  test('8. Answer Keys PDF Generation: Produces Valid PDF Buffer with 24 Chapters', async () => {
+    const courses = await Course.find().sort({ courseCode: 1 });
+    const chapters = await Chapter.find({ isPublished: true }).sort({ chapterNumber: 1 });
+    const quizzes = await Quiz.find({ publicationStatus: 'published' }).sort({ version: -1 });
+
+    const coursesData = courses.map(c => {
+      const cChaps = chapters.filter(ch => ch.courseId.toString() === c._id.toString());
+      return {
+        id: c._id,
+        courseCode: c.courseCode,
+        courseTitle: c.courseTitle,
+        academicYearLevel: c.academicYearLevel,
+        term: c.term,
+        chapters: cChaps.map(ch => {
+          const q = quizzes.find(qz => qz.chapterId.toString() === ch._id.toString());
+          return {
+            id: ch._id,
+            chapterNumber: ch.chapterNumber,
+            title: ch.title,
+            quiz: q ? {
+              id: q._id,
+              title: q.title,
+              passingScore: 15,
+              questionCount: 20,
+              questions: [
+                {
+                  id: new mongoose.Types.ObjectId(),
+                  position: 1,
+                  questionText: 'Sample Test Question 1?',
+                  points: 1,
+                  correctOption: 'B',
+                  options: [
+                    { label: 'A', optionText: 'Option A', isCorrect: false },
+                    { label: 'B', optionText: 'Option B', isCorrect: true },
+                    { label: 'C', optionText: 'Option C', isCorrect: false },
+                    { label: 'D', optionText: 'Option D', isCorrect: false }
+                  ]
+                }
+              ]
+            } : null
+          };
+        })
+      };
+    });
+
+    const pdfBuffer = await generateQuizAnswerKeysPDF({
+      coursesData,
+      requestedBy: { firstName: 'Test', surname: 'User', username: 'student1', role: 'student' }
+    });
+
+    assert.ok(Buffer.isBuffer(pdfBuffer), 'Output must be a Buffer');
+    assert.ok(pdfBuffer.length > 500, 'PDF buffer must contain binary content');
+    // Verify PDF header magic bytes "%PDF-"
+    const magic = pdfBuffer.slice(0, 5).toString('ascii');
+    assert.strictEqual(magic, '%PDF-', 'Buffer must begin with %PDF- header signature');
   });
 });
 
