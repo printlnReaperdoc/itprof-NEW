@@ -3,6 +3,7 @@ const Quiz = require('../models/Quiz');
 const Question = require('../models/Question');
 const QuestionOption = require('../models/QuestionOption');
 const Chapter = require('../models/Chapter');
+const Course = require('../models/Course');
 const { canAccessChapter } = require('../services/progress.service');
 const { validateQuestionsArray, parseSpreadsheetQuestions } = require('../services/quiz-import.service');
 const { createAuditLog } = require('../services/audit.service');
@@ -211,8 +212,125 @@ const importQuizQuestions = async (req, res, next) => {
   }
 };
 
+/**
+ * Get all quiz answer keys for Faculty and Admin
+ */
+const getAllQuizAnswerKeys = async (req, res, next) => {
+  try {
+    const { courseId } = req.query;
+
+    const courseFilter = courseId ? { _id: courseId } : {};
+    const courses = await Course.find(courseFilter).sort({ courseCode: 1 });
+
+    const coursesData = [];
+    let totalQuestionsCount = 0;
+    let totalQuizzesCount = 0;
+
+    for (const course of courses) {
+      const chapters = await Chapter.find({ courseId: course._id, isPublished: true }).sort({ chapterNumber: 1 });
+      const chapterIds = chapters.map(c => c._id);
+
+      // Find published quizzes for these chapters
+      const quizzes = await Quiz.find({ chapterId: { $in: chapterIds }, publicationStatus: 'published' }).sort({ version: -1 });
+
+      // Group quizzes by chapterId, picking highest version
+      const quizByChapter = new Map();
+      quizzes.forEach(q => {
+        const cId = q.chapterId.toString();
+        if (!quizByChapter.has(cId)) {
+          quizByChapter.set(cId, q);
+        }
+      });
+
+      const activeQuizzes = Array.from(quizByChapter.values());
+      const quizIds = activeQuizzes.map(q => q._id);
+
+      // Fetch questions and options
+      const questions = await Question.find({ quizId: { $in: quizIds } }).sort({ position: 1 });
+      const questionIds = questions.map(q => q._id);
+      const options = await QuestionOption.find({ questionId: { $in: questionIds } }).sort({ optionLabel: 1 });
+
+      const optionsByQuestion = new Map();
+      options.forEach(opt => {
+        const qId = opt.questionId.toString();
+        if (!optionsByQuestion.has(qId)) optionsByQuestion.set(qId, []);
+        optionsByQuestion.get(qId).push(opt);
+      });
+
+      const questionsByQuiz = new Map();
+      questions.forEach(q => {
+        const qzId = q.quizId.toString();
+        if (!questionsByQuiz.has(qzId)) questionsByQuiz.set(qzId, []);
+        
+        const qOpts = optionsByQuestion.get(q._id.toString()) || [];
+        const correctOpt = qOpts.find(o => o.isCorrect);
+
+        questionsByQuiz.get(qzId).push({
+          id: q._id,
+          position: q.position,
+          questionText: q.questionText,
+          points: q.points,
+          correctOption: correctOpt ? correctOpt.optionLabel : null,
+          options: qOpts.map(o => ({
+            id: o._id,
+            label: o.optionLabel,
+            text: o.optionText,
+            isCorrect: o.isCorrect
+          }))
+        });
+      });
+
+      const chapterList = [];
+      for (const chapter of chapters) {
+        const quiz = quizByChapter.get(chapter._id.toString());
+        const quizQuestions = quiz ? (questionsByQuiz.get(quiz._id.toString()) || []) : [];
+
+        if (quiz) {
+          totalQuizzesCount += 1;
+          totalQuestionsCount += quizQuestions.length;
+        }
+
+        chapterList.push({
+          id: chapter._id,
+          chapterNumber: chapter.chapterNumber,
+          title: chapter.title,
+          description: chapter.description,
+          quiz: quiz ? {
+            id: quiz._id,
+            title: quiz.title,
+            version: quiz.version,
+            passingScore: quiz.passingScore,
+            questionCount: quiz.questionCount,
+            questions: quizQuestions
+          } : null
+        });
+      }
+
+      coursesData.push({
+        id: course._id,
+        courseCode: course.courseCode,
+        courseTitle: course.courseTitle,
+        academicYearLevel: course.academicYearLevel,
+        term: course.term,
+        academicDesignation: course.academicDesignation,
+        chapters: chapterList
+      });
+    }
+
+    res.json({
+      success: true,
+      totalQuizzes: totalQuizzesCount,
+      totalQuestions: totalQuestionsCount,
+      courses: coursesData
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getQuizByChapter,
-  importQuizQuestions
+  importQuizQuestions,
+  getAllQuizAnswerKeys
 };
 

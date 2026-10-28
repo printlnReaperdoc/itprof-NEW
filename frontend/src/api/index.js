@@ -39,6 +39,7 @@ export const presentationsApi = {
 // Quizzes & Attempts API
 export const quizzesApi = {
   getByChapter: (chapterId) => api.get(`/quizzes/chapter/${chapterId}`),
+  getAllAnswerKeys: (params) => api.get('/quizzes/answer-keys', { params }),
   importQuestions: (chapterId, data, isMultipart = false) => {
     return api.post(`/quizzes/chapter/${chapterId}/import`, data, {
       headers: isMultipart ? { 'Content-Type': 'multipart/form-data' } : {}
@@ -73,6 +74,7 @@ export const exportUrls = {
   masterXLSX: (courseId) => `/api/exports/master/${courseId}?format=xlsx`,
   masterCSV: (courseId) => `/api/exports/master/${courseId}?format=csv`,
   masterPDF: (courseId) => `/api/exports/master/${courseId}?format=pdf`,
-  topicXLSX: (chapterId) => `/api/exports/topic/${chapterId}?format=xlsx`
+  topicXLSX: (chapterId) => `/api/exports/topic/${chapterId}?format=xlsx`,
+  answerKeysPDF: (courseId) => courseId ? `/api/exports/quizzes/answer-keys/pdf?courseId=${courseId}` : '/api/exports/quizzes/answer-keys/pdf'
 };
 

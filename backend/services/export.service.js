@@ -279,11 +279,156 @@ const generateMasterGradebookPDF = ({ course, students, chapters, gradeMatrix })
   });
 };
 
+/**
+ * Generate Quiz Answer Keys Master PDF (Faculty only)
+ */
+const generateQuizAnswerKeysPDF = ({ coursesData, requestedBy }) => {
+  return new Promise((resolve, reject) => {
+    try {
+      const doc = new PDFDocument({ margin: 40, size: 'A4', bufferPages: true });
+      const buffers = [];
+
+      doc.on('data', buffers.push.bind(buffers));
+      doc.on('end', () => {
+        const pdfData = Buffer.concat(buffers);
+        resolve(pdfData);
+      });
+
+      // Header Banner
+      doc.rect(40, 40, 515, 60).fill('#0f172a');
+      doc.fillColor('#ffffff').fontSize(13).font('Helvetica-Bold')
+        .text('UNIVERSITY LEARNING MANAGEMENT SYSTEM', 50, 48, { align: 'center', width: 495 });
+      doc.fontSize(10).font('Helvetica')
+        .text('FACULTY MASTER ASSESSMENT REFERENCE: OFFICIAL QUIZ ANSWER KEYS', 50, 66, { align: 'center', width: 495 });
+      doc.fontSize(8).font('Helvetica-Oblique').fillColor('#94a3b8')
+        .text('IT Professional Elective 2 (Data Mining) & IT Professional Elective 4 (Cloud Computing)', 50, 82, { align: 'center', width: 495 });
+
+      doc.y = 112;
+
+      // Metadata Box
+      doc.rect(40, 110, 515, 42).fillAndStroke('#f8fafc', '#cbd5e1');
+      doc.fillColor('#1e293b').fontSize(8).font('Helvetica-Bold')
+        .text('DOCUMENT METADATA & CONFIDENTIALITY NOTICE', 50, 116);
+      doc.font('Helvetica').fontSize(7.5).fillColor('#334155')
+        .text(`Authorized Faculty: ${requestedBy?.firstName || ''} ${requestedBy?.surname || ''} (@${requestedBy?.username || 'faculty'}) | Role: ${requestedBy?.role?.toUpperCase() || 'FACULTY'}`, 50, 128)
+        .text(`Export Timestamp: ${new Date().toLocaleString()} | Security Classification: Strictly Confidential - Faculty Assessment Material`, 50, 138);
+
+      doc.y = 162;
+
+      // Iterate through courses
+      coursesData.forEach((course, courseIdx) => {
+        if (courseIdx > 0) {
+          doc.addPage();
+          doc.y = 40;
+        }
+
+        // Course Section Banner
+        doc.rect(40, doc.y, 515, 26).fill('#0284c7');
+        doc.fillColor('#ffffff').fontSize(11).font('Helvetica-Bold')
+          .text(`${course.courseCode}: ${course.courseTitle}`, 50, doc.y + 7, { width: 495 });
+        doc.y += 34;
+
+        course.chapters.forEach((chapter) => {
+          if (doc.y > 640) {
+            doc.addPage();
+            doc.y = 40;
+          }
+
+          // Chapter Header
+          doc.rect(40, doc.y, 515, 20).fill('#1e293b');
+          doc.fillColor('#ffffff').fontSize(8.5).font('Helvetica-Bold')
+            .text(`Chapter ${chapter.chapterNumber}: ${chapter.title}`, 48, doc.y + 5, { width: 360 });
+          doc.font('Helvetica').fontSize(8).fillColor('#38bdf8')
+            .text(`Passing: 15/20 (75%) | 20 Questions`, 415, doc.y + 6, { width: 135, align: 'right' });
+          doc.y += 26;
+
+          const quiz = chapter.quiz;
+          if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+            doc.fillColor('#64748b').fontSize(8).font('Helvetica-Oblique')
+              .text('No active assessment questions configured for this chapter.', 50, doc.y);
+            doc.y += 15;
+            return;
+          }
+
+          // Compact Quick Answer Key Strip (2 rows of 10)
+          const startStripY = doc.y;
+          doc.rect(40, startStripY, 515, 32).fillAndStroke('#f1f5f9', '#cbd5e1');
+          doc.fillColor('#0f172a').fontSize(7.5).font('Helvetica-Bold')
+            .text('QUICK KEY MATRIX:', 46, startStripY + 5);
+
+          // Row 1: Q1 to Q10
+          const row1Text = quiz.questions.slice(0, 10).map(q => `Q${q.position}: ${q.correctOption || '?'}`).join('  |  ');
+          doc.font('Helvetica-Bold').fontSize(7).fillColor('#0369a1')
+            .text(row1Text, 140, startStripY + 5);
+
+          // Row 2: Q11 to Q20
+          const row2Text = quiz.questions.slice(10, 20).map(q => `Q${q.position}: ${q.correctOption || '?'}`).join('  |  ');
+          doc.text(row2Text, 140, startStripY + 18);
+
+          doc.y = startStripY + 38;
+
+          // Full Questions
+          quiz.questions.forEach((q) => {
+            if (doc.y > 690) {
+              doc.addPage();
+              doc.y = 40;
+            }
+
+            // Question Stem
+            doc.fillColor('#0f172a').fontSize(8).font('Helvetica-Bold')
+              .text(`Q${q.position}. ${q.questionText} (${q.points || 1} pt)`, 45, doc.y, { width: 505 });
+            doc.y += 2;
+
+            // Options
+            if (q.options && q.options.length > 0) {
+              q.options.forEach((opt) => {
+                if (doc.y > 730) {
+                  doc.addPage();
+                  doc.y = 40;
+                }
+
+                if (opt.isCorrect) {
+                  doc.fillColor('#15803d').font('Helvetica-Bold').fontSize(7.5)
+                    .text(`[✓] ${opt.label}. ${opt.optionText}  <-- CORRECT ANSWER KEY`, 55, doc.y, { width: 495 });
+                } else {
+                  doc.fillColor('#475569').font('Helvetica').fontSize(7.5)
+                    .text(`[  ] ${opt.label}. ${opt.optionText}`, 55, doc.y, { width: 495 });
+                }
+              });
+            }
+            doc.moveDown(0.35);
+          });
+
+          doc.moveDown(0.5);
+        });
+      });
+
+      // Add Page Numbers to all pages
+      const pages = doc.bufferedPageRange();
+      for (let i = 0; i < pages.count; i++) {
+        doc.switchToPage(i);
+        doc.fillColor('#94a3b8').fontSize(7.5).font('Helvetica')
+          .text(
+            `Page ${i + 1} of ${pages.count}  •  IT Professional Electives LMS  •  Faculty Assessment Master Key`,
+            40,
+            doc.page.height - 25,
+            { align: 'center', width: doc.page.width - 80 }
+          );
+      }
+
+      doc.end();
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 module.exports = {
   sanitizeCellValue,
   generateMasterGradebookXLSX,
   generateMasterGradebookCSV,
   generateTopicGradebookXLSX,
-  generateMasterGradebookPDF
+  generateMasterGradebookPDF,
+  generateQuizAnswerKeysPDF
 };
 

@@ -14,6 +14,7 @@ import ChapterView from './pages/ChapterView';
 import QuizPage from './pages/QuizPage';
 import GradebookPage from './pages/GradebookPage';
 import AuditLogsPage from './pages/AuditLogsPage';
+import FacultyAnswerKeysPage from './pages/FacultyAnswerKeysPage';
 
 function App() {
   return (
@@ -78,6 +79,14 @@ function App() {
               />
 
               {/* Faculty / Admin Protected Routes */}
+              <Route
+                path="/answer-keys"
+                element={
+                  <ProtectedRoute allowedRoles={['faculty', 'admin']}>
+                    <FacultyAnswerKeysPage />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/audit-logs"
                 element={

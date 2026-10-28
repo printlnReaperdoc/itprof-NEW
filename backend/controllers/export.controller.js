@@ -1,12 +1,16 @@
 const Course = require('../models/Course');
 const Chapter = require('../models/Chapter');
+const Quiz = require('../models/Quiz');
+const Question = require('../models/Question');
+const QuestionOption = require('../models/QuestionOption');
 const Enrollment = require('../models/Enrollment');
 const ChapterProgress = require('../models/ChapterProgress');
 const {
   generateMasterGradebookXLSX,
   generateMasterGradebookCSV,
   generateTopicGradebookXLSX,
-  generateMasterGradebookPDF
+  generateMasterGradebookPDF,
+  generateQuizAnswerKeysPDF
 } = require('../services/export.service');
 const { createAuditLog } = require('../services/audit.service');
 
@@ -179,8 +183,131 @@ const exportTopicGradebook = async (req, res, next) => {
   }
 };
 
+/**
+ * Export Quiz Answer Keys as PDF (Faculty only)
+ */
+const exportQuizAnswerKeysPDF = async (req, res, next) => {
+  try {
+    const { courseId } = req.query;
+
+    const courseFilter = courseId ? { _id: courseId } : {};
+    const courses = await Course.find(courseFilter).sort({ courseCode: 1 });
+
+    const coursesData = [];
+
+    for (const course of courses) {
+      const chapters = await Chapter.find({ courseId: course._id, isPublished: true }).sort({ chapterNumber: 1 });
+      const chapterIds = chapters.map(c => c._id);
+
+      const quizzes = await Quiz.find({ chapterId: { $in: chapterIds }, publicationStatus: 'published' }).sort({ version: -1 });
+
+      const quizByChapter = new Map();
+      quizzes.forEach(q => {
+        const cId = q.chapterId.toString();
+        if (!quizByChapter.has(cId)) {
+          quizByChapter.set(cId, q);
+        }
+      });
+
+      const activeQuizzes = Array.from(quizByChapter.values());
+      const quizIds = activeQuizzes.map(q => q._id);
+
+      const questions = await Question.find({ quizId: { $in: quizIds } }).sort({ position: 1 });
+      const questionIds = questions.map(q => q._id);
+      const options = await QuestionOption.find({ questionId: { $in: questionIds } }).sort({ optionLabel: 1 });
+
+      const optionsByQuestion = new Map();
+      options.forEach(opt => {
+        const qId = opt.questionId.toString();
+        if (!optionsByQuestion.has(qId)) optionsByQuestion.set(qId, []);
+        optionsByQuestion.get(qId).push(opt);
+      });
+
+      const questionsByQuiz = new Map();
+      questions.forEach(q => {
+        const qzId = q.quizId.toString();
+        if (!questionsByQuiz.has(qzId)) questionsByQuiz.set(qzId, []);
+
+        const qOpts = optionsByQuestion.get(q._id.toString()) || [];
+        const correctOpt = qOpts.find(o => o.isCorrect);
+
+        questionsByQuiz.get(qzId).push({
+          id: q._id,
+          position: q.position,
+          questionText: q.questionText,
+          points: q.points,
+          correctOption: correctOpt ? correctOpt.optionLabel : null,
+          options: qOpts.map(o => ({
+            id: o._id,
+            label: o.optionLabel,
+            optionText: o.optionText,
+            isCorrect: o.isCorrect
+          }))
+        });
+      });
+
+      const chapterList = [];
+      for (const chapter of chapters) {
+        const quiz = quizByChapter.get(chapter._id.toString());
+        const quizQuestions = quiz ? (questionsByQuiz.get(quiz._id.toString()) || []) : [];
+
+        chapterList.push({
+          id: chapter._id,
+          chapterNumber: chapter.chapterNumber,
+          title: chapter.title,
+          description: chapter.description,
+          quiz: quiz ? {
+            id: quiz._id,
+            title: quiz.title,
+            version: quiz.version,
+            passingScore: quiz.passingScore,
+            questionCount: quiz.questionCount,
+            questions: quizQuestions
+          } : null
+        });
+      }
+
+      coursesData.push({
+        id: course._id,
+        courseCode: course.courseCode,
+        courseTitle: course.courseTitle,
+        academicYearLevel: course.academicYearLevel,
+        term: course.term,
+        chapters: chapterList
+      });
+    }
+
+    await createAuditLog({
+      actorUserId: req.user._id,
+      action: 'EXPORT_QUIZ_ANSWER_KEYS_PDF',
+      entityType: 'Quiz',
+      details: {
+        courseId: courseId || 'ALL',
+        coursesCount: coursesData.length
+      },
+      req
+    });
+
+    const pdfBuffer = await generateQuizAnswerKeysPDF({
+      coursesData,
+      requestedBy: req.user
+    });
+
+    const filename = courseId && courses.length === 1
+      ? `${courses[0].courseCode}_Quiz_Answer_Keys.pdf`
+      : 'IT_Prof_Electives_Master_Quiz_Answer_Keys.pdf';
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    return res.send(pdfBuffer);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   exportMasterGradebook,
-  exportTopicGradebook
+  exportTopicGradebook,
+  exportQuizAnswerKeysPDF
 };
 

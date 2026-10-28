@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import Modal from '../common/Modal';
 import {
   GraduationCap,
   LayoutDashboard,
@@ -10,7 +11,9 @@ import {
   ShieldCheck,
   LogOut,
   Sparkles,
-  Server
+  Server,
+  KeyRound,
+  AlertTriangle
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -18,9 +21,20 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = async () => {
-    await logout();
-    navigate('/login');
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const confirmLogout = async () => {
+    try {
+      setLoggingOut(true);
+      await logout();
+      setIsLogoutModalOpen(false);
+      navigate('/login');
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   if (!isAuthenticated) return null;
@@ -100,17 +114,30 @@ const Navbar = () => {
           </Link>
 
           {isFaculty && (
-            <Link
-              to="/audit-logs"
-              className="btn btn-outline"
-              style={{
-                border: isActive('/audit-logs') ? '1px solid rgba(192, 132, 252, 0.4)' : '1px solid transparent',
-                backgroundColor: isActive('/audit-logs') ? 'rgba(192, 132, 252, 0.12)' : 'transparent',
-                color: isActive('/audit-logs') ? '#c084fc' : '#cbd5e1'
-              }}
-            >
-              <ShieldCheck size={15} /> Audit Logs
-            </Link>
+            <>
+              <Link
+                to="/answer-keys"
+                className="btn btn-outline"
+                style={{
+                  border: isActive('/answer-keys') ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
+                  backgroundColor: isActive('/answer-keys') ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+                  color: isActive('/answer-keys') ? '#38bdf8' : '#cbd5e1'
+                }}
+              >
+                <KeyRound size={15} /> Answer Keys
+              </Link>
+              <Link
+                to="/audit-logs"
+                className="btn btn-outline"
+                style={{
+                  border: isActive('/audit-logs') ? '1px solid rgba(192, 132, 252, 0.4)' : '1px solid transparent',
+                  backgroundColor: isActive('/audit-logs') ? 'rgba(192, 132, 252, 0.12)' : 'transparent',
+                  color: isActive('/audit-logs') ? '#c084fc' : '#cbd5e1'
+                }}
+              >
+                <ShieldCheck size={15} /> Audit Logs
+              </Link>
+            </>
           )}
         </nav>
 
@@ -144,7 +171,7 @@ const Navbar = () => {
           </div>
 
           <button
-            onClick={handleLogout}
+            onClick={() => setIsLogoutModalOpen(true)}
             className="btn btn-outline"
             style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', color: '#f87171', borderColor: 'rgba(248, 113, 113, 0.25)' }}
             title="Log out"
@@ -153,6 +180,61 @@ const Navbar = () => {
           </button>
         </div>
       </div>
+
+      {/* Custom Logout Confirmation Modal (No HTML5 Dialog) */}
+      <Modal
+        isOpen={isLogoutModalOpen}
+        onClose={() => !loggingOut && setIsLogoutModalOpen(false)}
+        title="Confirm Session Termination"
+        maxWidth="460px"
+      >
+        <div style={{ textAlign: 'center', padding: '0.5rem 0 1rem' }}>
+          <div style={{
+            width: '54px',
+            height: '54px',
+            borderRadius: '50%',
+            backgroundColor: 'rgba(239, 68, 68, 0.15)',
+            color: '#f87171',
+            border: '1px solid rgba(239, 68, 68, 0.3)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '1rem'
+          }}>
+            <AlertTriangle size={28} />
+          </div>
+
+          <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.5rem' }}>
+            Terminate Active Session?
+          </h3>
+
+          <p style={{ fontSize: '0.9rem', color: 'var(--text-muted)', lineHeight: 1.6, marginBottom: '1.5rem' }}>
+            Are you sure you want to log out, <strong style={{ color: 'var(--text-main)' }}>{user?.firstName} {user?.surname}</strong>?
+            Any unsaved work in lecture editors or quiz attempts will be discarded.
+          </p>
+
+          <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
+            <button
+              type="button"
+              onClick={() => setIsLogoutModalOpen(false)}
+              disabled={loggingOut}
+              className="btn btn-outline"
+              style={{ padding: '0.6rem 1.5rem', minWidth: '110px' }}
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={confirmLogout}
+              disabled={loggingOut}
+              className="btn btn-danger"
+              style={{ padding: '0.6rem 1.5rem', minWidth: '140px' }}
+            >
+              <LogOut size={16} /> {loggingOut ? 'Signing Out...' : 'Terminate Session'}
+            </button>
+          </div>
+        </div>
+      </Modal>
     </header>
   );
 };

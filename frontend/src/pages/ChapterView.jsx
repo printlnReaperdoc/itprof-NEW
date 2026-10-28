@@ -49,6 +49,8 @@ const ChapterView = () => {
   const [reviewAttemptId, setReviewAttemptId] = useState(null);
   const [isOverrideModalOpen, setIsOverrideModalOpen] = useState(false);
   const [overrideData, setOverrideData] = useState({ studentId: '', status: 'available', reason: '' });
+  const [overrideError, setOverrideError] = useState(null);
+  const [overrideSuccess, setOverrideSuccess] = useState(null);
 
   const loadChapterData = async () => {
     try {
@@ -103,13 +105,29 @@ const ChapterView = () => {
 
   const handleOverrideSubmit = async (e) => {
     e.preventDefault();
+    setOverrideError(null);
+    setOverrideSuccess(null);
+
+    if (!overrideData.studentId.trim()) {
+      setOverrideError('Student username or ID is required.');
+      return;
+    }
+    if (!overrideData.reason.trim()) {
+      setOverrideError('Administrative justification reason is mandatory for compliance audit logging.');
+      return;
+    }
+
     try {
       await chaptersApi.overrideProgress(chapterId, overrideData);
-      alert('Administrative progress override applied successfully.');
-      setIsOverrideModalOpen(false);
-      loadChapterData();
+      setOverrideSuccess('Administrative progress override applied successfully.');
+      setTimeout(() => {
+        setIsOverrideModalOpen(false);
+        setOverrideSuccess(null);
+        setOverrideError(null);
+        loadChapterData();
+      }, 1200);
     } catch (err) {
-      alert('Override error: ' + err.message);
+      setOverrideError(err.message || 'Failed to apply override.');
     }
   };
 
@@ -543,10 +561,26 @@ const ChapterView = () => {
       {/* Administrative Progress Override Modal */}
       <Modal
         isOpen={isOverrideModalOpen}
-        onClose={() => setIsOverrideModalOpen(false)}
+        onClose={() => {
+          setIsOverrideModalOpen(false);
+          setOverrideError(null);
+          setOverrideSuccess(null);
+        }}
         title="Administrative Progress Override"
       >
-        <form onSubmit={handleOverrideSubmit}>
+        <form onSubmit={handleOverrideSubmit} noValidate>
+          {overrideSuccess && (
+            <div className="alert alert-success" style={{ marginBottom: '1.25rem' }}>
+              <CheckCircle2 size={18} /> {overrideSuccess}
+            </div>
+          )}
+
+          {overrideError && (
+            <div className="alert alert-danger" style={{ marginBottom: '1.25rem' }}>
+              <AlertTriangle size={18} /> {overrideError}
+            </div>
+          )}
+
           <div className="form-group">
             <label className="form-label">Student Username or ID</label>
             <input
@@ -555,7 +589,6 @@ const ChapterView = () => {
               value={overrideData.studentId}
               onChange={(e) => setOverrideData({ ...overrideData, studentId: e.target.value })}
               placeholder="e.g. 64a8c1f9... or student username"
-              required
             />
           </div>
 
@@ -580,7 +613,6 @@ const ChapterView = () => {
               value={overrideData.reason}
               onChange={(e) => setOverrideData({ ...overrideData, reason: e.target.value })}
               placeholder="State the institutional justification for manually overriding student progression..."
-              required
             />
           </div>
 

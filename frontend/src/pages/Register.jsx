@@ -28,20 +28,52 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match.');
+    // Custom non-HTML5 input validations
+    const firstName = formData.firstName.trim();
+    const surname = formData.surname.trim();
+    const username = formData.username.trim();
+    const password = formData.password;
+    const confirmPassword = formData.confirmPassword;
+
+    if (!firstName) {
+      setError('Please provide your first name.');
       return;
     }
-
-    if (formData.password.length < 8) {
+    if (!surname) {
+      setError('Please provide your surname.');
+      return;
+    }
+    if (!username) {
+      setError('Please provide a unique student username.');
+      return;
+    }
+    if (username.length < 3) {
+      setError('Username must be at least 3 characters long.');
+      return;
+    }
+    if (!password) {
+      setError('Please create a password for your student account.');
+      return;
+    }
+    if (password.length < 8) {
       setError('Password must be at least 8 characters long.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Password and Confirm Password do not match.');
       return;
     }
 
     setLoading(true);
 
     try {
-      await register(formData);
+      await register({
+        firstName,
+        surname,
+        username,
+        password,
+        confirmPassword
+      });
       navigate('/');
     } catch (err) {
       setError(err.message || 'Registration failed. Check inputs.');
@@ -106,7 +138,7 @@ const Register = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div className="form-group">
               <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>FIRST NAME</label>
@@ -117,7 +149,6 @@ const Register = () => {
                 value={formData.firstName}
                 onChange={handleChange}
                 placeholder="Juan"
-                required
               />
             </div>
             <div className="form-group">
@@ -129,7 +160,6 @@ const Register = () => {
                 value={formData.surname}
                 onChange={handleChange}
                 placeholder="Dela Cruz"
-                required
               />
             </div>
           </div>
@@ -143,7 +173,6 @@ const Register = () => {
               value={formData.username}
               onChange={handleChange}
               placeholder="e.g. jdelacruz2026"
-              required
             />
           </div>
 
@@ -156,7 +185,6 @@ const Register = () => {
               value={formData.password}
               onChange={handleChange}
               placeholder="Minimum 8 characters"
-              required
             />
           </div>
 
@@ -169,7 +197,6 @@ const Register = () => {
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="Re-type password"
-              required
             />
           </div>
 

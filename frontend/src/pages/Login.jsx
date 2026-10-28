@@ -15,10 +15,23 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+
+    // Custom non-HTML5 validation
+    const cleanUsername = username.trim();
+    if (!cleanUsername) {
+      setError('Please provide your account username or ID.');
+      return;
+    }
+
+    if (!password) {
+      setError('Please provide your account password.');
+      return;
+    }
+
     setLoading(true);
 
     try {
-      await login(username, password);
+      await login(cleanUsername, password);
       navigate('/');
     } catch (err) {
       setError(err.message || 'Invalid credentials. Authentication failed.');
@@ -103,7 +116,7 @@ const Login = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="form-group">
             <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>
               USERNAME / ID
@@ -114,7 +127,6 @@ const Login = () => {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="e.g. faculty or student username"
-              required
               autoFocus
             />
           </div>
@@ -129,7 +141,6 @@ const Login = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••••••"
-              required
             />
           </div>
 
