@@ -40,6 +40,10 @@ export const presentationsApi = {
 export const quizzesApi = {
   getByChapter: (chapterId) => api.get(`/quizzes/chapter/${chapterId}`),
   getAllAnswerKeys: (params) => api.get('/quizzes/answer-keys', { params }),
+  downloadAnswerKeysPDF: (courseId) => api.get('/exports/quizzes/answer-keys/pdf', {
+    params: courseId ? { courseId } : {},
+    responseType: 'blob'
+  }),
   importQuestions: (chapterId, data, isMultipart = false) => {
     return api.post(`/quizzes/chapter/${chapterId}/import`, data, {
       headers: isMultipart ? { 'Content-Type': 'multipart/form-data' } : {}

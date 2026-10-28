@@ -15,7 +15,8 @@ import {
   HelpCircle,
   Award,
   Filter,
-  Check
+  Check,
+  AlertTriangle
 } from 'lucide-react';
 
 const FacultyAnswerKeysPage = () => {
@@ -82,12 +83,11 @@ const FacultyAnswerKeysPage = () => {
       setDownloadingCourseId(targetId || 'ALL');
       setError(null);
 
-      const url = exportUrls.answerKeysPDF(targetId || undefined);
-      // Fetch binary PDF data through authenticated Axios client
-      const response = await api.get(url, { responseType: 'blob' });
+      // Call dedicated API endpoint with authenticated Axios client
+      const res = await quizzesApi.downloadAnswerKeysPDF(targetId);
 
-      // Create download blob
-      const blob = new Blob([response], { type: 'application/pdf' });
+      // Extract binary Blob (Axios returns response.data directly via interceptor)
+      const blob = res instanceof Blob ? res : new Blob([res], { type: 'application/pdf' });
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = downloadUrl;
@@ -97,11 +97,24 @@ const FacultyAnswerKeysPage = () => {
       link.setAttribute('download', filename);
       document.body.appendChild(link);
       link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(downloadUrl);
+
+      setTimeout(() => {
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(downloadUrl);
+      }, 250);
     } catch (err) {
       console.error('Download error:', err);
-      setError(err.message || 'Failed to download Answer Keys PDF.');
+      let errorMsg = 'Failed to download Answer Keys PDF.';
+      if (err instanceof Blob) {
+        try {
+          const text = await err.text();
+          const parsed = JSON.parse(text);
+          errorMsg = parsed.message || errorMsg;
+        } catch (_) {}
+      } else if (err.message) {
+        errorMsg = err.message;
+      }
+      setError(errorMsg);
     } finally {
       setDownloadingCourseId(null);
     }
@@ -196,6 +209,14 @@ const FacultyAnswerKeysPage = () => {
             </button>
           </div>
         </div>
+
+        {/* Dynamic Error Alert */}
+        {error && (
+          <div className="alert alert-danger no-print" style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+            <AlertTriangle size={18} />
+            <span>{error}</span>
+          </div>
+        )}
 
         {/* Overview Stats Strip */}
         <div className="no-print" style={{

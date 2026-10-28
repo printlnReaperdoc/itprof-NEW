@@ -353,7 +353,9 @@ const exportQuizAnswerKeysPDF = async (req, res, next) => {
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
-    return res.send(pdfBuffer);
+    res.setHeader('Content-Length', pdfBuffer.length);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.end(pdfBuffer);
   } catch (err) {
     next(err);
   }

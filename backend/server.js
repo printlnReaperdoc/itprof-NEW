@@ -69,6 +69,14 @@ app.use(cookieParser());
 // Request ID tracking
 app.use(requestId);
 
+// Normalize duplicated /api prefixes (e.g. from axios baseURL + absolute url)
+app.use((req, res, next) => {
+  if (req.url.startsWith('/api/api/')) {
+    req.url = req.url.replace('/api/api/', '/api/');
+  }
+  next();
+});
+
 // Database Connection
 connectDB().catch((err) => {
   console.error('Initial MongoDB connection failed:', err.message);
