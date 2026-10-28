@@ -1,0 +1,55 @@
+const mongoose = require('mongoose');
+
+const lessonSchema = new mongoose.Schema(
+  {
+    chapterId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Chapter',
+      required: [true, 'Chapter reference is required'],
+      unique: true,
+      index: true
+    },
+    overview: {
+      type: String,
+      required: [true, 'Lesson overview is required']
+    },
+    learningObjectives: {
+      type: [String],
+      default: []
+    },
+    content: {
+      type: String,
+      required: [true, 'Lesson content is required']
+    },
+    keyConcepts: [
+      {
+        term: { type: String, required: true },
+        definition: { type: String, required: true }
+      }
+    ],
+    studyGuide: {
+      type: [String],
+      default: []
+    },
+    publicationStatus: {
+      type: String,
+      enum: ['draft', 'published'],
+      default: 'published'
+    },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    },
+    updatedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User'
+    }
+  },
+  {
+    timestamps: true
+  }
+);
+
+const Lesson = mongoose.model('Lesson', lessonSchema);
+module.exports = Lesson;
+
