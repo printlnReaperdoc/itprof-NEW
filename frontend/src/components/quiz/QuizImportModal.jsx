@@ -113,7 +113,7 @@ const QuizImportModal = ({ isOpen, onClose, chapterId, onImported }) => {
           <textarea
             className="form-textarea"
             rows={10}
-            style={{ fontFamily: 'Consolas, monospace', fontSize: '0.85rem' }}
+            style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', letterSpacing: '-0.01em' }}
             value={jsonText}
             onChange={(e) => setJsonText(e.target.value)}
             placeholder={sampleJson}

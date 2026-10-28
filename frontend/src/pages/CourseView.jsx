@@ -11,7 +11,9 @@ import {
   CheckCircle2,
   Database,
   Cloud,
-  FileSpreadsheet
+  FileSpreadsheet,
+  ArrowLeft,
+  Layers
 } from 'lucide-react';
 
 const CourseView = () => {
@@ -39,48 +41,56 @@ const CourseView = () => {
     fetchCourse();
   }, [courseId]);
 
-  if (loading) return <LoadingSpinner message="Loading course curriculum..." />;
+  if (loading) return <LoadingSpinner message="Loading course curriculum roadmap..." />;
   if (error || !course) return <div className="container" style={{ padding: '2rem' }}><div className="alert alert-danger">{error || 'Course not found'}</div></div>;
 
   const isDataMining = course.courseCode.includes('411');
+  const accentColor = isDataMining ? '#c084fc' : '#38bdf8';
 
   return (
-    <div className="container" style={{ padding: '2rem 1.5rem' }}>
+    <div className="container" style={{ padding: '2.5rem 1.5rem' }}>
+      {/* Back Link */}
+      <div style={{ marginBottom: '1.25rem' }}>
+        <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', color: '#94a3b8' }}>
+          <ArrowLeft size={15} /> Back to LMS Dashboard
+        </Link>
+      </div>
+
       {/* Course Header Banner */}
       <div
-        className="card"
+        className="card tech-grid-bg"
         style={{
-          background: isDataMining
-            ? 'linear-gradient(135deg, #1e1b4b, #312e81)'
-            : 'linear-gradient(135deg, #082f49, #0369a1)',
+          backgroundColor: isDataMining ? '#140e26' : '#08172c',
+          borderColor: isDataMining ? 'rgba(192, 132, 252, 0.35)' : 'rgba(56, 189, 248, 0.35)',
           color: '#ffffff',
-          marginBottom: '2rem',
+          marginBottom: '2.5rem',
           padding: '2.5rem',
-          borderRadius: 'var(--radius-lg)'
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: `0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 0 25px -5px ${isDataMining ? 'rgba(192, 132, 252, 0.2)' : 'rgba(56, 189, 248, 0.2)'}`
         }}
       >
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1.5rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-              <span style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.2)',
-                padding: '0.2rem 0.75rem',
-                borderRadius: '9999px',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                letterSpacing: '0.05em'
-              }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.6rem' }}>
+              <span
+                className="badge"
+                style={{
+                  backgroundColor: isDataMining ? 'rgba(192, 132, 252, 0.2)' : 'rgba(56, 189, 248, 0.2)',
+                  color: accentColor,
+                  border: `1px solid ${isDataMining ? 'rgba(192, 132, 252, 0.4)' : 'rgba(56, 189, 248, 0.4)'}`
+                }}
+              >
                 {course.classification}
               </span>
-              <span style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>
+              <span style={{ fontSize: '0.8rem', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>
                 {course.academicDesignation}
               </span>
             </div>
 
-            <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '0.5rem' }}>
+            <h1 style={{ fontSize: '2.25rem', fontWeight: 800, letterSpacing: '-0.02em', color: '#f8fafc', marginBottom: '0.6rem' }}>
               {course.courseTitle}
             </h1>
-            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', maxWidth: '750px', lineHeight: 1.6 }}>
+            <p style={{ color: '#cbd5e1', fontSize: '0.95rem', maxWidth: '780px', lineHeight: 1.6 }}>
               {course.description}
             </p>
           </div>
@@ -89,9 +99,9 @@ const CourseView = () => {
             <Link
               to={`/gradebook?courseId=${course.id}`}
               className="btn btn-outline"
-              style={{ color: '#ffffff', borderColor: 'rgba(255,255,255,0.4)' }}
+              style={{ borderColor: 'rgba(255, 255, 255, 0.2)', color: '#ffffff' }}
             >
-              <FileSpreadsheet size={16} /> Course Gradebook
+              <FileSpreadsheet size={16} /> Course Gradebook Matrix
             </Link>
           </div>
         </div>
@@ -100,16 +110,16 @@ const CourseView = () => {
       {/* Modules and Chapters List */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
         {modules.map((mod) => (
-          <div key={mod.id} className="card" style={{ padding: '1.75rem' }}>
-            <div style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '1rem', marginBottom: '1.25rem' }}>
-              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--primary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                Module {mod.moduleNumber}
+          <div key={mod.id} className="card" style={{ padding: '2rem', backgroundColor: '#0c1222' }}>
+            <div style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', paddingBottom: '1rem', marginBottom: '1.5rem' }}>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, color: accentColor, textTransform: 'uppercase', letterSpacing: '0.06em', fontFamily: 'var(--font-mono)' }}>
+                MODULE {mod.moduleNumber}
               </div>
-              <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)', marginTop: '0.2rem' }}>
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, color: '#f8fafc', marginTop: '0.25rem' }}>
                 {mod.title}
               </h2>
               {mod.description && (
-                <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+                <p style={{ fontSize: '0.875rem', color: '#94a3b8', marginTop: '0.3rem' }}>
                   {mod.description}
                 </p>
               )}
@@ -128,28 +138,31 @@ const CourseView = () => {
                       flexWrap: 'wrap',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      padding: '1rem 1.25rem',
+                      padding: '1.1rem 1.4rem',
                       borderRadius: 'var(--radius-sm)',
-                      border: '1px solid var(--border-color)',
-                      backgroundColor: isLocked ? '#f8fafc' : '#ffffff',
-                      opacity: isLocked ? 0.75 : 1,
+                      border: '1px solid',
+                      borderColor: ch.status === 'passed' ? 'rgba(52, 211, 153, 0.25)' : isLocked ? 'rgba(255, 255, 255, 0.05)' : 'rgba(56, 189, 248, 0.25)',
+                      backgroundColor: isLocked ? 'rgba(15, 23, 42, 0.4)' : '#0f172a',
+                      opacity: isLocked ? 0.6 : 1,
                       gap: '1rem',
-                      transition: 'all 0.15s ease'
+                      transition: 'all 0.2s ease'
                     }}
                   >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1, minWidth: '260px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.15rem', flex: 1, minWidth: '280px' }}>
                       <div
                         style={{
-                          width: '36px',
-                          height: '36px',
-                          borderRadius: '8px',
-                          backgroundColor: ch.status === 'passed' ? 'var(--success-bg)' : isLocked ? '#f1f5f9' : 'var(--primary-light)',
-                          color: ch.status === 'passed' ? 'var(--success)' : isLocked ? '#94a3b8' : 'var(--primary)',
+                          width: '40px',
+                          height: '40px',
+                          borderRadius: '10px',
+                          backgroundColor: ch.status === 'passed' ? 'rgba(52, 211, 153, 0.15)' : isLocked ? 'rgba(255, 255, 255, 0.05)' : 'rgba(56, 189, 248, 0.15)',
+                          border: `1px solid ${ch.status === 'passed' ? 'rgba(52, 211, 153, 0.4)' : isLocked ? 'rgba(255, 255, 255, 0.1)' : 'rgba(56, 189, 248, 0.4)'}`,
+                          color: ch.status === 'passed' ? '#34d399' : isLocked ? '#64748b' : '#38bdf8',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
                           fontWeight: 700,
-                          fontSize: '0.9rem',
+                          fontSize: '0.95rem',
+                          fontFamily: 'var(--font-mono)',
                           flexShrink: 0
                         }}
                       >
@@ -157,10 +170,10 @@ const CourseView = () => {
                       </div>
 
                       <div>
-                        <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-main)' }}>
+                        <div style={{ fontWeight: 700, fontSize: '1.05rem', color: '#f8fafc' }}>
                           Chapter {ch.chapterNumber}: {ch.title}
                         </div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.15rem' }}>
+                        <div style={{ fontSize: '0.82rem', color: '#94a3b8', marginTop: '0.2rem' }}>
                           {ch.description}
                         </div>
                       </div>
@@ -173,8 +186,8 @@ const CourseView = () => {
                           <StatusBadge status={ch.status} />
                         </div>
                         {ch.highestScore !== null && (
-                          <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-                            Best: {ch.highestScore} / 20 ({ch.highestScorePercentage}%)
+                          <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>
+                            High: {ch.highestScore} / 20 ({ch.highestScorePercentage}%)
                           </div>
                         )}
                       </div>
@@ -183,7 +196,7 @@ const CourseView = () => {
                         <button
                           disabled
                           className="btn btn-outline"
-                          style={{ padding: '0.45rem 1rem', fontSize: '0.85rem', opacity: 0.6 }}
+                          style={{ padding: '0.45rem 1rem', fontSize: '0.85rem' }}
                           title="Pass previous chapter quiz (minimum 15/20) to unlock this chapter"
                         >
                           <Lock size={14} /> Locked
@@ -192,7 +205,7 @@ const CourseView = () => {
                         <Link
                           to={`/chapters/${ch.id}`}
                           className="btn btn-primary"
-                          style={{ padding: '0.45rem 1rem', fontSize: '0.85rem' }}
+                          style={{ padding: '0.45rem 1.15rem', fontSize: '0.85rem' }}
                         >
                           View Chapter <ArrowRight size={14} />
                         </Link>
@@ -210,4 +223,3 @@ const CourseView = () => {
 };
 
 export default CourseView;
-

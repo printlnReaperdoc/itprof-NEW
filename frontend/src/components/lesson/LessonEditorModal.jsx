@@ -43,11 +43,11 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Faculty Lesson Editor" maxWidth="850px">
+    <Modal isOpen={isOpen} onClose={onClose} title="Faculty Lesson Content Editor" maxWidth="880px">
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="form-group">
-        <label className="form-label">Lesson Overview & Abstract</label>
+        <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>LESSON OVERVIEW & ABSTRACT</label>
         <textarea
           className="form-textarea"
           rows={3}
@@ -58,7 +58,7 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
       </div>
 
       <div className="form-group">
-        <label className="form-label">Learning Objectives (One per line)</label>
+        <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>LEARNING OBJECTIVES (ONE PER LINE)</label>
         <textarea
           className="form-textarea"
           rows={4}
@@ -69,18 +69,18 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
       </div>
 
       <div className="form-group">
-        <label className="form-label">Detailed Lesson Content (Markdown/Text)</label>
+        <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>DETAILED LESSON CONTENT (MARKDOWN)</label>
         <textarea
           className="form-textarea"
           rows={12}
-          style={{ fontFamily: 'Consolas, Monaco, monospace', fontSize: '0.85rem' }}
+          style={{ fontFamily: 'var(--font-mono)', fontSize: '0.88rem' }}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="## 1. Section Title&#10;Detailed technical exposition..."
         />
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.75rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1rem' }}>
         <button type="button" onClick={onClose} className="btn btn-outline">
           Cancel
         </button>
@@ -93,4 +93,3 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
 };
 
 export default LessonEditorModal;
-

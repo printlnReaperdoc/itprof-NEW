@@ -91,7 +91,7 @@ const GradebookPage = () => {
       {isFaculty ? (
         <div>
           {/* Course Switcher Tabs */}
-          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' }}>
             {courses.map((c) => {
               const isSelected = selectedCourseId === (c.id || c._id);
               const isDM = c.courseCode.includes('411');
@@ -100,7 +100,18 @@ const GradebookPage = () => {
                   key={c.id || c._id}
                   onClick={() => setSelectedCourseId(c.id || c._id)}
                   className={`btn ${isSelected ? 'btn-primary' : 'btn-outline'}`}
-                  style={{ padding: '0.6rem 1.25rem', fontSize: '0.9rem' }}
+                  style={{
+                    padding: '0.65rem 1.35rem',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    background: isSelected
+                      ? (isDM ? 'var(--dm-accent)' : 'var(--cloud-accent)')
+                      : 'transparent',
+                    color: isSelected ? '#070a13' : 'var(--text-main)',
+                    boxShadow: isSelected
+                      ? (isDM ? '0 0 16px rgba(192, 132, 252, 0.35)' : '0 0 16px rgba(56, 189, 248, 0.35)')
+                      : 'none'
+                  }}
                 >
                   {isDM ? <Database size={16} /> : <Cloud size={16} />}
                   {c.courseTitle} ({c.courseCode})
@@ -148,20 +159,20 @@ const GradebookPage = () => {
 
                   <div style={{ display: 'flex', gap: '2rem', textAlign: 'right' }}>
                     <div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Chapters Passed</div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--success)' }}>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Chapters Passed</div>
+                      <div style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--success)', fontFamily: 'var(--font-mono)' }}>
                         {cData.chaptersPassed} / {cData.totalChapters}
                       </div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Completion</div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--primary)' }}>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Completion</div>
+                      <div style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--cloud-accent)', fontFamily: 'var(--font-mono)' }}>
                         {cData.completionPercentage}%
                       </div>
                     </div>
                     <div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Average</div>
-                      <div style={{ fontSize: '1.5rem', fontWeight: 700, color: '#0f172a' }}>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Average</div>
+                      <div style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
                         {cData.overallAverage !== null ? `${cData.overallAverage}%` : 'N/A'}
                       </div>
                     </div>
@@ -189,8 +200,8 @@ const GradebookPage = () => {
                           <td>
                             <StatusBadge status={ch.status} />
                           </td>
-                          <td>{ch.attemptsCount}</td>
-                          <td>
+                          <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{ch.attemptsCount}</td>
+                          <td style={{ fontFamily: 'var(--font-mono)' }}>
                             {ch.highestScore !== null ? (
                               <span style={{ fontWeight: 700, color: ch.status === 'passed' ? 'var(--success)' : 'inherit' }}>
                                 {ch.highestScore} / 20 ({ch.highestScorePercentage}%)

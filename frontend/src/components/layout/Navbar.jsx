@@ -9,7 +9,8 @@ import {
   FileSpreadsheet,
   ShieldCheck,
   LogOut,
-  User
+  Sparkles,
+  Server
 } from 'lucide-react';
 
 const Navbar = () => {
@@ -28,73 +29,74 @@ const Navbar = () => {
 
   return (
     <header style={{
-      backgroundColor: '#ffffff',
-      borderBottom: '1px solid var(--border-color)',
+      backgroundColor: 'rgba(11, 17, 32, 0.92)',
+      backdropFilter: 'blur(16px)',
+      borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
       position: 'sticky',
       top: 0,
       zIndex: 100,
-      boxShadow: 'var(--shadow-sm)'
+      boxShadow: '0 4px 20px rgba(0, 0, 0, 0.5)'
     }}>
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '68px' }}>
-        {/* Brand */}
-        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '70px' }}>
+        {/* Brand / Logo */}
+        <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', textDecoration: 'none' }}>
           <div style={{
-            background: 'linear-gradient(135deg, #1e40af, #3b82f6)',
+            background: 'linear-gradient(135deg, #0284c7, #9333ea)',
             color: '#ffffff',
-            padding: '0.5rem',
-            borderRadius: 'var(--radius-sm)',
+            padding: '0.55rem',
+            borderRadius: '10px',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            boxShadow: '0 0 16px rgba(56, 189, 248, 0.4)'
           }}>
-            <GraduationCap size={24} />
+            <Server size={22} />
           </div>
           <div>
-            <div style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--text-main)', lineHeight: 1.2 }}>
-              IT Professional Electives
+            <div style={{ fontWeight: 800, fontSize: '1.05rem', color: '#f8fafc', letterSpacing: '-0.02em', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span>IT Professional Electives</span>
+              <span style={{
+                fontSize: '0.68rem',
+                backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                color: '#38bdf8',
+                padding: '0.1rem 0.45rem',
+                borderRadius: '4px',
+                border: '1px solid rgba(56, 189, 248, 0.3)',
+                fontFamily: 'var(--font-mono)'
+              }}>
+                LMS 4-1
+              </span>
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
-              Elective 2 & 4 • 4th Year, 1st Term
+            <div style={{ fontSize: '0.72rem', color: '#94a3b8', fontFamily: 'var(--font-mono)', letterSpacing: '0.02em' }}>
+              ITEP411-T (Data Mining) • ITEP413-T (Cloud)
             </div>
           </div>
         </Link>
 
         {/* Navigation links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <Link
             to="/"
             className="btn btn-outline"
             style={{
-              border: 'none',
-              backgroundColor: isActive('/') ? 'var(--primary-light)' : 'transparent',
-              color: isActive('/') ? 'var(--primary)' : 'var(--text-main)'
+              border: isActive('/') ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
+              backgroundColor: isActive('/') ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+              color: isActive('/') ? '#38bdf8' : '#cbd5e1'
             }}
           >
-            <LayoutDashboard size={16} /> Dashboard
-          </Link>
-
-          <Link
-            to="/courses"
-            className="btn btn-outline"
-            style={{
-              border: 'none',
-              backgroundColor: location.pathname.startsWith('/course') ? 'var(--primary-light)' : 'transparent',
-              color: location.pathname.startsWith('/course') ? 'var(--primary)' : 'var(--text-main)'
-            }}
-          >
-            <Database size={16} /> Courses
+            <LayoutDashboard size={15} /> Dashboard
           </Link>
 
           <Link
             to="/gradebook"
             className="btn btn-outline"
             style={{
-              border: 'none',
-              backgroundColor: isActive('/gradebook') ? 'var(--primary-light)' : 'transparent',
-              color: isActive('/gradebook') ? 'var(--primary)' : 'var(--text-main)'
+              border: isActive('/gradebook') ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
+              backgroundColor: isActive('/gradebook') ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+              color: isActive('/gradebook') ? '#38bdf8' : '#cbd5e1'
             }}
           >
-            <FileSpreadsheet size={16} /> {isFaculty ? 'Master Gradebooks' : 'My Grades'}
+            <FileSpreadsheet size={15} /> {isFaculty ? 'Master Gradebooks' : 'My Grades'}
           </Link>
 
           {isFaculty && (
@@ -102,39 +104,41 @@ const Navbar = () => {
               to="/audit-logs"
               className="btn btn-outline"
               style={{
-                border: 'none',
-                backgroundColor: isActive('/audit-logs') ? 'var(--primary-light)' : 'transparent',
-                color: isActive('/audit-logs') ? 'var(--primary)' : 'var(--text-main)'
+                border: isActive('/audit-logs') ? '1px solid rgba(192, 132, 252, 0.4)' : '1px solid transparent',
+                backgroundColor: isActive('/audit-logs') ? 'rgba(192, 132, 252, 0.12)' : 'transparent',
+                color: isActive('/audit-logs') ? '#c084fc' : '#cbd5e1'
               }}
             >
-              <ShieldCheck size={16} /> Audit Logs
+              <ShieldCheck size={15} /> Audit Logs
             </Link>
           )}
         </nav>
 
         {/* User profile & logout */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', textAlign: 'right' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textAlign: 'right' }}>
             <div style={{
               width: '36px',
               height: '36px',
-              borderRadius: '50%',
-              backgroundColor: isFaculty ? '#fef3c7' : 'var(--primary-light)',
-              color: isFaculty ? '#b45309' : 'var(--primary)',
+              borderRadius: '8px',
+              backgroundColor: isFaculty ? 'rgba(192, 132, 252, 0.2)' : 'rgba(56, 189, 248, 0.2)',
+              border: `1px solid ${isFaculty ? 'rgba(192, 132, 252, 0.4)' : 'rgba(56, 189, 248, 0.4)'}`,
+              color: isFaculty ? '#c084fc' : '#38bdf8',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontWeight: 600,
-              fontSize: '0.875rem'
+              fontWeight: 700,
+              fontSize: '0.85rem',
+              fontFamily: 'var(--font-mono)'
             }}>
               {user?.firstName?.[0] || 'U'}
             </div>
             <div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main)' }}>
+              <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc' }}>
                 {user?.firstName} {user?.surname}
               </div>
-              <div style={{ fontSize: '0.72rem', textTransform: 'capitalize', color: 'var(--text-muted)' }}>
-                {user?.role} • @{user?.username}
+              <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>
+                {user?.role?.toUpperCase()} • @{user?.username}
               </div>
             </div>
           </div>
@@ -142,10 +146,10 @@ const Navbar = () => {
           <button
             onClick={handleLogout}
             className="btn btn-outline"
-            style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem' }}
+            style={{ padding: '0.4rem 0.75rem', fontSize: '0.8rem', color: '#f87171', borderColor: 'rgba(248, 113, 113, 0.25)' }}
             title="Log out"
           >
-            <LogOut size={15} /> Logout
+            <LogOut size={14} /> Exit
           </button>
         </div>
       </div>
@@ -154,4 +158,3 @@ const Navbar = () => {
 };
 
 export default Navbar;
-

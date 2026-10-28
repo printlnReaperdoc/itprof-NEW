@@ -103,27 +103,35 @@ const AuditLogsPage = () => {
               ) : (
                 logs.map((log) => (
                   <tr key={log._id}>
-                    <td style={{ whiteSpace: 'nowrap', color: 'var(--text-muted)', fontSize: '0.78rem' }}>
+                    <td style={{ whiteSpace: 'nowrap', color: 'var(--text-muted)', fontSize: '0.78rem', fontFamily: 'var(--font-mono)' }}>
                       {new Date(log.createdAt).toLocaleString()}
                     </td>
                     <td>
                       <span
                         style={{
                           display: 'inline-block',
-                          padding: '0.2rem 0.5rem',
+                          padding: '0.25rem 0.55rem',
                           borderRadius: '4px',
                           fontSize: '0.72rem',
                           fontWeight: 700,
-                          backgroundColor: log.action.includes('OVERRIDE')
-                            ? '#fef2f2'
-                            : log.action.includes('UNLOCKED')
-                            ? '#f0fdf4'
-                            : '#f1f5f9',
-                          color: log.action.includes('OVERRIDE')
-                            ? '#dc2626'
-                            : log.action.includes('UNLOCKED')
-                            ? '#16a34a'
-                            : '#334155'
+                          fontFamily: 'var(--font-mono)',
+                          backgroundColor: (log.action.includes('OVERRIDE') || log.action.includes('FAILED'))
+                            ? 'rgba(239, 68, 68, 0.15)'
+                            : (log.action.includes('UNLOCKED') || log.action.includes('SUCCESS') || log.action.includes('PASSED'))
+                            ? 'rgba(16, 185, 129, 0.15)'
+                            : 'rgba(56, 189, 248, 0.12)',
+                          color: (log.action.includes('OVERRIDE') || log.action.includes('FAILED'))
+                            ? '#f87171'
+                            : (log.action.includes('UNLOCKED') || log.action.includes('SUCCESS') || log.action.includes('PASSED'))
+                            ? '#34d399'
+                            : '#38bdf8',
+                          border: `1px solid ${
+                            (log.action.includes('OVERRIDE') || log.action.includes('FAILED'))
+                              ? 'rgba(239, 68, 68, 0.3)'
+                              : (log.action.includes('UNLOCKED') || log.action.includes('SUCCESS') || log.action.includes('PASSED'))
+                              ? 'rgba(16, 185, 129, 0.3)'
+                              : 'rgba(56, 189, 248, 0.25)'
+                          }`
                         }}
                       >
                         {log.action}
@@ -133,23 +141,23 @@ const AuditLogsPage = () => {
                       {log.actorUserId ? (
                         <span>
                           {log.actorUserId.firstName} {log.actorUserId.surname}{' '}
-                          <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem' }}>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>
                             (@{log.actorUserId.username})
                           </span>
                         </span>
                       ) : (
-                        <span style={{ color: 'var(--text-light)' }}>System / Anonymous</span>
+                        <span style={{ color: 'var(--text-light)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>SYSTEM / CRON</span>
                       )}
                     </td>
                     <td>
-                      <span style={{ fontWeight: 500 }}>{log.entityType}</span>
+                      <span style={{ fontWeight: 600 }}>{log.entityType}</span>
                       {log.entityId && (
-                        <span style={{ fontSize: '0.72rem', color: 'var(--text-light)', display: 'block' }}>
+                        <span style={{ fontSize: '0.72rem', color: 'var(--text-light)', display: 'block', fontFamily: 'var(--font-mono)' }}>
                           ID: {log.entityId.slice(-8)}
                         </span>
                       )}
                     </td>
-                    <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>
+                    <td style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                       <div>{log.ipAddress || '127.0.0.1'}</div>
                       {log.requestId && <div style={{ fontSize: '0.68rem', color: 'var(--text-light)' }}>{log.requestId.slice(0, 8)}...</div>}
                     </td>
@@ -158,9 +166,11 @@ const AuditLogsPage = () => {
                         style={{
                           margin: 0,
                           fontSize: '0.72rem',
-                          fontFamily: 'Consolas, monospace',
-                          backgroundColor: '#f8fafc',
-                          padding: '0.35rem',
+                          fontFamily: 'var(--font-mono)',
+                          backgroundColor: 'var(--bg-app)',
+                          border: '1px solid var(--border-color)',
+                          color: '#94a3b8',
+                          padding: '0.45rem',
                           borderRadius: '4px',
                           overflowX: 'auto',
                           maxHeight: '80px'

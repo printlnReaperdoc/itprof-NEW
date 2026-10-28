@@ -36,36 +36,43 @@ const QuizReviewModal = ({ isOpen, onClose, attemptId }) => {
               flexWrap: 'wrap',
               justifyContent: 'space-between',
               alignItems: 'center',
-              backgroundColor: '#f8fafc',
+              backgroundColor: 'var(--bg-app)',
               border: '1px solid var(--border-color)',
               borderRadius: 'var(--radius-sm)',
-              padding: '1.25rem',
-              marginBottom: '1.5rem',
+              padding: '1.25rem 1.5rem',
+              marginBottom: '1.75rem',
               gap: '1rem'
             }}
           >
             <div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Candidate</div>
-              <div style={{ fontWeight: 600 }}>{review.student?.fullName} (@{review.student?.username})</div>
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                Course: {review.course?.courseCode} • Chapter {review.chapter?.chapterNumber}
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Candidate</div>
+              <div style={{ fontWeight: 700, fontSize: '1.05rem', color: 'var(--text-main)' }}>
+                {review.student?.fullName} <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 500 }}>(@{review.student?.username})</span>
+              </div>
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem', fontFamily: 'var(--font-mono)' }}>
+                Course: <span style={{ color: 'var(--cloud-accent)' }}>{review.course?.courseCode}</span> • Chapter {review.chapter?.chapterNumber}
               </div>
             </div>
 
-            <div style={{ display: 'flex', gap: '1.5rem', textAlign: 'center' }}>
+            <div style={{ display: 'flex', gap: '2rem', textAlign: 'center' }}>
               <div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Score</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: 700, color: review.isPassed ? 'var(--success)' : 'var(--danger)' }}>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Score</div>
+                <div style={{ fontSize: '1.65rem', fontWeight: 800, fontFamily: 'var(--font-mono)', color: review.isPassed ? 'var(--success)' : 'var(--danger)' }}>
                   {review.correctAnswers} / {review.questions?.length}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>Result</div>
+                <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Evaluation</div>
                 <div style={{
                   fontSize: '0.85rem',
-                  fontWeight: 700,
+                  fontWeight: 800,
+                  fontFamily: 'var(--font-mono)',
                   color: review.isPassed ? 'var(--success)' : 'var(--danger)',
-                  marginTop: '0.35rem'
+                  marginTop: '0.35rem',
+                  padding: '0.2rem 0.6rem',
+                  borderRadius: '4px',
+                  backgroundColor: review.isPassed ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                  border: `1px solid ${review.isPassed ? 'rgba(16, 185, 129, 0.3)' : 'rgba(239, 68, 68, 0.3)'}`
                 }}>
                   {review.isPassed ? 'PASSED (≥75%)' : 'FAILED (<75%)'}
                 </div>
@@ -74,7 +81,7 @@ const QuizReviewModal = ({ isOpen, onClose, attemptId }) => {
           </div>
 
           {/* Question by Question Review */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {review.questions?.map((q, idx) => {
               const isCorrect = q.isCorrect;
               return (
@@ -82,22 +89,23 @@ const QuizReviewModal = ({ isOpen, onClose, attemptId }) => {
                   key={q.id}
                   style={{
                     border: '1px solid var(--border-color)',
-                    borderLeft: `5px solid ${isCorrect ? 'var(--success)' : 'var(--danger)'}`,
+                    borderLeft: `4px solid ${isCorrect ? 'var(--success)' : 'var(--danger)'}`,
                     borderRadius: 'var(--radius-sm)',
                     padding: '1.25rem',
-                    backgroundColor: '#ffffff'
+                    backgroundColor: 'var(--bg-card)'
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-                    <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.75rem', alignItems: 'center' }}>
+                    <span style={{ fontWeight: 600, fontSize: '0.82rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                       Question {idx + 1}
                     </span>
                     <span style={{
                       display: 'inline-flex',
                       alignItems: 'center',
-                      gap: '0.25rem',
+                      gap: '0.35rem',
                       fontSize: '0.8rem',
-                      fontWeight: 600,
+                      fontWeight: 700,
+                      fontFamily: 'var(--font-mono)',
                       color: isCorrect ? 'var(--success)' : 'var(--danger)'
                     }}>
                       {isCorrect ? <CheckCircle2 size={15} /> : <XCircle size={15} />}
@@ -105,27 +113,27 @@ const QuizReviewModal = ({ isOpen, onClose, attemptId }) => {
                     </span>
                   </div>
 
-                  <p style={{ fontWeight: 500, fontSize: '1rem', color: 'var(--text-main)', marginBottom: '1rem' }}>
+                  <p style={{ fontWeight: 600, fontSize: '0.98rem', color: 'var(--text-main)', marginBottom: '1rem', lineHeight: 1.6 }}>
                     {q.questionText}
                   </p>
 
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                     {q.options?.map((opt) => {
                       const isStudentSelected = q.selectedOptionId === opt.id;
                       const isCorrectAnswer = opt.isCorrect;
 
-                      let bgColor = '#ffffff';
+                      let bgColor = 'var(--bg-app)';
                       let borderColor = 'var(--border-color)';
                       let textColor = 'var(--text-main)';
 
                       if (isCorrectAnswer) {
-                        bgColor = 'var(--success-bg)';
-                        borderColor = 'var(--success-border)';
-                        textColor = '#166534';
+                        bgColor = 'rgba(16, 185, 129, 0.12)';
+                        borderColor = 'rgba(16, 185, 129, 0.4)';
+                        textColor = '#34d399';
                       } else if (isStudentSelected && !isCorrectAnswer) {
-                        bgColor = 'var(--danger-bg)';
-                        borderColor = 'var(--danger-border)';
-                        textColor = '#991b1b';
+                        bgColor = 'rgba(239, 68, 68, 0.12)';
+                        borderColor = 'rgba(239, 68, 68, 0.4)';
+                        textColor = '#f87171';
                       }
 
                       return (
@@ -135,7 +143,7 @@ const QuizReviewModal = ({ isOpen, onClose, attemptId }) => {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'space-between',
-                            padding: '0.6rem 0.85rem',
+                            padding: '0.65rem 0.95rem',
                             borderRadius: 'var(--radius-sm)',
                             border: `1px solid ${borderColor}`,
                             backgroundColor: bgColor,
@@ -143,15 +151,27 @@ const QuizReviewModal = ({ isOpen, onClose, attemptId }) => {
                             fontSize: '0.9rem'
                           }}
                         >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                            <span style={{ fontWeight: 700 }}>{opt.optionLabel}.</span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                            <span style={{ fontWeight: 700, fontFamily: 'var(--font-mono)' }}>{opt.optionLabel}.</span>
                             <span>{opt.optionText}</span>
                           </div>
 
-                          <div style={{ fontSize: '0.75rem', fontWeight: 600 }}>
-                            {isCorrectAnswer && <span style={{ color: 'var(--success)' }}>Correct Key</span>}
-                            {isStudentSelected && !isCorrectAnswer && <span style={{ color: 'var(--danger)' }}>Your Answer</span>}
-                            {isStudentSelected && isCorrectAnswer && <span style={{ color: 'var(--success)' }}>• Your Answer</span>}
+                          <div style={{ fontSize: '0.75rem', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
+                            {isCorrectAnswer && (
+                              <span style={{ color: 'var(--success)', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'rgba(16, 185, 129, 0.2)' }}>
+                                Correct Key
+                              </span>
+                            )}
+                            {isStudentSelected && !isCorrectAnswer && (
+                              <span style={{ color: 'var(--danger)', padding: '0.15rem 0.45rem', borderRadius: '4px', backgroundColor: 'rgba(239, 68, 68, 0.2)' }}>
+                                Your Answer
+                              </span>
+                            )}
+                            {isStudentSelected && isCorrectAnswer && (
+                              <span style={{ color: 'var(--success)', marginLeft: '0.5rem', opacity: 0.85 }}>
+                                • Your Answer
+                              </span>
+                            )}
                           </div>
                         </div>
                       );

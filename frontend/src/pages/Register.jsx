@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { GraduationCap, UserPlus, AlertCircle } from 'lucide-react';
+import { Server, UserPlus, AlertCircle, Database, Cloud } from 'lucide-react';
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -44,42 +44,58 @@ const Register = () => {
       await register(formData);
       navigate('/');
     } catch (err) {
-      setError(err.message || 'Registration failed. Please check your information.');
+      setError(err.message || 'Registration failed. Check inputs.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem 1rem',
-      backgroundColor: '#f1f5f9'
-    }}>
-      <div className="card" style={{ width: '100%', maxWidth: '480px', padding: '2.5rem 2rem', boxShadow: 'var(--shadow-lg)' }}>
+    <div
+      className="tech-grid-bg"
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem 1rem'
+      }}
+    >
+      <div
+        className="card"
+        style={{
+          width: '100%',
+          maxWidth: '500px',
+          padding: '2.5rem 2.25rem',
+          backgroundColor: 'rgba(15, 23, 42, 0.94)',
+          backdropFilter: 'blur(20px)',
+          borderColor: 'rgba(56, 189, 248, 0.25)',
+          boxShadow: '0 20px 40px -15px rgba(0, 0, 0, 0.8), 0 0 25px -5px rgba(56, 189, 248, 0.15)'
+        }}
+      >
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{
-            width: '54px',
-            height: '54px',
-            borderRadius: '12px',
-            background: 'linear-gradient(135deg, #1e40af, #3b82f6)',
-            color: '#ffffff',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginBottom: '1rem',
-            boxShadow: '0 4px 10px rgba(37, 99, 235, 0.3)'
-          }}>
-            <GraduationCap size={32} />
+          <div
+            style={{
+              width: '56px',
+              height: '56px',
+              borderRadius: '16px',
+              background: 'linear-gradient(135deg, #0284c7, #9333ea)',
+              color: '#ffffff',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              marginBottom: '1rem',
+              boxShadow: '0 0 20px rgba(56, 189, 248, 0.4)'
+            }}
+          >
+            <Server size={28} />
           </div>
-          <h1 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.25rem' }}>
+
+          <h1 style={{ fontSize: '1.65rem', fontWeight: 800, color: '#f8fafc', letterSpacing: '-0.02em', marginBottom: '0.25rem' }}>
             Student Registration
           </h1>
-          <p style={{ fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-            Enroll in IT Professional Electives 2 and 4
+          <p style={{ fontSize: '0.85rem', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>
+            Instant enrollment in Data Mining & Cloud Computing
           </p>
         </div>
 
@@ -93,7 +109,7 @@ const Register = () => {
         <form onSubmit={handleSubmit}>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div className="form-group">
-              <label className="form-label">First Name</label>
+              <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>FIRST NAME</label>
               <input
                 type="text"
                 name="firstName"
@@ -105,7 +121,7 @@ const Register = () => {
               />
             </div>
             <div className="form-group">
-              <label className="form-label">Surname</label>
+              <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>SURNAME</label>
               <input
                 type="text"
                 name="surname"
@@ -119,7 +135,7 @@ const Register = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Username</label>
+            <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>USERNAME</label>
             <input
               type="text"
               name="username"
@@ -129,13 +145,10 @@ const Register = () => {
               placeholder="e.g. jdelacruz2026"
               required
             />
-            <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-              Letters, numbers, dots, and dashes only.
-            </div>
           </div>
 
           <div className="form-group">
-            <label className="form-label">Password</label>
+            <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>PASSWORD</label>
             <input
               type="password"
               name="password"
@@ -148,7 +161,7 @@ const Register = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Confirm Password</label>
+            <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>CONFIRM PASSWORD</label>
             <input
               type="password"
               name="confirmPassword"
@@ -164,15 +177,15 @@ const Register = () => {
             type="submit"
             disabled={loading}
             className="btn btn-primary"
-            style={{ width: '100%', padding: '0.75rem', fontSize: '0.95rem', marginTop: '0.5rem' }}
+            style={{ width: '100%', padding: '0.8rem', fontSize: '0.95rem', marginTop: '0.5rem' }}
           >
-            <UserPlus size={18} /> {loading ? 'Registering...' : 'Register Student Account'}
+            <UserPlus size={18} /> {loading ? 'Enrolling...' : 'Register and Access Courses'}
           </button>
         </form>
 
-        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.875rem', color: 'var(--text-muted)' }}>
-          Already registered?{' '}
-          <Link to="/login" style={{ fontWeight: 600 }}>
+        <div style={{ textAlign: 'center', marginTop: '1.5rem', fontSize: '0.85rem', color: '#94a3b8' }}>
+          Already enrolled?{' '}
+          <Link to="/login" style={{ fontWeight: 600, color: '#38bdf8' }}>
             Sign in
           </Link>
         </div>
@@ -182,4 +195,3 @@ const Register = () => {
 };
 
 export default Register;
-

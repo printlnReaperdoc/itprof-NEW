@@ -136,16 +136,18 @@ const TopicGradebookTable = ({ records = [], chapter, onReviewStudent }) => {
                   <td style={{ fontWeight: 600 }}>
                     {r.surname}, {r.firstName}
                   </td>
-                  <td>@{r.username}</td>
-                  <td>{r.attemptsCount}</td>
-                  <td>
+                  <td style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--text-muted)' }}>
+                    @{r.username}
+                  </td>
+                  <td style={{ fontFamily: 'var(--font-mono)', fontWeight: 600 }}>{r.attemptsCount}</td>
+                  <td style={{ fontFamily: 'var(--font-mono)' }}>
                     {r.latestScore !== null ? (
                       <span style={{ fontWeight: 600 }}>{r.latestScore} / 20 ({r.latestScorePercentage}%)</span>
                     ) : (
                       <span style={{ color: 'var(--text-light)' }}>Not Attempted</span>
                     )}
                   </td>
-                  <td>
+                  <td style={{ fontFamily: 'var(--font-mono)' }}>
                     {r.highestScore !== null ? (
                       <span style={{ fontWeight: 700, color: r.isPassed ? 'var(--success)' : 'inherit' }}>
                         {r.highestScore} / 20 ({r.highestScorePercentage}%)
@@ -166,7 +168,7 @@ const TopicGradebookTable = ({ records = [], chapter, onReviewStudent }) => {
                   <td>
                     <StatusBadge status={r.status} />
                   </td>
-                  <td style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
+                  <td style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                     {r.latestAttemptAt ? new Date(r.latestAttemptAt).toLocaleString() : 'N/A'}
                   </td>
                 </tr>

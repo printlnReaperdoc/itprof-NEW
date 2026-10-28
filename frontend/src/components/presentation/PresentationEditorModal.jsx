@@ -9,7 +9,6 @@ const PresentationEditorModal = ({ isOpen, onClose, presentation, chapterId, onS
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
-  // Sync state when modal opens
   React.useEffect(() => {
     if (presentation) {
       setTitle(presentation.title || '');
@@ -85,11 +84,11 @@ const PresentationEditorModal = ({ isOpen, onClose, presentation, chapterId, onS
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Faculty Presentation Editor" maxWidth="800px">
+    <Modal isOpen={isOpen} onClose={onClose} title="Faculty Presentation Slide Deck Editor" maxWidth="840px">
       {error && <div className="alert alert-danger">{error}</div>}
 
       <div className="form-group">
-        <label className="form-label">Presentation Deck Title</label>
+        <label className="form-label" style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem' }}>DECK TITLE</label>
         <input
           type="text"
           className="form-input"
@@ -100,11 +99,11 @@ const PresentationEditorModal = ({ isOpen, onClose, presentation, chapterId, onS
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '1.5rem 0 1rem' }}>
-        <h4 style={{ fontSize: '1rem', fontWeight: 600, color: 'var(--text-main)' }}>
-          Slides ({slides.length})
+        <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#f8fafc', fontFamily: 'var(--font-mono)' }}>
+          SLIDES LIST ({slides.length})
         </h4>
-        <button type="button" onClick={handleAddSlide} className="btn btn-outline" style={{ fontSize: '0.8rem' }}>
-          <Plus size={14} /> Add Slide
+        <button type="button" onClick={handleAddSlide} className="btn btn-outline" style={{ fontSize: '0.8rem', borderColor: 'rgba(56, 189, 248, 0.4)', color: '#38bdf8' }}>
+          <Plus size={14} /> Add New Slide
         </button>
       </div>
 
@@ -117,17 +116,17 @@ const PresentationEditorModal = ({ isOpen, onClose, presentation, chapterId, onS
             <div
               key={idx}
               style={{
-                border: '1px solid var(--border-color)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: 'var(--radius-sm)',
-                padding: '1rem',
-                backgroundColor: '#f8fafc'
+                padding: '1.25rem',
+                backgroundColor: '#0a0f1d'
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
-                <span style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--primary)' }}>
-                  Slide #{idx + 1}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.85rem' }}>
+                <span style={{ fontWeight: 700, fontSize: '0.82rem', color: '#38bdf8', fontFamily: 'var(--font-mono)' }}>
+                  SLIDE #{idx + 1}
                 </span>
-                <div style={{ display: 'flex', gap: '0.25rem' }}>
+                <div style={{ display: 'flex', gap: '0.35rem' }}>
                   <button
                     type="button"
                     onClick={() => handleMoveSlide(idx, -1)}
@@ -161,7 +160,7 @@ const PresentationEditorModal = ({ isOpen, onClose, presentation, chapterId, onS
               </div>
 
               <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                <label className="form-label" style={{ fontSize: '0.8rem' }}>Slide Title</label>
+                <label className="form-label" style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>SLIDE TITLE</label>
                 <input
                   type="text"
                   className="form-input"
@@ -172,10 +171,11 @@ const PresentationEditorModal = ({ isOpen, onClose, presentation, chapterId, onS
               </div>
 
               <div className="form-group" style={{ marginBottom: '0.75rem' }}>
-                <label className="form-label" style={{ fontSize: '0.8rem' }}>Slide Content (One bullet per line)</label>
+                <label className="form-label" style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>BULLET POINTS (ONE PER LINE)</label>
                 <textarea
                   className="form-textarea"
                   rows={4}
+                  style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
                   value={bulletLines}
                   onChange={(e) => handleBulletsChange(idx, e.target.value)}
                   placeholder="Point 1&#10;Point 2&#10;Point 3"
@@ -183,10 +183,11 @@ const PresentationEditorModal = ({ isOpen, onClose, presentation, chapterId, onS
               </div>
 
               <div className="form-group" style={{ marginBottom: 0 }}>
-                <label className="form-label" style={{ fontSize: '0.8rem' }}>Presenter & Study Notes</label>
+                <label className="form-label" style={{ fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>PRESENTER NOTES & STUDY GUIDE</label>
                 <textarea
                   className="form-textarea"
                   rows={2}
+                  style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem' }}
                   value={s.notes || ''}
                   onChange={(e) => handleSlideChange(idx, 'notes', e.target.value)}
                   placeholder="Notes for instructor explanation and student review."
@@ -197,12 +198,12 @@ const PresentationEditorModal = ({ isOpen, onClose, presentation, chapterId, onS
         })}
       </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.5rem', borderTop: '1px solid var(--border-color)', paddingTop: '1rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginTop: '1.75rem', borderTop: '1px solid rgba(255, 255, 255, 0.08)', paddingTop: '1rem' }}>
         <button type="button" onClick={onClose} className="btn btn-outline">
           Cancel
         </button>
         <button type="button" onClick={handleSave} disabled={saving} className="btn btn-primary">
-          <Save size={16} /> {saving ? 'Saving...' : 'Save Presentation'}
+          <Save size={16} /> {saving ? 'Saving...' : 'Save Presentation Deck'}
         </button>
       </div>
     </Modal>
@@ -210,4 +211,3 @@ const PresentationEditorModal = ({ isOpen, onClose, presentation, chapterId, onS
 };
 
 export default PresentationEditorModal;
-

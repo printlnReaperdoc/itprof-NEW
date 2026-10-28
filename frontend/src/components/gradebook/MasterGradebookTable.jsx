@@ -88,14 +88,14 @@ const MasterGradebookTable = ({ course, chapters = [], students = [], gradeMatri
             <tr>
               <th style={{ minWidth: '180px' }}>Student Name</th>
               {chapters.map((ch) => (
-                <th key={ch.id} style={{ textAlign: 'center', padding: '0.5rem 0.4rem', minWidth: '55px' }} title={`Chapter ${ch.chapterNumber}: ${ch.title}`}>
+                <th key={ch.id} style={{ textAlign: 'center', padding: '0.5rem 0.4rem', minWidth: '55px', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }} title={`Chapter ${ch.chapterNumber}: ${ch.title}`}>
                   Ch {ch.chapterNumber}
                 </th>
               ))}
-              <th style={{ textAlign: 'center', minWidth: '80px' }}>Attempted</th>
-              <th style={{ textAlign: 'center', minWidth: '75px' }}>Passed</th>
-              <th style={{ textAlign: 'center', minWidth: '85px' }}>Average</th>
-              <th style={{ textAlign: 'center', minWidth: '95px' }}>Completion</th>
+              <th style={{ textAlign: 'center', minWidth: '85px', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>Attempted</th>
+              <th style={{ textAlign: 'center', minWidth: '75px', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>Passed</th>
+              <th style={{ textAlign: 'center', minWidth: '85px', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>Average</th>
+              <th style={{ textAlign: 'center', minWidth: '95px', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>Completion</th>
             </tr>
           </thead>
           <tbody>
@@ -112,7 +112,7 @@ const MasterGradebookTable = ({ course, chapters = [], students = [], gradeMatri
                   <tr key={s._id}>
                     <td style={{ fontWeight: 600 }}>
                       {s.surname}, {s.firstName}
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 400 }}>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: 400, fontFamily: 'var(--font-mono)' }}>
                         @{s.username}
                       </div>
                     </td>
@@ -129,30 +129,31 @@ const MasterGradebookTable = ({ course, chapters = [], students = [], gradeMatri
                           style={{
                             textAlign: 'center',
                             padding: '0.5rem 0.25rem',
-                            backgroundColor: isPassed ? '#f0fdf4' : isAttempted ? '#fef2f2' : 'transparent'
+                            backgroundColor: isPassed ? 'rgba(16, 185, 129, 0.12)' : isAttempted ? 'rgba(239, 68, 68, 0.12)' : 'transparent',
+                            borderRight: '1px solid rgba(255, 255, 255, 0.03)'
                           }}
                         >
                           {isAttempted ? (
-                            <span style={{ fontWeight: 700, color: isPassed ? 'var(--success)' : 'var(--danger)' }}>
+                            <span style={{ fontWeight: 700, fontFamily: 'var(--font-mono)', color: isPassed ? 'var(--success)' : 'var(--danger)' }}>
                               {chData.highestScore}
                             </span>
                           ) : (
-                            <span style={{ color: 'var(--text-light)', fontSize: '0.75rem' }}>—</span>
+                            <span style={{ color: 'var(--text-light)', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>—</span>
                           )}
                         </td>
                       );
                     })}
 
-                    <td style={{ textAlign: 'center', fontWeight: 500 }}>
+                    <td style={{ textAlign: 'center', fontWeight: 600, fontFamily: 'var(--font-mono)' }}>
                       {sData.chaptersAttempted ?? 0} / 12
                     </td>
-                    <td style={{ textAlign: 'center', fontWeight: 600, color: 'var(--success)' }}>
+                    <td style={{ textAlign: 'center', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--success)' }}>
                       {sData.chaptersPassed ?? 0} / 12
                     </td>
-                    <td style={{ textAlign: 'center', fontWeight: 700 }}>
+                    <td style={{ textAlign: 'center', fontWeight: 700, fontFamily: 'var(--font-mono)' }}>
                       {sData.overallAverage !== null ? `${sData.overallAverage}%` : <span style={{ color: 'var(--text-light)' }}>N/A</span>}
                     </td>
-                    <td style={{ textAlign: 'center', fontWeight: 700, color: 'var(--primary)' }}>
+                    <td style={{ textAlign: 'center', fontWeight: 700, fontFamily: 'var(--font-mono)', color: 'var(--cloud-accent)' }}>
                       {sData.completionPercentage ?? 0}%
                     </td>
                   </tr>

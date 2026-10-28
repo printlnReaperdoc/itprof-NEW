@@ -131,6 +131,8 @@ const ChapterView = () => {
   }
 
   const isPassed = progress?.status === 'passed';
+  const isDM = chapter?.course?.courseCode?.includes('411');
+  const accentColor = isDM ? 'var(--dm-accent)' : 'var(--cloud-accent)';
 
   return (
     <div className="container" style={{ padding: '2rem 1.5rem' }}>
@@ -138,38 +140,46 @@ const ChapterView = () => {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
         <Link
           to={`/courses/${chapter?.course?._id || chapter?.course?.id}`}
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.85rem', fontWeight: 600 }}
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '0.5rem',
+            fontSize: '0.85rem',
+            fontWeight: 600,
+            color: accentColor,
+            textDecoration: 'none'
+          }}
         >
-          <ArrowLeft size={15} /> Back to {chapter?.course?.courseCode} Course
+          <ArrowLeft size={16} /> Back to {chapter?.course?.courseCode} Course
         </Link>
 
         {isFaculty && (
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             <button
               onClick={() => setIsOverrideModalOpen(true)}
               className="btn btn-outline"
-              style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
+              style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
             >
               <ShieldAlert size={14} /> Progress Override
             </button>
             <button
               onClick={() => setIsPresEditorOpen(true)}
               className="btn btn-outline"
-              style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
+              style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
             >
               <Edit size={14} /> Edit Slides
             </button>
             <button
               onClick={() => setIsLessonEditorOpen(true)}
               className="btn btn-outline"
-              style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
+              style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
             >
               <Edit size={14} /> Edit Lesson
             </button>
             <button
               onClick={() => setIsQuizImportOpen(true)}
               className="btn btn-outline"
-              style={{ fontSize: '0.8rem', padding: '0.35rem 0.75rem' }}
+              style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
             >
               <Upload size={14} /> Manage Quiz
             </button>
@@ -178,31 +188,50 @@ const ChapterView = () => {
       </div>
 
       {/* Chapter Title Header */}
-      <div className="card" style={{ marginBottom: '1.5rem', padding: '1.5rem 2rem' }}>
+      <div
+        className="card"
+        style={{
+          marginBottom: '1.5rem',
+          padding: '1.75rem 2rem',
+          borderTop: `3px solid ${accentColor}`,
+          background: 'linear-gradient(180deg, rgba(15, 23, 42, 0.95) 0%, rgba(10, 15, 30, 0.98) 100%)'
+        }}
+      >
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.35rem' }}>
-              <span className="badge badge-available">
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.5rem' }}>
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                  padding: '0.2rem 0.6rem',
+                  borderRadius: '9999px',
+                  backgroundColor: isDM ? 'rgba(192, 132, 252, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                  color: accentColor,
+                  border: `1px solid ${isDM ? 'rgba(192, 132, 252, 0.3)' : 'rgba(56, 189, 248, 0.3)'}`
+                }}
+              >
                 Module {chapter?.module?.moduleNumber}: {chapter?.module?.title}
               </span>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>
                 {chapter?.course?.courseTitle} ({chapter?.course?.courseCode})
               </span>
             </div>
-            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)' }}>
+            <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main)', letterSpacing: '-0.02em' }}>
               Chapter {chapter?.chapterNumber}: {chapter?.title}
             </h1>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginTop: '0.25rem' }}>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginTop: '0.35rem', maxWidth: '800px', lineHeight: 1.6 }}>
               {chapter?.description}
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
             <div style={{ textAlign: 'right' }}>
               <StatusBadge status={progress?.status || 'available'} />
               {progress?.highestScore !== undefined && progress?.highestScore !== null && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.25rem' }}>
-                  Highest: {progress.highestScore} / 20 ({progress.highestScorePercentage}%)
+                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.35rem', fontFamily: 'var(--font-mono)' }}>
+                  Highest: <strong style={{ color: isPassed ? 'var(--success)' : 'var(--danger)' }}>{progress.highestScore}/20</strong> ({progress.highestScorePercentage}%)
                 </div>
               )}
             </div>
@@ -210,7 +239,16 @@ const ChapterView = () => {
             <button
               onClick={handleStartQuiz}
               className="btn btn-primary"
-              style={{ padding: '0.6rem 1.25rem', fontSize: '0.9rem' }}
+              style={{
+                padding: '0.65rem 1.35rem',
+                fontSize: '0.9rem',
+                background: isDM
+                  ? 'linear-gradient(135deg, #9333ea 0%, #c084fc 100%)'
+                  : 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+                boxShadow: isDM
+                  ? '0 0 16px rgba(192, 132, 252, 0.35)'
+                  : '0 0 16px rgba(56, 189, 248, 0.35)'
+              }}
             >
               <PlayCircle size={18} /> {isPassed ? 'Retake Quiz' : 'Start Chapter Quiz'}
             </button>
@@ -221,30 +259,46 @@ const ChapterView = () => {
         <div
           style={{
             display: 'flex',
-            gap: '0.5rem',
+            gap: '0.6rem',
             borderTop: '1px solid var(--border-color)',
             marginTop: '1.5rem',
-            paddingTop: '1rem'
+            paddingTop: '1.25rem',
+            flexWrap: 'wrap'
           }}
         >
           <button
             onClick={() => setActiveTab('presentation')}
             className={`btn ${activeTab === 'presentation' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ fontSize: '0.85rem' }}
+            style={{
+              fontSize: '0.85rem',
+              background: activeTab === 'presentation' ? (isDM ? 'var(--dm-accent)' : 'var(--cloud-accent)') : 'transparent',
+              color: activeTab === 'presentation' ? '#070a13' : 'var(--text-main)',
+              fontWeight: 600
+            }}
           >
             <Sparkles size={16} /> Interactive Slides ({presentation?.slides?.length || 0})
           </button>
           <button
             onClick={() => setActiveTab('lesson')}
             className={`btn ${activeTab === 'lesson' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ fontSize: '0.85rem' }}
+            style={{
+              fontSize: '0.85rem',
+              background: activeTab === 'lesson' ? (isDM ? 'var(--dm-accent)' : 'var(--cloud-accent)') : 'transparent',
+              color: activeTab === 'lesson' ? '#070a13' : 'var(--text-main)',
+              fontWeight: 600
+            }}
           >
             <BookOpen size={16} /> Lesson Content & Notes
           </button>
           <button
             onClick={() => setActiveTab('quiz')}
             className={`btn ${activeTab === 'quiz' ? 'btn-primary' : 'btn-outline'}`}
-            style={{ fontSize: '0.85rem' }}
+            style={{
+              fontSize: '0.85rem',
+              background: activeTab === 'quiz' ? (isDM ? 'var(--dm-accent)' : 'var(--cloud-accent)') : 'transparent',
+              color: activeTab === 'quiz' ? '#070a13' : 'var(--text-main)',
+              fontWeight: 600
+            }}
           >
             <HelpCircle size={16} /> Assessment & Quiz (20 Qs)
           </button>
@@ -252,7 +306,12 @@ const ChapterView = () => {
             <button
               onClick={() => setActiveTab('gradebook')}
               className={`btn ${activeTab === 'gradebook' ? 'btn-primary' : 'btn-outline'}`}
-              style={{ fontSize: '0.85rem' }}
+              style={{
+                fontSize: '0.85rem',
+                background: activeTab === 'gradebook' ? (isDM ? 'var(--dm-accent)' : 'var(--cloud-accent)') : 'transparent',
+                color: activeTab === 'gradebook' ? '#070a13' : 'var(--text-main)',
+                fontWeight: 600
+              }}
             >
               <FileSpreadsheet size={16} /> Topic Gradebook
             </button>
@@ -273,31 +332,31 @@ const ChapterView = () => {
 
       {/* TAB 2: DETAILED LESSON CONTENT */}
       {activeTab === 'lesson' && lesson && (
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '2rem', alignItems: 'start' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem', alignItems: 'start' }}>
           {/* Main Content */}
           <div className="card" style={{ padding: '2.5rem' }}>
             <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-main)' }}>
               Lesson Overview & Objectives
             </h2>
-            <p style={{ fontSize: '1rem', lineHeight: 1.7, color: '#334155', marginBottom: '1.75rem' }}>
+            <p style={{ fontSize: '1rem', lineHeight: 1.8, color: 'var(--text-muted)', marginBottom: '1.75rem' }}>
               {lesson.overview}
             </p>
 
-            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: 'var(--primary)', marginBottom: '0.75rem' }}>
+            <h3 style={{ fontSize: '1.1rem', fontWeight: 600, color: accentColor, marginBottom: '0.75rem' }}>
               Learning Objectives
             </h3>
-            <ul style={{ paddingLeft: '1.5rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <ul style={{ paddingLeft: '1.5rem', marginBottom: '2rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
               {lesson.learningObjectives?.map((obj, i) => (
-                <li key={i} style={{ fontSize: '0.95rem', color: '#1e293b' }}>
+                <li key={i} style={{ fontSize: '0.95rem', color: 'var(--text-main)', lineHeight: 1.6 }}>
                   {obj}
                 </li>
               ))}
             </ul>
 
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)', borderTop: '1px solid var(--border-color)', paddingTop: '1.5rem', marginBottom: '1rem' }}>
+            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)', borderTop: '1px solid var(--border-color)', paddingTop: '1.75rem', marginBottom: '1.25rem' }}>
               Detailed Instructional Content
             </h3>
-            <div style={{ fontSize: '0.95rem', lineHeight: 1.8, color: '#1e293b', whiteSpace: 'pre-wrap' }}>
+            <div style={{ fontSize: '0.96rem', lineHeight: 1.85, color: '#e2e8f0', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
               {lesson.content}
             </div>
           </div>
@@ -306,14 +365,18 @@ const ChapterView = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {lesson.keyConcepts && lesson.keyConcepts.length > 0 && (
               <div className="card" style={{ padding: '1.5rem' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--primary)', marginBottom: '1rem' }}>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: accentColor, marginBottom: '1rem' }}>
                   Key Terms & Definitions
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                   {lesson.keyConcepts.map((kc, i) => (
-                    <div key={i} style={{ borderBottom: i < lesson.keyConcepts.length - 1 ? '1px solid #f1f5f9' : 'none', paddingBottom: '0.75rem' }}>
-                      <div style={{ fontWeight: 600, fontSize: '0.85rem', color: '#0f172a' }}>{kc.term}</div>
-                      <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.2rem' }}>{kc.definition}</div>
+                    <div key={i} style={{ borderBottom: i < lesson.keyConcepts.length - 1 ? '1px solid var(--border-color)' : 'none', paddingBottom: '0.75rem' }}>
+                      <div style={{ fontWeight: 600, fontSize: '0.85rem', color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
+                        {kc.term}
+                      </div>
+                      <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', marginTop: '0.25rem', lineHeight: 1.5 }}>
+                        {kc.definition}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -321,11 +384,18 @@ const ChapterView = () => {
             )}
 
             {lesson.studyGuide && lesson.studyGuide.length > 0 && (
-              <div className="card" style={{ padding: '1.5rem', backgroundColor: '#f0fdf4', borderColor: '#bbf7d0' }}>
-                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#166534', marginBottom: '0.75rem' }}>
-                  Review Checklist
+              <div
+                className="card"
+                style={{
+                  padding: '1.5rem',
+                  backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                  borderColor: 'rgba(16, 185, 129, 0.25)'
+                }}
+              >
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#34d399', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <CheckCircle2 size={16} /> Review Checklist
                 </h4>
-                <ul style={{ paddingLeft: '1.25rem', margin: 0, fontSize: '0.85rem', color: '#14532d', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                <ul style={{ paddingLeft: '1.25rem', margin: 0, fontSize: '0.85rem', color: '#e2e8f0', display: 'flex', flexDirection: 'column', gap: '0.5rem', lineHeight: 1.5 }}>
                   {lesson.studyGuide.map((sg, i) => (
                     <li key={i}>{sg}</li>
                   ))}
@@ -341,56 +411,94 @@ const ChapterView = () => {
         <div className="card" style={{ maxWidth: '800px', margin: '0 auto', padding: '2.5rem' }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <div style={{
-              width: '64px',
-              height: '64px',
+              width: '68px',
+              height: '68px',
               borderRadius: '50%',
-              backgroundColor: isPassed ? 'var(--success-bg)' : 'var(--primary-light)',
-              color: isPassed ? 'var(--success)' : 'var(--primary)',
+              backgroundColor: isPassed ? 'rgba(16, 185, 129, 0.15)' : (isDM ? 'rgba(192, 132, 252, 0.15)' : 'rgba(56, 189, 248, 0.15)'),
+              color: isPassed ? 'var(--success)' : accentColor,
+              border: `1px solid ${isPassed ? 'rgba(16, 185, 129, 0.3)' : (isDM ? 'rgba(192, 132, 252, 0.3)' : 'rgba(56, 189, 248, 0.3)')}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              margin: '0 auto 1rem'
+              margin: '0 auto 1.25rem'
             }}>
-              <HelpCircle size={32} />
+              <HelpCircle size={34} />
             </div>
             <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
               {quiz?.title || `Chapter ${chapter?.chapterNumber} Assessment`}
             </h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-              Official curriculum-aligned multiple-choice evaluation for Chapter {chapter?.chapterNumber}
+              Curriculum-aligned multiple-choice evaluation for Chapter {chapter?.chapterNumber}
             </p>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem', textAlign: 'center', backgroundColor: '#f8fafc', padding: '1.5rem', borderRadius: 'var(--radius-md)', marginBottom: '2rem' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '1rem',
+              textAlign: 'center',
+              backgroundColor: 'var(--bg-app)',
+              border: '1px solid var(--border-color)',
+              padding: '1.5rem',
+              borderRadius: 'var(--radius-md)',
+              marginBottom: '2rem'
+            }}
+          >
             <div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Questions</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)' }}>{quiz?.questionCount || 20}</div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Questions</div>
+              <div style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>{quiz?.questionCount || 20}</div>
             </div>
             <div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Time Limit</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Time Limit</div>
+              <div style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--text-main)', fontFamily: 'var(--font-mono)' }}>
                 {Math.floor((quiz?.timeLimitSeconds || 600) / 60)} Mins
               </div>
             </div>
             <div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase' }}>Pass Threshold</div>
-              <div style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--success)' }}>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontFamily: 'var(--font-mono)' }}>Pass Threshold</div>
+              <div style={{ fontSize: '1.65rem', fontWeight: 800, color: 'var(--success)', fontFamily: 'var(--font-mono)' }}>
                 {quiz?.passingScore || 15} / 20 (75%)
               </div>
             </div>
           </div>
 
-          <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fde68a', borderRadius: 'var(--radius-sm)', padding: '1rem 1.25rem', marginBottom: '2rem', fontSize: '0.85rem', color: '#92400e' }}>
-            <strong>Assessment Rules:</strong>
-            <ul style={{ paddingLeft: '1.25rem', marginTop: '0.35rem', lineHeight: 1.5 }}>
-              <li>The timer begins immediately once you start the assessment.</li>
+          <div
+            style={{
+              backgroundColor: 'rgba(245, 158, 11, 0.08)',
+              border: '1px solid rgba(245, 158, 11, 0.25)',
+              borderRadius: 'var(--radius-sm)',
+              padding: '1.25rem',
+              marginBottom: '2rem',
+              fontSize: '0.85rem',
+              color: '#fde68a'
+            }}
+          >
+            <div style={{ fontWeight: 700, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+              <Clock size={16} /> Assessment Rules & Sequential Progression:
+            </div>
+            <ul style={{ paddingLeft: '1.25rem', margin: 0, lineHeight: 1.6, color: '#fef3c7' }}>
+              <li>The 10-minute server timer begins immediately once you initiate the assessment.</li>
               <li>A score of at least 15/20 (75%) is required to unlock Chapter {Number(chapter?.chapterNumber) + 1}.</li>
-              <li>You may retake failed attempts without penalty. Once passed, your passing status remains recorded.</li>
+              <li>You may retake failed attempts without penalty. Once passed, your passing status remains permanently recorded.</li>
             </ul>
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <button onClick={handleStartQuiz} className="btn btn-primary" style={{ padding: '0.75rem 2.5rem', fontSize: '1rem' }}>
+            <button
+              onClick={handleStartQuiz}
+              className="btn btn-primary"
+              style={{
+                padding: '0.85rem 2.5rem',
+                fontSize: '1rem',
+                background: isDM
+                  ? 'linear-gradient(135deg, #9333ea 0%, #c084fc 100%)'
+                  : 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+                boxShadow: isDM
+                  ? '0 0 20px rgba(192, 132, 252, 0.4)'
+                  : '0 0 20px rgba(56, 189, 248, 0.4)'
+              }}
+            >
               <PlayCircle size={20} /> {isPassed ? 'Retake Quiz' : 'Start Timed Assessment'}
             </button>
           </div>
