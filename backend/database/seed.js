@@ -8,12 +8,18 @@ const {
   Course,
   Module,
   Chapter,
+  Enrollment,
   Lesson,
   Presentation,
+  LessonFile,
   Quiz,
   Question,
   QuestionOption,
-  AuditLog
+  QuizAttempt,
+  AttemptAnswer,
+  ChapterProgress,
+  AuditLog,
+  SystemSetting
 } = require('../models');
 
 // Seed Data
@@ -31,6 +37,28 @@ const seedDatabase = async () => {
   await connectDB();
 
   try {
+    // 0. Clear all existing data entries before seeding
+    console.log('\n[0/5] Purging all existing database collections before fresh seed...');
+    await Promise.all([
+      User.deleteMany({}),
+      Course.deleteMany({}),
+      Module.deleteMany({}),
+      Chapter.deleteMany({}),
+      Enrollment.deleteMany({}),
+      Lesson.deleteMany({}),
+      Presentation.deleteMany({}),
+      LessonFile.deleteMany({}),
+      Quiz.deleteMany({}),
+      Question.deleteMany({}),
+      QuestionOption.deleteMany({}),
+      QuizAttempt.deleteMany({}),
+      AttemptAnswer.deleteMany({}),
+      ChapterProgress.deleteMany({}),
+      AuditLog.deleteMany({}),
+      SystemSetting.deleteMany({})
+    ]);
+    console.log('  -> All 16 database collections successfully purged.');
+
     // 1. Provision Default Faculty & Admin Accounts
     console.log('\n[1/5] Checking / Provisioning Faculty and Admin Accounts...');
     let facultyUser = await User.findOne({ username: 'faculty' });
