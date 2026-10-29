@@ -19,7 +19,8 @@ const getDashboardAnalytics = async (req, res, next) => {
 
       const courseSummaries = await Promise.all(
         courses.map(async (c) => {
-          const totalChapters = await Chapter.countDocuments({ courseId: c._id, isPublished: true });
+          const courseChapters = await Chapter.find({ courseId: c._id, isPublished: true }).sort({ chapterNumber: 1 });
+          const totalChapters = courseChapters.length;
           totalChaptersBothCourses += totalChapters;
 
           const progressList = await ChapterProgress.find({
@@ -27,8 +28,12 @@ const getDashboardAnalytics = async (req, res, next) => {
             courseId: c._id
           });
 
-          const passedCount = progressList.filter(p => p.status === 'passed').length;
+          const passedList = progressList.filter(p => p.status === 'passed');
+          const passedCount = passedList.length;
           totalPassedBothCourses += passedCount;
+
+          const passedChapterIds = new Set(passedList.map(p => p.chapterId.toString()));
+          const nextChapter = courseChapters.find(ch => !passedChapterIds.has(ch._id.toString())) || courseChapters[courseChapters.length - 1];
 
           const attemptedList = progressList.filter(p => p.attemptsCount > 0);
           const attemptedCount = attemptedList.length;
@@ -48,7 +53,12 @@ const getDashboardAnalytics = async (req, res, next) => {
             chaptersPassed: passedCount,
             chaptersAttempted: attemptedCount,
             completionPercentage: completion,
-            overallAverage: average
+            overallAverage: average,
+            nextChapter: nextChapter ? {
+              id: nextChapter._id,
+              chapterNumber: nextChapter.chapterNumber,
+              title: nextChapter.title
+            } : null
           };
         })
       );

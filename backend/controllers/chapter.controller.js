@@ -7,6 +7,7 @@ const Quiz = require('../models/Quiz');
 const ChapterProgress = require('../models/ChapterProgress');
 const { canAccessChapter } = require('../services/progress.service');
 const { createAuditLog } = require('../services/audit.service');
+const { getChapterSummaryData } = require('../services/chapterSummary.service');
 
 /**
  * Get chapter details with access verification
@@ -137,8 +138,28 @@ const overrideChapterProgress = async (req, res, next) => {
   }
 };
 
+/**
+ * Get comprehensive chapter summary dossier (Faculty only)
+ */
+const getChapterSummary = async (req, res, next) => {
+  try {
+    const { chapterId } = req.params;
+    const { sortBy = 'surname', sortOrder } = req.query;
+
+    const data = await getChapterSummaryData(chapterId, { sortBy, sortOrder });
+
+    res.json({
+      success: true,
+      ...data
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   getChapter,
-  overrideChapterProgress
+  overrideChapterProgress,
+  getChapterSummary
 };
 

@@ -10,6 +10,7 @@ import LessonEditorModal from '../components/lesson/LessonEditorModal';
 import QuizImportModal from '../components/quiz/QuizImportModal';
 import QuizReviewModal from '../components/quiz/QuizReviewModal';
 import TopicGradebookTable from '../components/gradebook/TopicGradebookTable';
+import ChapterSummaryModal from '../components/chapter/ChapterSummaryModal';
 import Modal from '../components/common/Modal';
 import {
   Sparkles,
@@ -17,6 +18,7 @@ import {
   HelpCircle,
   PlayCircle,
   FileSpreadsheet,
+  FileText,
   Edit,
   Upload,
   ArrowLeft,
@@ -43,6 +45,7 @@ const ChapterView = () => {
   const [error, setError] = useState(null);
 
   // Modals state
+  const [isChapterSummaryOpen, setIsChapterSummaryOpen] = useState(false);
   const [isPresEditorOpen, setIsPresEditorOpen] = useState(false);
   const [isLessonEditorOpen, setIsLessonEditorOpen] = useState(false);
   const [isQuizImportOpen, setIsQuizImportOpen] = useState(false);
@@ -244,33 +247,60 @@ const ChapterView = () => {
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
-            <div style={{ textAlign: 'right' }}>
-              <StatusBadge status={progress?.status || 'available'} />
-              {progress?.highestScore !== undefined && progress?.highestScore !== null && (
-                <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.35rem', fontFamily: 'var(--font-mono)' }}>
-                  Highest: <strong style={{ color: isPassed ? 'var(--success)' : 'var(--danger)' }}>{progress.highestScore}/20</strong> ({progress.highestScorePercentage}%)
-                </div>
-              )}
-            </div>
+          {isFaculty ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <button
+                onClick={() => setIsChapterSummaryOpen(true)}
+                className="btn btn-primary"
+                style={{
+                  padding: '0.65rem 1.25rem',
+                  fontSize: '0.88rem',
+                  background: 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+                  boxShadow: '0 0 16px rgba(56, 189, 248, 0.35)'
+                }}
+                title="Preview and export full chapter documents dossier with sortable roster"
+              >
+                <FileText size={16} /> Chapter Summary & Dossier
+              </button>
 
-            <button
-              onClick={handleStartQuiz}
-              className="btn btn-primary"
-              style={{
-                padding: '0.65rem 1.35rem',
-                fontSize: '0.9rem',
-                background: isDM
-                  ? 'linear-gradient(135deg, #9333ea 0%, #c084fc 100%)'
-                  : 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
-                boxShadow: isDM
-                  ? '0 0 16px rgba(192, 132, 252, 0.35)'
-                  : '0 0 16px rgba(56, 189, 248, 0.35)'
-              }}
-            >
-              <PlayCircle size={18} /> {isPassed ? 'Retake Quiz' : 'Start Chapter Quiz'}
-            </button>
-          </div>
+              <button
+                onClick={() => setIsQuizImportOpen(true)}
+                className="btn btn-outline"
+                style={{ padding: '0.65rem 1.15rem', fontSize: '0.88rem' }}
+                title="Import or replace chapter assessment questions"
+              >
+                <Upload size={16} /> Import Quiz
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem' }}>
+              <div style={{ textAlign: 'right' }}>
+                <StatusBadge status={progress?.status || 'available'} />
+                {progress?.highestScore !== undefined && progress?.highestScore !== null && (
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '0.35rem', fontFamily: 'var(--font-mono)' }}>
+                    Highest: <strong style={{ color: isPassed ? 'var(--success)' : 'var(--danger)' }}>{progress.highestScore}/20</strong> ({progress.highestScorePercentage}%)
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={handleStartQuiz}
+                className="btn btn-primary"
+                style={{
+                  padding: '0.65rem 1.35rem',
+                  fontSize: '0.9rem',
+                  background: isDM
+                    ? 'linear-gradient(135deg, #9333ea 0%, #c084fc 100%)'
+                    : 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+                  boxShadow: isDM
+                    ? '0 0 16px rgba(192, 132, 252, 0.35)'
+                    : '0 0 16px rgba(56, 189, 248, 0.35)'
+                }}
+              >
+                <PlayCircle size={18} /> {isPassed ? 'Retake Quiz' : 'Start Chapter Quiz'}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Navigation Tabs */}
@@ -426,15 +456,15 @@ const ChapterView = () => {
 
       {/* TAB 3: QUIZ & ASSESSMENT INFO */}
       {activeTab === 'quiz' && (
-        <div className="card" style={{ maxWidth: '800px', margin: '0 auto', padding: '2.5rem' }}>
+        <div className="card" style={{ maxWidth: '850px', margin: '0 auto', padding: '2.5rem' }}>
           <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
             <div style={{
               width: '68px',
               height: '68px',
               borderRadius: '50%',
-              backgroundColor: isPassed ? 'rgba(16, 185, 129, 0.15)' : (isDM ? 'rgba(192, 132, 252, 0.15)' : 'rgba(56, 189, 248, 0.15)'),
-              color: isPassed ? 'var(--success)' : accentColor,
-              border: `1px solid ${isPassed ? 'rgba(16, 185, 129, 0.3)' : (isDM ? 'rgba(192, 132, 252, 0.3)' : 'rgba(56, 189, 248, 0.3)')}`,
+              backgroundColor: isFaculty ? 'rgba(56, 189, 248, 0.15)' : (isPassed ? 'rgba(16, 185, 129, 0.15)' : (isDM ? 'rgba(192, 132, 252, 0.15)' : 'rgba(56, 189, 248, 0.15)')),
+              color: isFaculty ? '#38bdf8' : (isPassed ? 'var(--success)' : accentColor),
+              border: `1px solid ${isFaculty ? 'rgba(56, 189, 248, 0.3)' : (isPassed ? 'rgba(16, 185, 129, 0.3)' : (isDM ? 'rgba(192, 132, 252, 0.3)' : 'rgba(56, 189, 248, 0.3)'))}`,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -442,11 +472,28 @@ const ChapterView = () => {
             }}>
               <HelpCircle size={34} />
             </div>
+
+            {isFaculty && (
+              <span
+                className="badge"
+                style={{
+                  backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                  color: '#38bdf8',
+                  border: '1px solid rgba(56, 189, 248, 0.3)',
+                  marginBottom: '0.75rem'
+                }}
+              >
+                FACULTY ASSESSMENT ADMINISTRATION
+              </span>
+            )}
+
             <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-main)', marginBottom: '0.35rem' }}>
               {quiz?.title || `Chapter ${chapter?.chapterNumber} Assessment`}
             </h2>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-              Curriculum-aligned multiple-choice evaluation for Chapter {chapter?.chapterNumber}
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', maxWidth: '650px', margin: '0 auto' }}>
+              {isFaculty
+                ? `Evaluation blueprint and question management for Chapter ${chapter?.chapterNumber}. Faculty members manage curriculum questions and review student attempts. Faculty cannot take student quizzes.`
+                : `Curriculum-aligned multiple-choice evaluation for Chapter ${chapter?.chapterNumber}.`}
             </p>
           </div>
 
@@ -481,45 +528,101 @@ const ChapterView = () => {
             </div>
           </div>
 
-          <div
-            style={{
-              backgroundColor: 'rgba(245, 158, 11, 0.08)',
-              border: '1px solid rgba(245, 158, 11, 0.25)',
-              borderRadius: 'var(--radius-sm)',
-              padding: '1.25rem',
-              marginBottom: '2rem',
-              fontSize: '0.85rem',
-              color: '#fde68a'
-            }}
-          >
-            <div style={{ fontWeight: 700, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Clock size={16} /> Assessment Rules & Sequential Progression:
-            </div>
-            <ul style={{ paddingLeft: '1.25rem', margin: 0, lineHeight: 1.6, color: '#fef3c7' }}>
-              <li>The 10-minute server timer begins immediately once you initiate the assessment.</li>
-              <li>A score of at least 15/20 (75%) is required to unlock Chapter {Number(chapter?.chapterNumber) + 1}.</li>
-              <li>You may retake failed attempts without penalty. Once passed, your passing status remains permanently recorded.</li>
-            </ul>
-          </div>
+          {isFaculty ? (
+            <div>
+              <div
+                style={{
+                  backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '1.15rem 1.35rem',
+                  marginBottom: '2rem',
+                  fontSize: '0.85rem',
+                  color: '#bae6fd'
+                }}
+              >
+                <div style={{ fontWeight: 700, marginBottom: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <ShieldAlert size={16} /> Faculty Authority Console:
+                </div>
+                <p style={{ margin: 0, lineHeight: 1.5 }}>
+                  You have full administrative authority to preview chapter documents dossiers, import or replace assessment question banks, inspect official answer keys, and evaluate student topic gradebooks. Student quizzes are restricted from faculty attempt submission.
+                </p>
+              </div>
 
-          <div style={{ textAlign: 'center' }}>
-            <button
-              onClick={handleStartQuiz}
-              className="btn btn-primary"
-              style={{
-                padding: '0.85rem 2.5rem',
-                fontSize: '1rem',
-                background: isDM
-                  ? 'linear-gradient(135deg, #9333ea 0%, #c084fc 100%)'
-                  : 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
-                boxShadow: isDM
-                  ? '0 0 20px rgba(192, 132, 252, 0.4)'
-                  : '0 0 20px rgba(56, 189, 248, 0.4)'
-              }}
-            >
-              <PlayCircle size={20} /> {isPassed ? 'Retake Quiz' : 'Start Timed Assessment'}
-            </button>
-          </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+                <button
+                  onClick={() => setIsChapterSummaryOpen(true)}
+                  className="btn btn-primary"
+                  style={{
+                    padding: '0.85rem 1.25rem',
+                    justifyContent: 'center',
+                    background: 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+                    boxShadow: '0 0 16px rgba(56, 189, 248, 0.35)'
+                  }}
+                >
+                  <FileText size={18} /> Chapter Summary & Dossier
+                </button>
+
+                <button
+                  onClick={() => setIsQuizImportOpen(true)}
+                  className="btn btn-outline"
+                  style={{ padding: '0.85rem 1.25rem', justifyContent: 'center' }}
+                >
+                  <Upload size={18} /> Import / Replace Questions
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('gradebook')}
+                  className="btn btn-outline"
+                  style={{ padding: '0.85rem 1.25rem', justifyContent: 'center', borderColor: '#34d399', color: '#34d399' }}
+                >
+                  <FileSpreadsheet size={18} /> View Topic Gradebook
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <div
+                style={{
+                  backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                  border: '1px solid rgba(245, 158, 11, 0.25)',
+                  borderRadius: 'var(--radius-sm)',
+                  padding: '1.25rem',
+                  marginBottom: '2rem',
+                  fontSize: '0.85rem',
+                  color: '#fde68a'
+                }}
+              >
+                <div style={{ fontWeight: 700, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Clock size={16} /> Assessment Rules & Sequential Progression:
+                </div>
+                <ul style={{ paddingLeft: '1.25rem', margin: 0, lineHeight: 1.6, color: '#fef3c7' }}>
+                  <li>The 10-minute server timer begins immediately once you initiate the assessment.</li>
+                  <li>A score of at least 15/20 (75%) is required to unlock Chapter {Number(chapter?.chapterNumber) + 1}.</li>
+                  <li>You may retake failed attempts without penalty. Once passed, your passing status remains permanently recorded.</li>
+                </ul>
+              </div>
+
+              <div style={{ textAlign: 'center' }}>
+                <button
+                  onClick={handleStartQuiz}
+                  className="btn btn-primary"
+                  style={{
+                    padding: '0.85rem 2.5rem',
+                    fontSize: '1rem',
+                    background: isDM
+                      ? 'linear-gradient(135deg, #9333ea 0%, #c084fc 100%)'
+                      : 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)',
+                    boxShadow: isDM
+                      ? '0 0 20px rgba(192, 132, 252, 0.4)'
+                      : '0 0 20px rgba(56, 189, 248, 0.4)'
+                  }}
+                >
+                  <PlayCircle size={20} /> {isPassed ? 'Retake Quiz' : 'Start Timed Assessment'}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -626,6 +729,15 @@ const ChapterView = () => {
           </div>
         </form>
       </Modal>
+
+      {/* Comprehensive Chapter Summary & Export Dossier Modal */}
+      <ChapterSummaryModal
+        isOpen={isChapterSummaryOpen}
+        onClose={() => setIsChapterSummaryOpen(false)}
+        chapterId={chapterId}
+        chapterNumber={chapter?.chapterNumber}
+        chapterTitle={chapter?.title}
+      />
     </div>
   );
 };

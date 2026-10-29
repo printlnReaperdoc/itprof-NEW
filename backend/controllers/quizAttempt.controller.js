@@ -15,6 +15,15 @@ const startAttempt = async (req, res, next) => {
   try {
     const { chapterId } = req.params;
 
+    // Faculty and administrators cannot take student quizzes
+    if (['faculty', 'admin'].includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Faculty members cannot take student assessment quizzes. As faculty, you can manage quiz questions and review student gradebooks.',
+        code: 'FACULTY_CANNOT_TAKE_QUIZ'
+      });
+    }
+
     // Verify student is permitted to access this chapter
     const accessCheck = await canAccessChapter(req.user, chapterId);
     if (!accessCheck.allowed) {
@@ -157,6 +166,14 @@ const returnAttemptWithQuestions = async (attempt, quiz, res) => {
  */
 const saveAnswer = async (req, res, next) => {
   try {
+    if (['faculty', 'admin'].includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Faculty members cannot submit quiz answers.',
+        code: 'FACULTY_CANNOT_TAKE_QUIZ'
+      });
+    }
+
     const { attemptId } = req.params;
     const { questionId, selectedOptionId } = req.body;
 
@@ -217,6 +234,14 @@ const saveAnswer = async (req, res, next) => {
  */
 const submitAttempt = async (req, res, next) => {
   try {
+    if (['faculty', 'admin'].includes(req.user.role)) {
+      return res.status(403).json({
+        success: false,
+        message: 'Faculty members cannot submit quiz attempts.',
+        code: 'FACULTY_CANNOT_TAKE_QUIZ'
+      });
+    }
+
     const { attemptId } = req.params;
 
     const attempt = await QuizAttempt.findOne({

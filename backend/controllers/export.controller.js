@@ -13,8 +13,12 @@ const {
   generateMasterGradebookCSV,
   generateTopicGradebookXLSX,
   generateMasterGradebookPDF,
-  generateQuizAnswerKeysPDF
+  generateQuizAnswerKeysPDF,
+  generateChapterSummaryPDF,
+  generateChapterSummaryXLSX,
+  generateChapterSummaryCSV
 } = require('../services/export.service');
+const { getChapterSummaryData } = require('../services/chapterSummary.service');
 const { createAuditLog } = require('../services/audit.service');
 
 /**
@@ -361,9 +365,123 @@ const exportQuizAnswerKeysPDF = async (req, res, next) => {
   }
 };
 
+/**
+ * Export Chapter Comprehensive Summary PDF (Faculty only)
+ */
+const exportChapterSummaryPDF = async (req, res, next) => {
+  try {
+    const { chapterId } = req.params;
+    const { sortBy = 'surname', sortOrder } = req.query;
+
+    const summaryData = await getChapterSummaryData(chapterId, { sortBy, sortOrder });
+
+    await createAuditLog({
+      actorUserId: req.user._id,
+      action: 'EXPORT_CHAPTER_SUMMARY_PDF',
+      entityType: 'Chapter',
+      entityId: chapterId,
+      details: {
+        chapterNumber: summaryData.chapter.chapterNumber,
+        courseCode: summaryData.course.courseCode,
+        sortBy: summaryData.sorting.sortBy,
+        sortOrder: summaryData.sorting.sortOrder
+      },
+      req
+    });
+
+    const pdfBuffer = await generateChapterSummaryPDF({
+      summaryData,
+      requestedBy: req.user
+    });
+
+    const filename = `${summaryData.course.courseCode}_Ch${summaryData.chapter.chapterNumber}_Dossier_${summaryData.sorting.sortBy}.pdf`;
+
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    res.setHeader('Content-Length', pdfBuffer.length);
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    return res.end(pdfBuffer);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Export Chapter Summary XLSX (Faculty only)
+ */
+const exportChapterSummaryXLSX = async (req, res, next) => {
+  try {
+    const { chapterId } = req.params;
+    const { sortBy = 'surname', sortOrder } = req.query;
+
+    const summaryData = await getChapterSummaryData(chapterId, { sortBy, sortOrder });
+
+    await createAuditLog({
+      actorUserId: req.user._id,
+      action: 'EXPORT_CHAPTER_SUMMARY_XLSX',
+      entityType: 'Chapter',
+      entityId: chapterId,
+      details: {
+        chapterNumber: summaryData.chapter.chapterNumber,
+        courseCode: summaryData.course.courseCode,
+        sortBy: summaryData.sorting.sortBy,
+        sortOrder: summaryData.sorting.sortOrder
+      },
+      req
+    });
+
+    const buffer = await generateChapterSummaryXLSX({ summaryData });
+    const filename = `${summaryData.course.courseCode}_Ch${summaryData.chapter.chapterNumber}_Evaluation_${summaryData.sorting.sortBy}.xlsx`;
+
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    return res.send(buffer);
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Export Chapter Summary CSV (Faculty only)
+ */
+const exportChapterSummaryCSV = async (req, res, next) => {
+  try {
+    const { chapterId } = req.params;
+    const { sortBy = 'surname', sortOrder } = req.query;
+
+    const summaryData = await getChapterSummaryData(chapterId, { sortBy, sortOrder });
+
+    await createAuditLog({
+      actorUserId: req.user._id,
+      action: 'EXPORT_CHAPTER_SUMMARY_CSV',
+      entityType: 'Chapter',
+      entityId: chapterId,
+      details: {
+        chapterNumber: summaryData.chapter.chapterNumber,
+        courseCode: summaryData.course.courseCode,
+        sortBy: summaryData.sorting.sortBy,
+        sortOrder: summaryData.sorting.sortOrder
+      },
+      req
+    });
+
+    const csvBuffer = await generateChapterSummaryCSV({ summaryData });
+    const filename = `${summaryData.course.courseCode}_Ch${summaryData.chapter.chapterNumber}_Roster_${summaryData.sorting.sortBy}.csv`;
+
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    return res.send(csvBuffer);
+  } catch (err) {
+    next(err);
+  }
+};
+
 module.exports = {
   exportMasterGradebook,
   exportTopicGradebook,
-  exportQuizAnswerKeysPDF
+  exportQuizAnswerKeysPDF,
+  exportChapterSummaryPDF,
+  exportChapterSummaryXLSX,
+  exportChapterSummaryCSV
 };
 

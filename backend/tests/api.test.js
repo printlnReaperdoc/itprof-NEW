@@ -22,7 +22,14 @@ const {
 
 const { canAccessChapter, handleQuizAttemptResult } = require('../services/progress.service');
 const { gradeAttempt } = require('../services/grading.service');
-const { generateQuizAnswerKeysPDF } = require('../services/export.service');
+const { startAttempt } = require('../controllers/quizAttempt.controller');
+const { getChapterSummaryData } = require('../services/chapterSummary.service');
+const {
+  generateQuizAnswerKeysPDF,
+  generateChapterSummaryPDF,
+  generateChapterSummaryXLSX,
+  generateChapterSummaryCSV
+} = require('../services/export.service');
 
 describe('IT Professional Electives LMS Test Suite', () => {
   before(async () => {
@@ -221,6 +228,124 @@ describe('IT Professional Electives LMS Test Suite', () => {
     // Verify PDF header magic bytes "%PDF-"
     const magic = pdfBuffer.slice(0, 5).toString('ascii');
     assert.strictEqual(magic, '%PDF-', 'Buffer must begin with %PDF- header signature');
+  });
+
+  test('9. Role Permission: Faculty Members Are Blocked from Taking Quizzes', async () => {
+    const dmCourse = await Course.findOne({ courseCode: 'ITEP411-T' });
+    const dmCh1 = await Chapter.findOne({ courseId: dmCourse._id, chapterNumber: 1 });
+
+    const facultyUser = {
+      _id: new mongoose.Types.ObjectId(),
+      role: 'faculty',
+      username: 'faculty_test'
+    };
+
+    let statusCode = null;
+    let jsonResponse = null;
+
+    const mockReq = {
+      user: facultyUser,
+      params: { chapterId: dmCh1._id.toString() }
+    };
+
+    const mockRes = {
+      status(code) {
+        statusCode = code;
+        return this;
+      },
+      json(payload) {
+        jsonResponse = payload;
+        return this;
+      }
+    };
+
+    await startAttempt(mockReq, mockRes, () => {});
+
+    assert.strictEqual(statusCode, 403, 'Faculty startAttempt must return HTTP 403');
+    assert.strictEqual(jsonResponse.code, 'FACULTY_CANNOT_TAKE_QUIZ', 'Response code must be FACULTY_CANNOT_TAKE_QUIZ');
+    assert.strictEqual(jsonResponse.success, false);
+  });
+
+  test('10. Chapter Summary & Documents Dossier: Aggregates Full Syllabus, Slides, 20 Questions with Keys, and Cohort Metrics', async () => {
+    const dmCourse = await Course.findOne({ courseCode: 'ITEP411-T' });
+    const dmCh1 = await Chapter.findOne({ courseId: dmCourse._id, chapterNumber: 1 });
+
+    const summary = await getChapterSummaryData(dmCh1._id, { sortBy: 'surname', sortOrder: 'asc' });
+
+    assert.ok(summary.chapter, 'Must have chapter metadata');
+    assert.strictEqual(summary.chapter.chapterNumber, 1);
+    assert.ok(summary.lesson, 'Must have lesson content');
+    assert.ok(summary.lesson.learningObjectives.length > 0, 'Lesson must contain learning objectives');
+    assert.ok(summary.presentation, 'Must have interactive presentation deck');
+    assert.ok(summary.presentation.slides.length >= 3, 'Presentation must contain slides');
+    assert.ok(summary.quiz, 'Must have quiz assessment');
+    assert.strictEqual(summary.quiz.questions.length, 20, 'Quiz must have exactly 20 questions');
+
+    // Verify all 20 questions have correct answer keys
+    for (const q of summary.quiz.questions) {
+      assert.ok(q.correctOption, `Question ${q.position} must have correctOption letter`);
+      assert.ok(['A', 'B', 'C', 'D'].includes(q.correctOption));
+    }
+
+    // Verify cohort metrics
+    assert.ok(summary.cohort, 'Must have cohort statistics');
+    assert.ok(summary.cohort.totalEnrolled >= 8, 'Must reflect enrolled students');
+    assert.ok(Array.isArray(summary.records), 'Records must be an array');
+  });
+
+  test('11. Sorting Implementation: Both Surname and Quiz Score Sorting Work Accurately', async () => {
+    const dmCourse = await Course.findOne({ courseCode: 'ITEP411-T' });
+    const dmCh1 = await Chapter.findOne({ courseId: dmCourse._id, chapterNumber: 1 });
+
+    // 1. Sort by Surname Ascending
+    const summarySurnameAsc = await getChapterSummaryData(dmCh1._id, { sortBy: 'surname', sortOrder: 'asc' });
+    const surnamesAsc = summarySurnameAsc.records.map(r => r.surname);
+    const sortedCopySurname = [...surnamesAsc].sort((a, b) => a.localeCompare(b));
+    assert.deepStrictEqual(surnamesAsc, sortedCopySurname, 'Records must be sorted by surname ascending');
+
+    // 2. Sort by Score Descending
+    const summaryScoreDesc = await getChapterSummaryData(dmCh1._id, { sortBy: 'score', sortOrder: 'desc' });
+    for (let i = 0; i < summaryScoreDesc.records.length - 1; i++) {
+      const currentScore = summaryScoreDesc.records[i].highestScore ?? -1;
+      const nextScore = summaryScoreDesc.records[i + 1].highestScore ?? -1;
+      assert.ok(currentScore >= nextScore, `Score at rank ${i + 1} (${currentScore}) must be >= rank ${i + 2} (${nextScore})`);
+    }
+
+    // 3. Sort by Score Ascending
+    const summaryScoreAsc = await getChapterSummaryData(dmCh1._id, { sortBy: 'score', sortOrder: 'asc' });
+    for (let i = 0; i < summaryScoreAsc.records.length - 1; i++) {
+      const currentScore = summaryScoreAsc.records[i].highestScore ?? -1;
+      const nextScore = summaryScoreAsc.records[i + 1].highestScore ?? -1;
+      assert.ok(currentScore <= nextScore, `Score at rank ${i + 1} (${currentScore}) must be <= rank ${i + 2} (${nextScore})`);
+    }
+  });
+
+  test('12. Chapter Summary Dossier Exports: PDF, XLSX, and CSV Are Valid and Non-Empty', async () => {
+    const dmCourse = await Course.findOne({ courseCode: 'ITEP411-T' });
+    const dmCh1 = await Chapter.findOne({ courseId: dmCourse._id, chapterNumber: 1 });
+
+    const summaryData = await getChapterSummaryData(dmCh1._id, { sortBy: 'score', sortOrder: 'desc' });
+    const facultyUser = { firstName: 'Admin', surname: 'Faculty', username: 'faculty1', role: 'faculty' };
+
+    // 1. PDF Dossier
+    const pdfBuffer = await generateChapterSummaryPDF({ summaryData, requestedBy: facultyUser });
+    assert.ok(Buffer.isBuffer(pdfBuffer), 'PDF output must be a buffer');
+    assert.ok(pdfBuffer.length > 1000, 'PDF buffer must contain substantial content');
+    assert.strictEqual(pdfBuffer.slice(0, 5).toString('ascii'), '%PDF-', 'PDF magic bytes header');
+
+    // 2. Excel XLSX Dossier
+    const xlsxBuffer = await generateChapterSummaryXLSX({ summaryData });
+    assert.ok(Buffer.isBuffer(xlsxBuffer), 'XLSX output must be a buffer');
+    assert.ok(xlsxBuffer.length > 1000, 'XLSX buffer must contain substantial content');
+    // Zip signature PK\x03\x04
+    assert.strictEqual(xlsxBuffer.slice(0, 4).toString('hex'), '504b0304', 'XLSX must have zip file header');
+
+    // 3. CSV Dossier
+    const csvBuffer = await generateChapterSummaryCSV({ summaryData });
+    assert.ok(Buffer.isBuffer(csvBuffer), 'CSV output must be a buffer');
+    const csvText = csvBuffer.toString('utf-8');
+    assert.ok(csvText.includes('Rank,StudentID,Surname,FirstName'), 'CSV must contain standard headers');
+    assert.ok(csvText.includes('ITEP411-T'), 'CSV must include course code metadata');
   });
 });
 
