@@ -97,6 +97,10 @@ const QuizAttemptView = ({ attemptData, onCompleted, onCancel }) => {
   };
 
   const triggerConfetti = () => {
+    // Skip CPU/GPU demanding canvas confetti when Low Detail Mode (LDM) is engaged
+    if (document.documentElement.classList.contains('ldm-mode') || document.body.classList.contains('ldm-mode')) {
+      return;
+    }
     try {
       confetti({
         particleCount: 120,
@@ -276,7 +280,7 @@ const QuizAttemptView = ({ attemptData, onCompleted, onCancel }) => {
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 290px', gap: '1.5rem', alignItems: 'start' }}>
         {/* Main Question Display */}
         {currentQ && (
-          <div className="card" style={{ padding: '2.25rem', backgroundColor: '#0c1222' }}>
+          <div key={currentQuestionIndex} className="card animate-fade-in" style={{ padding: '2.25rem', backgroundColor: '#0c1222' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1.25rem' }}>
               <span style={{ fontSize: '0.8rem', fontWeight: 800, color: '#38bdf8', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>
                 QUESTION {currentQuestionIndex + 1} OF {questions.length}

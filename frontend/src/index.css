@@ -359,6 +359,213 @@ code, pre, .font-mono {
   color: #7dd3fc;
 }
 
+/* ==========================================================================
+   CYBER ANIMATIONS & MICRO-INTERACTIONS (NORMAL HIGH-FIDELITY MODE)
+   ========================================================================== */
+
+@keyframes cyberFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes cyberScaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes pulseGlowCyan {
+  0%, 100% {
+    box-shadow: 0 0 15px -2px rgba(56, 189, 248, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 28px 4px rgba(56, 189, 248, 0.45);
+  }
+}
+
+@keyframes pulseGlowPurple {
+  0%, 100% {
+    box-shadow: 0 0 15px -2px rgba(192, 132, 252, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 28px 4px rgba(192, 132, 252, 0.45);
+  }
+}
+
+@keyframes pulseGlowEmerald {
+  0%, 100% {
+    box-shadow: 0 0 12px -2px rgba(52, 211, 153, 0.25);
+  }
+  50% {
+    box-shadow: 0 0 24px 3px rgba(52, 211, 153, 0.45);
+  }
+}
+
+@keyframes badgeFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+/* Page & Section Entrance Animations */
+.animate-fade-in {
+  animation: cyberFadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scale-in {
+  animation: cyberScaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse-cyan {
+  animation: pulseGlowCyan 3s infinite ease-in-out;
+}
+
+.animate-pulse-purple {
+  animation: pulseGlowPurple 3s infinite ease-in-out;
+}
+
+.animate-pulse-emerald {
+  animation: pulseGlowEmerald 3s infinite ease-in-out;
+}
+
+/* Enhanced interactive card hover */
+.card {
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(56, 189, 248, 0.35);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.65), 0 0 20px -2px rgba(56, 189, 248, 0.2);
+}
+
+/* Enhanced buttons micro-interactions */
+.btn {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.45);
+}
+
+.btn-outline:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+/* Badges */
+.badge-passed {
+  animation: badgeFloat 4s ease-in-out infinite;
+}
+
+/* Table rows */
+.table tr {
+  transition: background-color 0.15s ease;
+}
+
+.table tr:hover td {
+  background-color: rgba(56, 189, 248, 0.04);
+}
+
+/* ==========================================================================
+   LDM MODE (LOW DETAIL MODE / LOW DEMAND MODE)
+   Disables animations, transitions, heavy filters, blurs, and ambient glow
+   for maximum performance and battery savings on low-end hardware
+   ========================================================================== */
+
+.ldm-mode,
+.ldm-mode * {
+  animation: none !important;
+  transition: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  filter: none !important;
+}
+
+.ldm-mode body {
+  background-image: none !important;
+  background-color: #070a13 !important;
+}
+
+.ldm-mode .tech-grid-bg {
+  background-image: none !important;
+  background-color: #0d1527 !important;
+}
+
+.ldm-mode .card {
+  transform: none !important;
+  box-shadow: none !important;
+  border: 1px solid #1e293b !important;
+  background: #0f172a !important;
+}
+
+.ldm-mode .card:hover {
+  transform: none !important;
+  border-color: #38bdf8 !important;
+  box-shadow: none !important;
+}
+
+.ldm-mode .btn {
+  transform: none !important;
+  box-shadow: none !important;
+  transition: none !important;
+}
+
+.ldm-mode .btn:active {
+  transform: none !important;
+}
+
+.ldm-mode .btn-primary {
+  background: #0284c7 !important;
+  border-color: #0284c7 !important;
+  box-shadow: none !important;
+}
+
+.ldm-mode .btn-primary:hover {
+  background: #0369a1 !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.ldm-mode .badge {
+  box-shadow: none !important;
+  animation: none !important;
+}
+
+.ldm-mode header {
+  background-color: #0b1120 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid #1e293b !important;
+}
+
+.ldm-mode .table tr:hover td {
+  background-color: transparent !important;
+}
+
 /* Print Styles */
 @media print {
   body {

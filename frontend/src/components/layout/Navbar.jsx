@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Modal from '../common/Modal';
+import LdmToggle from '../common/LdmToggle';
 import {
   GraduationCap,
   LayoutDashboard,
@@ -140,8 +141,10 @@ const Navbar = () => {
           )}
         </nav>
 
-        {/* User profile & logout */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        {/* LDM Mode Toggle, User profile & logout */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+          <LdmToggle />
+
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', textAlign: 'right' }}>
             <div style={{
               width: '36px',

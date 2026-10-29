@@ -210,7 +210,7 @@ const ChapterView = () => {
 
       {/* Chapter Title Header */}
       <div
-        className="card"
+        className="card animate-fade-in"
         style={{
           marginBottom: '1.5rem',
           padding: '1.75rem 2rem',

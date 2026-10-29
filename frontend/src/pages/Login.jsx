@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import LdmToggle from '../components/common/LdmToggle';
 import { Server, LogIn, AlertCircle, Sparkles, Database, Cloud } from 'lucide-react';
 
 const Login = () => {
@@ -58,11 +59,16 @@ const Login = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '2rem 1rem'
+        padding: '2rem 1rem',
+        position: 'relative'
       }}
     >
+      <div style={{ position: 'absolute', top: '1.25rem', right: '1.5rem', zIndex: 10 }}>
+        <LdmToggle />
+      </div>
+
       <div
-        className="card"
+        className="card animate-scale-in"
         style={{
           width: '100%',
           maxWidth: '460px',

@@ -395,7 +395,7 @@ const PresentationViewer = ({ presentation, onEdit, isFaculty = false }) => {
           }}
         >
           {currentSlide && (
-            <div style={{ maxWidth: '920px', margin: '0 auto', width: '100%' }}>
+            <div key={currentSlideIndex} className="animate-fade-in" style={{ maxWidth: '920px', margin: '0 auto', width: '100%' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
                 <span style={{ fontSize: '0.78rem', fontWeight: 700, color: '#38bdf8', fontFamily: 'var(--font-mono)', letterSpacing: '0.08em' }}>
                   SLIDE {currentSlideIndex + 1} OF {totalSlides}

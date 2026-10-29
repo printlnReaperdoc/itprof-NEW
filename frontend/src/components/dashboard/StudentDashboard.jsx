@@ -35,7 +35,7 @@ const StudentDashboard = ({ courses = [], analytics = {}, user }) => {
     <div className="container" style={{ padding: '2.5rem 1.5rem' }}>
       {/* Student Welcome Hero Banner */}
       <div
-        className="card tech-grid-bg"
+        className="card tech-grid-bg animate-fade-in"
         style={{
           backgroundColor: '#0c1322',
           borderColor: 'rgba(56, 189, 248, 0.25)',

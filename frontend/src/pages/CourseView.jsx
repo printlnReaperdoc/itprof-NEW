@@ -58,7 +58,7 @@ const CourseView = () => {
 
       {/* Course Header Banner */}
       <div
-        className="card tech-grid-bg"
+        className="card tech-grid-bg animate-fade-in"
         style={{
           backgroundColor: isDataMining ? '#140e26' : '#08172c',
           borderColor: isDataMining ? 'rgba(192, 132, 252, 0.35)' : 'rgba(56, 189, 248, 0.35)',
