@@ -25,8 +25,19 @@ import {
   CheckCircle2,
   AlertTriangle,
   ShieldAlert,
-  Clock
+  Clock,
+  FolderOpen,
+  FileDown,
+  Eye
 } from 'lucide-react';
+
+const formatFileSize = (bytes) => {
+  if (!bytes || bytes === 0) return '0 B';
+  const k = 1024;
+  const sizes = ['B', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(2))} ${sizes[i]}`;
+};
 
 const ChapterView = () => {
   const { chapterId } = useParams();
@@ -35,6 +46,7 @@ const ChapterView = () => {
 
   const [chapter, setChapter] = useState(null);
   const [lesson, setLesson] = useState(null);
+  const [lessonFiles, setLessonFiles] = useState([]);
   const [presentation, setPresentation] = useState(null);
   const [quiz, setQuiz] = useState(null);
   const [progress, setProgress] = useState(null);
@@ -65,6 +77,9 @@ const ChapterView = () => {
       setChapter(chRes.chapter);
       setProgress(chRes.progress);
       setQuiz(chRes.quiz);
+      if (chRes.lessonFiles) {
+        setLessonFiles(chRes.lessonFiles);
+      }
 
       // 2. Load presentation
       try {
@@ -78,6 +93,9 @@ const ChapterView = () => {
       try {
         const lessonRes = await lessonsApi.getByChapter(chapterId);
         setLesson(lessonRes.lesson);
+        if (lessonRes.files) {
+          setLessonFiles(lessonRes.files);
+        }
       } catch (e) {
         console.warn('No lesson found for chapter:', e.message);
       }
@@ -193,9 +211,10 @@ const ChapterView = () => {
             <button
               onClick={() => setIsLessonEditorOpen(true)}
               className="btn btn-outline"
-              style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem' }}
+              style={{ fontSize: '0.8rem', padding: '0.4rem 0.8rem', borderColor: 'rgba(56, 189, 248, 0.4)', color: '#38bdf8' }}
+              title="Manage lesson syllabus, learning objectives, and upload chapter PDF and PPT slide decks"
             >
-              <Edit size={14} /> Edit Lesson
+              <Upload size={14} /> Manage Lesson & Materials
             </button>
             <button
               onClick={() => setIsQuizImportOpen(true)}
@@ -336,7 +355,7 @@ const ChapterView = () => {
               fontWeight: 600
             }}
           >
-            <BookOpen size={16} /> Lesson Content & Notes
+            <BookOpen size={16} /> Lesson & Materials {lessonFiles?.length > 0 ? `(${lessonFiles.length} files)` : ''}
           </button>
           <button
             onClick={() => setActiveTab('quiz')}
@@ -370,6 +389,57 @@ const ChapterView = () => {
       {/* TAB 1: INTERACTIVE PRESENTATION */}
       {activeTab === 'presentation' && (
         <div style={{ marginBottom: '2.5rem' }}>
+          {lessonFiles && lessonFiles.length > 0 && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                border: '1px solid rgba(56, 189, 248, 0.25)',
+                borderRadius: 'var(--radius-sm)',
+                padding: '0.75rem 1.25rem',
+                marginBottom: '1.25rem',
+                flexWrap: 'wrap',
+                gap: '0.75rem'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.85rem', color: '#e0f2fe' }}>
+                <FolderOpen size={17} color="#38bdf8" />
+                <span>
+                  <strong>Instructor Lecture Materials:</strong> {lessonFiles.length} downloadable PowerPoint deck(s) and PDF(s)
+                </span>
+              </div>
+
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                {lessonFiles.map((f) => {
+                  const fileId = f._id || f.id;
+                  const ext = f.originalFilename?.substring(f.originalFilename.lastIndexOf('.')).toLowerCase() || '';
+                  const isPdf = ext === '.pdf' || f.mimeType?.includes('pdf');
+                  const isPpt = ['.ppt', '.pptx'].includes(ext) || f.mimeType?.includes('presentation') || f.mimeType?.includes('powerpoint');
+
+                  return (
+                    <a
+                      key={fileId}
+                      href={lessonsApi.getFileDownloadUrl(fileId, false)}
+                      download={f.originalFilename}
+                      className="btn btn-outline btn-sm"
+                      style={{
+                        fontSize: '0.75rem',
+                        padding: '0.3rem 0.75rem',
+                        borderColor: isPdf ? 'rgba(239, 68, 68, 0.4)' : (isPpt ? 'rgba(249, 115, 22, 0.4)' : 'rgba(56, 189, 248, 0.4)'),
+                        color: isPdf ? '#fca5a5' : (isPpt ? '#fdba74' : '#7dd3fc')
+                      }}
+                      title={`Download ${f.originalFilename}`}
+                    >
+                      <FileDown size={13} /> {f.originalFilename} ({formatFileSize(f.fileSize)})
+                    </a>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
           <PresentationViewer
             presentation={presentation}
             onEdit={() => setIsPresEditorOpen(true)}
@@ -378,11 +448,175 @@ const ChapterView = () => {
         </div>
       )}
 
-      {/* TAB 2: DETAILED LESSON CONTENT */}
+      {/* TAB 2: DETAILED LESSON CONTENT & UPLOADED MATERIALS */}
       {activeTab === 'lesson' && lesson && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '2rem', alignItems: 'start' }}>
           {/* Main Content */}
           <div className="card" style={{ padding: '2.5rem' }}>
+            {/* Uploaded Chapter PDFs and PPTs Section */}
+            <div
+              style={{
+                marginBottom: '2.25rem',
+                padding: '1.5rem',
+                backgroundColor: '#0a0f1d',
+                border: '1px solid rgba(56, 189, 248, 0.25)',
+                borderRadius: 'var(--radius-md)',
+                boxShadow: '0 4px 15px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                  <span style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '8px',
+                    backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                    color: '#38bdf8',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}>
+                    <FolderOpen size={20} />
+                  </span>
+                  <div>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc', margin: 0 }}>
+                      Chapter Slide Decks & Documents ({lessonFiles.length})
+                    </h3>
+                    <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>
+                      Official instructor lecture PowerPoint presentations (.ppt, .pptx) and PDF reference materials
+                    </p>
+                  </div>
+                </div>
+
+                {isFaculty && (
+                  <button
+                    onClick={() => setIsLessonEditorOpen(true)}
+                    className="btn btn-primary btn-sm"
+                    style={{ fontSize: '0.78rem', padding: '0.4rem 0.85rem' }}
+                  >
+                    <Upload size={13} /> Manage / Upload Files
+                  </button>
+                )}
+              </div>
+
+              {lessonFiles.length === 0 ? (
+                <div
+                  style={{
+                    padding: '1.5rem',
+                    textAlign: 'center',
+                    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                    borderRadius: 'var(--radius-sm)',
+                    fontSize: '0.88rem',
+                    color: '#94a3b8'
+                  }}
+                >
+                  {isFaculty ? (
+                    <div>
+                      No PDF documents or PowerPoint decks uploaded yet for Chapter {chapter?.chapterNumber}.{' '}
+                      <button
+                        type="button"
+                        onClick={() => setIsLessonEditorOpen(true)}
+                        style={{ background: 'none', border: 'none', color: '#38bdf8', cursor: 'pointer', textDecoration: 'underline', fontWeight: 600 }}
+                      >
+                        Click here to upload slide decks & PDFs
+                      </button>
+                    </div>
+                  ) : (
+                    'No supplementary lecture slide decks or PDFs uploaded for this chapter.'
+                  )}
+                </div>
+              ) : (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '0.85rem' }}>
+                  {lessonFiles.map((file) => {
+                    const fileId = file._id || file.id;
+                    const ext = file.originalFilename?.substring(file.originalFilename.lastIndexOf('.')).toLowerCase() || '';
+                    const isPdf = ext === '.pdf' || file.mimeType?.includes('pdf');
+                    const isPpt = ['.ppt', '.pptx'].includes(ext) || file.mimeType?.includes('presentation') || file.mimeType?.includes('powerpoint');
+
+                    return (
+                      <div
+                        key={fileId}
+                        style={{
+                          padding: '1rem',
+                          backgroundColor: '#0f172a',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          borderRadius: 'var(--radius-sm)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'space-between',
+                          gap: '0.85rem'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.65rem' }}>
+                          <span
+                            className="badge"
+                            style={{
+                              backgroundColor: isPdf ? 'rgba(239, 68, 68, 0.15)' : (isPpt ? 'rgba(249, 115, 22, 0.15)' : 'rgba(56, 189, 248, 0.15)'),
+                              color: isPdf ? '#ef4444' : (isPpt ? '#f97316' : '#38bdf8'),
+                              border: `1px solid ${isPdf ? 'rgba(239, 68, 68, 0.35)' : (isPpt ? 'rgba(249, 115, 22, 0.35)' : 'rgba(56, 189, 248, 0.35)')}`,
+                              fontSize: '0.7rem',
+                              fontWeight: 700,
+                              fontFamily: 'var(--font-mono)'
+                            }}
+                          >
+                            {isPdf ? 'PDF' : (isPpt ? 'PPT' : 'DOC')}
+                          </span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div
+                              style={{
+                                fontSize: '0.88rem',
+                                fontWeight: 600,
+                                color: '#f8fafc',
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap'
+                              }}
+                              title={file.originalFilename}
+                            >
+                              {file.originalFilename}
+                            </div>
+                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
+                              {formatFileSize(file.fileSize)} • {new Date(file.createdAt).toLocaleDateString()}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                          {isPdf && (
+                            <a
+                              href={lessonsApi.getFileDownloadUrl(fileId, true)}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="btn btn-outline btn-sm"
+                              style={{ flex: 1, fontSize: '0.78rem', padding: '0.35rem 0.5rem', justifyContent: 'center' }}
+                              title="Open PDF in browser"
+                            >
+                              <Eye size={13} /> View PDF
+                            </a>
+                          )}
+                          <a
+                            href={lessonsApi.getFileDownloadUrl(fileId, false)}
+                            download={file.originalFilename}
+                            className="btn btn-primary btn-sm"
+                            style={{
+                              flex: 1,
+                              fontSize: '0.78rem',
+                              padding: '0.35rem 0.5rem',
+                              justifyContent: 'center',
+                              background: isPpt ? 'linear-gradient(135deg, #ea580c 0%, #f97316 100%)' : undefined
+                            }}
+                            title={`Download ${file.originalFilename}`}
+                          >
+                            <FileDown size={13} /> Download {isPpt ? 'PPT' : 'File'}
+                          </a>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             <h2 style={{ fontSize: '1.35rem', fontWeight: 700, marginBottom: '1rem', color: 'var(--text-main)' }}>
               Lesson Overview & Objectives
             </h2>
@@ -411,6 +645,50 @@ const ChapterView = () => {
 
           {/* Key Concepts Sidebar */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* Quick Materials Sidebar Widget */}
+            {lessonFiles && lessonFiles.length > 0 && (
+              <div className="card" style={{ padding: '1.5rem', borderColor: 'rgba(56, 189, 248, 0.3)' }}>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#38bdf8', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                  <FolderOpen size={16} /> Course Materials ({lessonFiles.length})
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  {lessonFiles.map((f) => {
+                    const fileId = f._id || f.id;
+                    const ext = f.originalFilename?.substring(f.originalFilename.lastIndexOf('.')).toLowerCase() || '';
+                    const isPdf = ext === '.pdf';
+                    const isPpt = ['.ppt', '.pptx'].includes(ext);
+
+                    return (
+                      <a
+                        key={fileId}
+                        href={lessonsApi.getFileDownloadUrl(fileId, false)}
+                        download={f.originalFilename}
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '0.55rem 0.75rem',
+                          backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                          border: '1px solid rgba(255, 255, 255, 0.06)',
+                          borderRadius: 'var(--radius-sm)',
+                          textDecoration: 'none',
+                          color: '#f8fafc',
+                          fontSize: '0.8rem',
+                          gap: '0.5rem',
+                          transition: 'all 0.15s ease'
+                        }}
+                        title={`Download ${f.originalFilename}`}
+                      >
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1 }}>
+                          {f.originalFilename}
+                        </span>
+                        <FileDown size={14} color={isPdf ? '#ef4444' : (isPpt ? '#f97316' : '#38bdf8')} />
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
             {lesson.keyConcepts && lesson.keyConcepts.length > 0 && (
               <div className="card" style={{ padding: '1.5rem' }}>
                 <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: accentColor, marginBottom: '1rem' }}>

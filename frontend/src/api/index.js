@@ -60,6 +60,11 @@ export const lessonsApi = {
   uploadFile: (chapterId, formData) => api.post(`/lessons/chapter/${chapterId}/files`, formData, {
     headers: { 'Content-Type': 'multipart/form-data' }
   }),
+  downloadFile: async (fileId, filename) => {
+    const blob = await api.get(`/lessons/files/${fileId}/download`, { responseType: 'blob' });
+    triggerBlobDownload(blob, filename || 'chapter-material');
+  },
+  getFileDownloadUrl: (fileId, inline = false) => `/api/lessons/files/${fileId}/download${inline ? '?inline=true' : ''}`,
   deleteFile: (fileId) => api.delete(`/lessons/files/${fileId}`)
 };
 

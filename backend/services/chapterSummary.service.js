@@ -6,6 +6,7 @@ const Presentation = require('../models/Presentation');
 const Quiz = require('../models/Quiz');
 const Question = require('../models/Question');
 const QuestionOption = require('../models/QuestionOption');
+const LessonFile = require('../models/LessonFile');
 const Enrollment = require('../models/Enrollment');
 const ChapterProgress = require('../models/ChapterProgress');
 const QuizAttempt = require('../models/QuizAttempt');
@@ -29,8 +30,9 @@ async function getChapterSummaryData(chapterId, { sortBy = 'surname', sortOrder 
   const course = chapter.courseId;
   const moduleInfo = chapter.moduleId;
 
-  // 1. Curriculum Lesson details
+  // 1. Curriculum Lesson details & uploaded files (PDF/PPT)
   const lesson = await Lesson.findOne({ chapterId: chapter._id });
+  const lessonFiles = await LessonFile.find({ chapterId: chapter._id }).select('-storagePath').sort({ createdAt: -1 });
 
   // 2. Interactive Presentation deck
   const presentation = await Presentation.findOne({ chapterId: chapter._id });
@@ -247,6 +249,13 @@ async function getChapterSummaryData(chapterId, { sortBy = 'surname', sortOrder 
       studyGuide: lesson.studyGuide || [],
       content: lesson.content
     } : null,
+    lessonFiles: (lessonFiles || []).map(f => ({
+      id: f._id,
+      originalFilename: f.originalFilename,
+      fileSize: f.fileSize,
+      mimeType: f.mimeType,
+      createdAt: f.createdAt
+    })),
     presentation: presentation ? {
       id: presentation._id,
       title: presentation.title,

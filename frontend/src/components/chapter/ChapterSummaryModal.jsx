@@ -17,7 +17,8 @@ import {
   Award,
   Layers,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  FolderOpen
 } from 'lucide-react';
 
 const ChapterSummaryModal = ({ isOpen, onClose, chapterId, chapterNumber, chapterTitle }) => {
@@ -455,6 +456,22 @@ const ChapterSummaryModal = ({ isOpen, onClose, chapterId, chapterNumber, chapte
                     <p style={{ color: '#cbd5e1', fontSize: '0.92rem', lineHeight: 1.7, marginBottom: '1.5rem' }}>
                       {data.lesson.overview}
                     </p>
+                  )}
+
+                  {data.lessonFiles?.length > 0 && (
+                    <div style={{ marginBottom: '1.5rem', backgroundColor: '#0a0f1d', border: '1px solid rgba(56, 189, 248, 0.25)', borderRadius: 'var(--radius-sm)', padding: '1rem 1.25rem' }}>
+                      <h4 style={{ fontSize: '0.88rem', fontWeight: 700, color: '#38bdf8', marginBottom: '0.6rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <FolderOpen size={15} /> Attached Lecture Slide Decks & Documents ({data.lessonFiles.length})
+                      </h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        {data.lessonFiles.map(f => (
+                          <div key={f.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', padding: '0.4rem 0.6rem', backgroundColor: 'rgba(255, 255, 255, 0.02)', borderRadius: '4px' }}>
+                            <span style={{ color: '#f8fafc', fontWeight: 600 }}>{f.originalFilename}</span>
+                            <span style={{ color: '#94a3b8', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>{new Date(f.createdAt).toLocaleDateString()}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   )}
 
                   {data.lesson.learningObjectives?.length > 0 && (

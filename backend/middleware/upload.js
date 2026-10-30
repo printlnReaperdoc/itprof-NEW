@@ -26,17 +26,33 @@ const allowedMimes = [
   'image/webp',
   'application/vnd.ms-powerpoint',
   'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/powerpoint',
+  'application/mspowerpoint',
+  'application/x-mspowerpoint',
+  'application/x-ppt',
+  'application/octet-stream',
+  'application/zip',
+  'application/x-zip-compressed',
   'application/json',
   'text/csv',
   'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 ];
 
-const allowedExtensions = ['.pdf', '.jpg', '.jpeg', '.png', '.webp', '.ppt', '.pptx', '.json', '.csv', '.xlsx'];
+const allowedExtensions = ['.pdf', '.ppt', '.pptx', '.jpg', '.jpeg', '.png', '.webp', '.json', '.csv', '.xlsx'];
 
 const fileFilter = (req, file, cb) => {
   const ext = path.extname(file.originalname).toLowerCase();
-  if (!allowedExtensions.includes(ext) || !allowedMimes.includes(file.mimetype)) {
-    return cb(new Error(`Unsupported file type: ${ext} (${file.mimetype}). Allowed types: PDF, Images, PPT/PPTX, JSON, CSV, XLSX`), false);
+  if (!allowedExtensions.includes(ext)) {
+    return cb(new Error(`Unsupported file type: ${ext}. Allowed formats include PDF (.pdf) and PowerPoint (.ppt, .pptx)`), false);
+  }
+
+  // If extension is pdf, ppt, or pptx, allow it even if OS reports octet-stream/zip
+  if (['.pdf', '.ppt', '.pptx'].includes(ext)) {
+    return cb(null, true);
+  }
+
+  if (!allowedMimes.includes(file.mimetype)) {
+    return cb(new Error(`Unsupported MIME type: ${file.mimetype} for file ${file.originalname}`), false);
   }
   cb(null, true);
 };
@@ -44,7 +60,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
   storage,
   limits: {
-    fileSize: 25 * 1024 * 1024 // 25 MB
+    fileSize: 50 * 1024 * 1024 // 50 MB for rich presentation decks and documents
   },
   fileFilter
 });

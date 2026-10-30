@@ -17,7 +17,8 @@ const {
   QuizAttempt,
   AttemptAnswer,
   ChapterProgress,
-  AuditLog
+  AuditLog,
+  LessonFile
 } = require('../models');
 
 const { canAccessChapter, handleQuizAttemptResult } = require('../services/progress.service');
@@ -346,6 +347,69 @@ describe('IT Professional Electives LMS Test Suite', () => {
     const csvText = csvBuffer.toString('utf-8');
     assert.ok(csvText.includes('Rank,StudentID,Surname,FirstName'), 'CSV must contain standard headers');
     assert.ok(csvText.includes('ITEP411-T'), 'CSV must include course code metadata');
+  });
+
+  test('13. Chapter Materials & File Management: Uploaded PDFs and PPTs are Tracked and Linked', async () => {
+    const dmCourse = await Course.findOne({ courseCode: 'ITEP411-T' });
+    const dmCh1 = await Chapter.findOne({ courseId: dmCourse._id, chapterNumber: 1 });
+
+    // Clean up any test files
+    await LessonFile.deleteMany({ originalFilename: /^test_slide_deck_/ });
+
+    const testPdf = await LessonFile.create({
+      chapterId: dmCh1._id,
+      originalFilename: 'test_slide_deck_ch1.pdf',
+      storedFilename: 'test_slide_deck_ch1.pdf',
+      storagePath: '/storage/uploads/test_slide_deck_ch1.pdf',
+      mimeType: 'application/pdf',
+      fileSize: 1048576
+    });
+
+    const testPptx = await LessonFile.create({
+      chapterId: dmCh1._id,
+      originalFilename: 'test_slide_deck_ch1.pptx',
+      storedFilename: 'test_slide_deck_ch1.pptx',
+      storagePath: '/storage/uploads/test_slide_deck_ch1.pptx',
+      mimeType: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      fileSize: 2097152
+    });
+
+    assert.ok(testPdf._id, 'PDF record should be created');
+    assert.ok(testPptx._id, 'PPTX record should be created');
+
+    // Verify inclusion in Chapter Summary Data
+    const summary = await getChapterSummaryData(dmCh1._id);
+    assert.ok(Array.isArray(summary.lessonFiles), 'Summary must contain lessonFiles array');
+    const hasPdf = summary.lessonFiles.some(f => f.originalFilename === 'test_slide_deck_ch1.pdf');
+    const hasPptx = summary.lessonFiles.some(f => f.originalFilename === 'test_slide_deck_ch1.pptx');
+    assert.strictEqual(hasPdf, true, 'Chapter summary must include uploaded PDF');
+    assert.strictEqual(hasPptx, true, 'Chapter summary must include uploaded PPTX');
+
+    // Cleanup
+    await LessonFile.deleteMany({ _id: { $in: [testPdf._id, testPptx._id] } });
+  });
+
+  test('14. Access Control for Materials: Sequential Locking Applies to File Access', async () => {
+    const dmCourse = await Course.findOne({ courseCode: 'ITEP411-T' });
+    const dmCh2 = await Chapter.findOne({ courseId: dmCourse._id, chapterNumber: 2 });
+
+    const dummyStudent = {
+      _id: new mongoose.Types.ObjectId(),
+      role: 'student'
+    };
+
+    // Student without progress cannot access Chapter 2 materials
+    const lockedCheck = await canAccessChapter(dummyStudent, dmCh2._id);
+    assert.strictEqual(lockedCheck.allowed, false, 'Student without Ch1 completion cannot access Ch2 materials');
+    assert.ok(lockedCheck.reason.includes('Pass previous chapters first'), 'Reason indicates prerequisite chapter requirement');
+
+    // Faculty always bypasses chapter access locks
+    const facultyUser = {
+      _id: new mongoose.Types.ObjectId(),
+      role: 'faculty'
+    };
+    const facultyCheck = await canAccessChapter(facultyUser, dmCh2._id);
+    assert.strictEqual(facultyCheck.allowed, true, 'Faculty can access all chapters materials unconditionally');
   });
 });
 

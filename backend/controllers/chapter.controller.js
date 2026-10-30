@@ -4,6 +4,7 @@ const Module = require('../models/Module');
 const Lesson = require('../models/Lesson');
 const Presentation = require('../models/Presentation');
 const Quiz = require('../models/Quiz');
+const LessonFile = require('../models/LessonFile');
 const ChapterProgress = require('../models/ChapterProgress');
 const { canAccessChapter } = require('../services/progress.service');
 const { createAuditLog } = require('../services/audit.service');
@@ -41,6 +42,7 @@ const getChapter = async (req, res, next) => {
       .select('-slides.notes'); // Exclude presenter notes from default student overview
     const quiz = await Quiz.findOne({ chapterId: chapter._id, publicationStatus: 'published' })
       .select('_id title version timeLimitSeconds questionCount passingScore');
+    const files = await LessonFile.find({ chapterId: chapter._id }).select('-storagePath').sort({ createdAt: -1 });
 
     let studentProgress = null;
     if (req.user.role === 'student') {
@@ -62,6 +64,7 @@ const getChapter = async (req, res, next) => {
         isPublished: chapter.isPublished
       },
       hasLesson: Boolean(lesson),
+      lessonFiles: files || [],
       hasPresentation: Boolean(presentation),
       presentationSlideCount: presentation?.slides?.length || 0,
       quiz: quiz || null,

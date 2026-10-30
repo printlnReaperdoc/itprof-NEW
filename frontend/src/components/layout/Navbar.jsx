@@ -114,17 +114,19 @@ const Navbar = () => {
             <FileSpreadsheet size={15} /> {isFaculty ? 'Master Gradebooks' : 'My Grades'}
           </Link>
 
-          <Link
-            to="/answer-keys"
-            className="btn btn-outline"
-            style={{
-              border: isActive('/answer-keys') ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
-              backgroundColor: isActive('/answer-keys') ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
-              color: isActive('/answer-keys') ? '#38bdf8' : '#cbd5e1'
-            }}
-          >
-            <KeyRound size={15} /> Answer Keys
-          </Link>
+          {isFaculty && (
+            <Link
+              to="/answer-keys"
+              className="btn btn-outline"
+              style={{
+                border: isActive('/answer-keys') ? '1px solid rgba(56, 189, 248, 0.4)' : '1px solid transparent',
+                backgroundColor: isActive('/answer-keys') ? 'rgba(56, 189, 248, 0.12)' : 'transparent',
+                color: isActive('/answer-keys') ? '#38bdf8' : '#cbd5e1'
+              }}
+            >
+              <KeyRound size={15} /> Answer Keys
+            </Link>
+          )}
 
           {isFaculty && (
             <Link

@@ -4,6 +4,7 @@ const LessonFile = require('../models/LessonFile');
 const { canAccessChapter } = require('../services/progress.service');
 const { createAuditLog } = require('../services/audit.service');
 const fs = require('fs');
+const path = require('path');
 
 /**
  * Get lesson for a chapter
@@ -169,12 +170,54 @@ const uploadLessonFile = async (req, res, next) => {
       message: 'File uploaded successfully',
       file: {
         id: lessonFile._id,
+        _id: lessonFile._id,
+        chapterId: lessonFile.chapterId,
         originalFilename: lessonFile.originalFilename,
+        storedFilename: lessonFile.storedFilename,
         fileSize: lessonFile.fileSize,
         mimeType: lessonFile.mimeType,
         createdAt: lessonFile.createdAt
       }
     });
+  } catch (err) {
+    next(err);
+  }
+};
+
+/**
+ * Download or stream an uploaded lesson file (PDF, PPT, etc.)
+ */
+const downloadLessonFile = async (req, res, next) => {
+  try {
+    const { fileId } = req.params;
+    const file = await LessonFile.findById(fileId);
+    if (!file) {
+      return res.status(404).json({ success: false, message: 'File not found' });
+    }
+
+    // Access control: verify user can access this chapter
+    const accessCheck = await canAccessChapter(req.user, file.chapterId);
+    if (!accessCheck.allowed) {
+      return res.status(403).json({
+        success: false,
+        message: accessCheck.reason || 'Chapter is locked.',
+        code: 'CHAPTER_LOCKED'
+      });
+    }
+
+    if (!fs.existsSync(file.storagePath)) {
+      return res.status(404).json({ success: false, message: 'File not found in storage' });
+    }
+
+    // Check if inline view requested (e.g. previewing PDF in browser)
+    const isInline = req.query.inline === 'true';
+    if (isInline && file.mimeType === 'application/pdf') {
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(file.originalFilename)}"`);
+      return res.sendFile(path.resolve(file.storagePath));
+    }
+
+    res.download(file.storagePath, file.originalFilename);
   } catch (err) {
     next(err);
   }
@@ -222,6 +265,7 @@ module.exports = {
   getLessonByChapter,
   updateLesson,
   uploadLessonFile,
+  downloadLessonFile,
   deleteLessonFile
 };
 
