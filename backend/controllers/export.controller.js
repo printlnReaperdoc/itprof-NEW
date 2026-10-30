@@ -20,6 +20,10 @@ const {
 } = require('../services/export.service');
 const { getChapterSummaryData } = require('../services/chapterSummary.service');
 const { createAuditLog } = require('../services/audit.service');
+const {
+  isCloudinaryConfigured,
+  uploadBufferToCloudinary
+} = require('../services/cloudinary.service');
 
 /**
  * Export Master Gradebook (Faculty only)
@@ -355,6 +359,25 @@ const exportQuizAnswerKeysPDF = async (req, res, next) => {
       ? `${courses[0].courseCode}_Quiz_Answer_Keys.pdf`
       : 'IT_Prof_Electives_Master_Quiz_Answer_Keys.pdf';
 
+    if (isCloudinaryConfigured()) {
+      try {
+        const cloudUpload = await uploadBufferToCloudinary(pdfBuffer, filename, {
+          folder: 'itprof/exports/answer-keys'
+        });
+        res.setHeader('X-Cloudinary-Url', cloudUpload.secureUrl);
+        if (req.query.uploadOnly === 'true') {
+          return res.json({
+            success: true,
+            message: 'Answer Keys PDF uploaded to Cloudinary successfully',
+            cloudinaryUrl: cloudUpload.secureUrl,
+            publicId: cloudUpload.publicId
+          });
+        }
+      } catch (cloudErr) {
+        console.warn('[Cloudinary] Failed to upload Answer Keys PDF export:', cloudErr.message);
+      }
+    }
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Length', pdfBuffer.length);
@@ -395,6 +418,25 @@ const exportChapterSummaryPDF = async (req, res, next) => {
     });
 
     const filename = `${summaryData.course.courseCode}_Ch${summaryData.chapter.chapterNumber}_Dossier_${summaryData.sorting.sortBy}.pdf`;
+
+    if (isCloudinaryConfigured()) {
+      try {
+        const cloudUpload = await uploadBufferToCloudinary(pdfBuffer, filename, {
+          folder: `itprof/exports/dossiers/${summaryData.course.courseCode}`
+        });
+        res.setHeader('X-Cloudinary-Url', cloudUpload.secureUrl);
+        if (req.query.uploadOnly === 'true') {
+          return res.json({
+            success: true,
+            message: 'Chapter Summary PDF uploaded to Cloudinary successfully',
+            cloudinaryUrl: cloudUpload.secureUrl,
+            publicId: cloudUpload.publicId
+          });
+        }
+      } catch (cloudErr) {
+        console.warn('[Cloudinary] Failed to upload Chapter Dossier PDF export:', cloudErr.message);
+      }
+    }
 
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);

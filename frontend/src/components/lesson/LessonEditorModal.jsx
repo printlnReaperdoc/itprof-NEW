@@ -11,7 +11,8 @@ import {
   AlertCircle,
   Eye,
   RefreshCw,
-  FolderOpen
+  FolderOpen,
+  Cloud
 } from 'lucide-react';
 import { lessonsApi } from '../../api';
 
@@ -388,8 +389,13 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
                           <div style={{ fontSize: '0.88rem', fontWeight: 600, color: '#f8fafc', wordBreak: 'break-all' }}>
                             {file.originalFilename}
                           </div>
-                          <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'var(--font-mono)', marginTop: '0.15rem' }}>
-                            {formatFileSize(file.fileSize)} • Uploaded {new Date(file.createdAt).toLocaleDateString()}
+                          <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'var(--font-mono)', marginTop: '0.15rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            <span>{formatFileSize(file.fileSize)} • Uploaded {new Date(file.createdAt).toLocaleDateString()}</span>
+                            {(file.cloudinaryUrl || file.storageType === 'cloudinary') && (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.2rem', color: '#38bdf8', fontSize: '0.7rem', backgroundColor: 'rgba(56, 189, 248, 0.1)', padding: '0.1rem 0.35rem', borderRadius: '3px' }}>
+                                <Cloud size={10} /> Cloudinary
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>

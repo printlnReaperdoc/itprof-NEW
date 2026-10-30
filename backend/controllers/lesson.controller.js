@@ -3,6 +3,13 @@ const Chapter = require('../models/Chapter');
 const LessonFile = require('../models/LessonFile');
 const { canAccessChapter } = require('../services/progress.service');
 const { createAuditLog } = require('../services/audit.service');
+const {
+  isCloudinaryConfigured,
+  uploadFileToCloudinary,
+  deleteFromCloudinary,
+  streamCloudinaryFile,
+  generateSignedDownloadUrl
+} = require('../services/cloudinary.service');
 const fs = require('fs');
 const path = require('path');
 
@@ -140,6 +147,20 @@ const uploadLessonFile = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Chapter not found' });
     }
 
+    let cloudinaryData = null;
+    if (isCloudinaryConfigured()) {
+      try {
+        const ext = path.extname(req.file.originalname);
+        const baseName = path.parse(req.file.originalname).name.replace(/[^a-zA-Z0-9_-]/g, '_');
+        cloudinaryData = await uploadFileToCloudinary(req.file.path, {
+          folder: `itprof/chapter-materials/ch_${chapter.chapterNumber}`,
+          public_id: `${baseName}_${Date.now()}${ext}`
+        });
+      } catch (cloudErr) {
+        console.warn('[Cloudinary] Upload warning (saved locally as fallback):', cloudErr.message);
+      }
+    }
+
     const lessonFile = new LessonFile({
       chapterId,
       originalFilename: req.file.originalname,
@@ -147,7 +168,11 @@ const uploadLessonFile = async (req, res, next) => {
       storagePath: req.file.path,
       mimeType: req.file.mimetype,
       fileSize: req.file.size,
-      uploadedBy: req.user._id
+      uploadedBy: req.user._id,
+      cloudinaryUrl: cloudinaryData?.secureUrl || null,
+      cloudinaryPublicId: cloudinaryData?.publicId || null,
+      cloudinaryResourceType: cloudinaryData?.resourceType || null,
+      storageType: cloudinaryData ? 'cloudinary' : 'local'
     });
 
     await lessonFile.save();
@@ -160,7 +185,9 @@ const uploadLessonFile = async (req, res, next) => {
       details: {
         chapterId,
         filename: req.file.originalname,
-        size: req.file.size
+        size: req.file.size,
+        storageType: lessonFile.storageType,
+        cloudinaryUrl: lessonFile.cloudinaryUrl
       },
       req
     });
@@ -176,6 +203,8 @@ const uploadLessonFile = async (req, res, next) => {
         storedFilename: lessonFile.storedFilename,
         fileSize: lessonFile.fileSize,
         mimeType: lessonFile.mimeType,
+        cloudinaryUrl: lessonFile.cloudinaryUrl,
+        storageType: lessonFile.storageType,
         createdAt: lessonFile.createdAt
       }
     });
@@ -205,19 +234,51 @@ const downloadLessonFile = async (req, res, next) => {
       });
     }
 
-    if (!fs.existsSync(file.storagePath)) {
-      return res.status(404).json({ success: false, message: 'File not found in storage' });
-    }
-
-    // Check if inline view requested (e.g. previewing PDF in browser)
     const isInline = req.query.inline === 'true';
-    if (isInline && file.mimeType === 'application/pdf') {
-      res.setHeader('Content-Type', 'application/pdf');
-      res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(file.originalFilename)}"`);
-      return res.sendFile(path.resolve(file.storagePath));
+    const contentDisposition = `${isInline ? 'inline' : 'attachment'}; filename="${encodeURIComponent(file.originalFilename)}"`;
+    const resolvedMime = file.mimeType || (file.originalFilename?.toLowerCase().endsWith('.pdf') ? 'application/pdf' : 'application/octet-stream');
+
+    // 1. If asset is in Cloudinary, stream it directly using authenticated backend stream
+    // This bypasses the Cloudinary "show_original_customer_untrusted" public delivery block for unverified accounts
+    if (file.cloudinaryPublicId) {
+      try {
+        await streamCloudinaryFile(file.cloudinaryPublicId, res, {
+          resourceType: file.cloudinaryResourceType || 'raw',
+          contentType: resolvedMime,
+          contentDisposition,
+          attachment: !isInline
+        });
+        return;
+      } catch (streamErr) {
+        console.warn(`[Cloudinary Stream] Falling back for ${file.originalFilename}:`, streamErr.message);
+
+        // Fallback A: Authenticated signed download URL redirect
+        const signedUrl = generateSignedDownloadUrl(file.cloudinaryPublicId, {
+          resourceType: file.cloudinaryResourceType || 'raw',
+          attachment: !isInline
+        });
+        if (signedUrl) {
+          return res.redirect(signedUrl);
+        }
+      }
     }
 
-    res.download(file.storagePath, file.originalFilename);
+    // 2. Local disk file fallback
+    if (file.storagePath && fs.existsSync(file.storagePath)) {
+      if (isInline && resolvedMime === 'application/pdf') {
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="${encodeURIComponent(file.originalFilename)}"`);
+        return res.sendFile(path.resolve(file.storagePath));
+      }
+      return res.download(file.storagePath, file.originalFilename);
+    }
+
+    // 3. Fallback to public Cloudinary URL if available
+    if (file.cloudinaryUrl) {
+      return res.redirect(file.cloudinaryUrl);
+    }
+
+    return res.status(404).json({ success: false, message: 'File not found in storage' });
   } catch (err) {
     next(err);
   }
@@ -234,9 +295,18 @@ const deleteLessonFile = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'File not found' });
     }
 
-    // Unlink physical file
-    if (fs.existsSync(file.storagePath)) {
-      fs.unlinkSync(file.storagePath);
+    // Delete from Cloudinary if stored there
+    if (file.cloudinaryPublicId) {
+      await deleteFromCloudinary(file.cloudinaryPublicId, file.cloudinaryResourceType || 'raw');
+    }
+
+    // Unlink physical file if exists locally
+    if (file.storagePath && fs.existsSync(file.storagePath)) {
+      try {
+        fs.unlinkSync(file.storagePath);
+      } catch (err) {
+        console.warn(`[Storage] Could not unlink ${file.storagePath}:`, err.message);
+      }
     }
 
     await LessonFile.findByIdAndDelete(fileId);
@@ -247,7 +317,8 @@ const deleteLessonFile = async (req, res, next) => {
       entityType: 'LessonFile',
       entityId: fileId,
       details: {
-        filename: file.originalFilename
+        filename: file.originalFilename,
+        cloudinaryPublicId: file.cloudinaryPublicId
       },
       req
     });

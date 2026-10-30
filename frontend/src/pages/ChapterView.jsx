@@ -28,7 +28,8 @@ import {
   Clock,
   FolderOpen,
   FileDown,
-  Eye
+  Eye,
+  Cloud
 } from 'lucide-react';
 
 const formatFileSize = (bytes) => {
@@ -575,8 +576,13 @@ const ChapterView = () => {
                             >
                               {file.originalFilename}
                             </div>
-                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'var(--font-mono)', marginTop: '0.2rem' }}>
-                              {formatFileSize(file.fileSize)} • {new Date(file.createdAt).toLocaleDateString()}
+                            <div style={{ fontSize: '0.75rem', color: '#94a3b8', fontFamily: 'var(--font-mono)', marginTop: '0.2rem', display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                              <span>{formatFileSize(file.fileSize)} • {new Date(file.createdAt).toLocaleDateString()}</span>
+                              {(file.cloudinaryUrl || file.storageType === 'cloudinary') && (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.2rem', color: '#38bdf8', fontSize: '0.7rem', backgroundColor: 'rgba(56, 189, 248, 0.1)', padding: '0.1rem 0.35rem', borderRadius: '3px' }}>
+                                  <Cloud size={10} /> Cloudinary
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>

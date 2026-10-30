@@ -31,6 +31,23 @@ const lessonFileSchema = new mongoose.Schema(
     uploadedBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
+    },
+    cloudinaryUrl: {
+      type: String,
+      default: null
+    },
+    cloudinaryPublicId: {
+      type: String,
+      default: null
+    },
+    cloudinaryResourceType: {
+      type: String,
+      default: null
+    },
+    storageType: {
+      type: String,
+      enum: ['cloudinary', 'local'],
+      default: 'local'
     }
   },
   {
