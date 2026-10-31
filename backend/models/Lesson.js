@@ -31,6 +31,20 @@ const lessonSchema = new mongoose.Schema(
       type: [String],
       default: []
     },
+    citations: [
+      {
+        citationText: { type: String, required: true },
+        title: { type: String },
+        authors: { type: String },
+        year: { type: Number },
+        url: { type: String, required: true },
+        sourceType: {
+          type: String,
+          enum: ['book', 'journal', 'standard', 'whitepaper', 'website'],
+          default: 'book'
+        }
+      }
+    ],
     publicationStatus: {
       type: String,
       enum: ['draft', 'published'],

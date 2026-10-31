@@ -12,7 +12,9 @@ import {
   Eye,
   RefreshCw,
   FolderOpen,
-  Cloud
+  Cloud,
+  BookOpen,
+  ExternalLink
 } from 'lucide-react';
 import { lessonsApi } from '../../api';
 
@@ -56,10 +58,12 @@ const getFileTypeDetails = (filename = '', mimeType = '') => {
 };
 
 const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
-  const [activeTab, setActiveTab] = useState('files'); // 'files' | 'content'
+  const [activeTab, setActiveTab] = useState('files'); // 'files' | 'content' | 'citations'
   const [overview, setOverview] = useState('');
   const [objectives, setObjectives] = useState('');
   const [content, setContent] = useState('');
+  const [citations, setCitations] = useState([]);
+  const [newCit, setNewCit] = useState({ citationText: '', url: '', title: '', sourceType: 'book' });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -81,6 +85,9 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
       if (res.files) {
         setFiles(res.files);
       }
+      if (res.lesson?.citations) {
+        setCitations(res.lesson.citations);
+      }
     } catch (e) {
       console.warn('Could not load chapter files:', e.message);
     } finally {
@@ -93,6 +100,7 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
       setOverview(lesson.overview || '');
       setObjectives(Array.isArray(lesson.learningObjectives) ? lesson.learningObjectives.join('\n') : '');
       setContent(lesson.content || '');
+      setCitations(Array.isArray(lesson.citations) ? lesson.citations : []);
     }
     if (isOpen && chapterId) {
       loadLessonFiles();
@@ -100,6 +108,20 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
       setUploadSuccess(null);
     }
   }, [lesson, isOpen, chapterId]);
+
+  const handleAddCitation = () => {
+    if (!newCit.citationText.trim() || !newCit.url.trim()) {
+      setError('Both citation text and valid link URL are required for APA 7th citations.');
+      return;
+    }
+    setCitations([...citations, { ...newCit }]);
+    setNewCit({ citationText: '', url: '', title: '', sourceType: 'book' });
+    setError(null);
+  };
+
+  const handleDeleteCitation = (index) => {
+    setCitations(citations.filter((_, i) => i !== index));
+  };
 
   const handleSaveContent = async () => {
     setSaving(true);
@@ -113,7 +135,8 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
       await lessonsApi.update(chapterId, {
         overview,
         learningObjectives,
-        content
+        content,
+        citations
       });
 
       if (onSaved) onSaved();
@@ -227,6 +250,20 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
           }}
         >
           <FileText size={15} /> Lesson Syllabus & Notes
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('citations')}
+          className={`btn btn-sm ${activeTab === 'citations' ? 'btn-primary' : 'btn-outline'}`}
+          style={{
+            fontSize: '0.82rem',
+            padding: '0.45rem 1rem',
+            background: activeTab === 'citations' ? 'linear-gradient(135deg, #0284c7 0%, #38bdf8 100%)' : 'transparent',
+            color: activeTab === 'citations' ? '#ffffff' : 'var(--text-muted)'
+          }}
+        >
+          <BookOpen size={15} /> APA 7th Citations ({citations.length})
         </button>
       </div>
 
@@ -492,6 +529,155 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
         </div>
       )}
 
+      {/* TAB 3: APA 7TH CITATIONS & REFERENCES */}
+      {activeTab === 'citations' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+          {/* Add New Citation Card */}
+          <div
+            style={{
+              padding: '1.25rem',
+              backgroundColor: '#0a0f1d',
+              border: '1px solid rgba(56, 189, 248, 0.3)',
+              borderRadius: 'var(--radius-sm)'
+            }}
+          >
+            <h4 style={{ fontSize: '0.88rem', fontWeight: 700, color: '#38bdf8', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <Plus size={15} /> Add Academic Citation (APA 7th)
+            </h4>
+
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>SHORT TITLE</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={newCit.title}
+                  onChange={(e) => setNewCit({ ...newCit, title: e.target.value })}
+                  placeholder="e.g. Data Mining Concepts"
+                  style={{ fontSize: '0.82rem' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>SOURCE TYPE</label>
+                <select
+                  className="form-input"
+                  value={newCit.sourceType}
+                  onChange={(e) => setNewCit({ ...newCit, sourceType: e.target.value })}
+                  style={{ fontSize: '0.82rem' }}
+                >
+                  <option value="book">Canonical Textbook</option>
+                  <option value="journal">Peer-Reviewed Journal</option>
+                  <option value="standard">Technical Standard (NIST/IEEE/ISO)</option>
+                  <option value="whitepaper">Technical Whitepaper</option>
+                  <option value="website">Authoritative Website</option>
+                </select>
+              </div>
+
+              <div className="form-group" style={{ gridColumn: '1 / -1', marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>DOI OR AUTHORITATIVE URL (REQUIRED)</label>
+                <input
+                  type="url"
+                  className="form-input"
+                  value={newCit.url}
+                  onChange={(e) => setNewCit({ ...newCit, url: e.target.value })}
+                  placeholder="https://doi.org/10.xxxx or https://..."
+                  style={{ fontSize: '0.82rem', fontFamily: 'var(--font-mono)' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ gridColumn: '1 / -1', marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>APA 7TH CITATION TEXT (REQUIRED)</label>
+                <textarea
+                  className="form-textarea"
+                  rows={2}
+                  value={newCit.citationText}
+                  onChange={(e) => setNewCit({ ...newCit, citationText: e.target.value })}
+                  placeholder="Author, A. A. (Year). Title of work. Publisher. URL"
+                  style={{ fontSize: '0.82rem' }}
+                />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleAddCitation}
+              className="btn btn-primary btn-sm"
+              style={{ fontSize: '0.78rem', marginTop: '0.5rem' }}
+            >
+              <Plus size={14} /> Add Citation to List
+            </button>
+          </div>
+
+          {/* Current Citations List */}
+          <div>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <BookOpen size={16} color="#38bdf8" /> Current Chapter Citations ({citations.length})
+            </h4>
+
+            {citations.length === 0 ? (
+              <div style={{ padding: '1.5rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem', backgroundColor: 'rgba(255, 255, 255, 0.02)', borderRadius: 'var(--radius-sm)' }}>
+                No citations added yet. Use the form above to add references.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                {citations.map((c, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      padding: '0.85rem 1rem',
+                      backgroundColor: '#0c1322',
+                      border: '1px solid rgba(255, 255, 255, 0.08)',
+                      borderRadius: 'var(--radius-sm)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      gap: '0.75rem'
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '0.82rem', color: '#f1f5f9', lineHeight: 1.6 }}>
+                        <strong style={{ color: '#38bdf8', marginRight: '0.35rem' }}>[{i + 1}]</strong>
+                        {c.citationText}
+                      </div>
+                      {c.url && (
+                        <a
+                          href={c.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                            color: '#38bdf8',
+                            fontSize: '0.75rem',
+                            fontFamily: 'var(--font-mono)',
+                            textDecoration: 'none',
+                            marginTop: '0.35rem'
+                          }}
+                        >
+                          <ExternalLink size={11} /> {c.url}
+                        </a>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteCitation(i)}
+                      className="btn btn-outline btn-sm"
+                      style={{ color: '#f87171', borderColor: 'rgba(239, 68, 68, 0.3)', padding: '0.3rem 0.5rem' }}
+                      title="Remove citation"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Modal Actions Footer */}
       <div
         style={{
@@ -512,9 +698,9 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
           <button type="button" onClick={onClose} className="btn btn-outline">
             Close
           </button>
-          {activeTab === 'content' && (
+          {(activeTab === 'content' || activeTab === 'citations') && (
             <button type="button" onClick={handleSaveContent} disabled={saving} className="btn btn-primary">
-              <Save size={16} /> {saving ? 'Saving...' : 'Save Lesson Content'}
+              <Save size={16} /> {saving ? 'Saving...' : 'Save Lesson & Citations'}
             </button>
           )}
         </div>

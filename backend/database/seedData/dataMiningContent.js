@@ -4,6 +4,8 @@
  * Chapters 1 to 12
  */
 
+const { dataMiningCitations, formatMarkdownReferences } = require('./academicCitations');
+
 const dataMiningContent = [
   // CHAPTER 1
   {
@@ -40,7 +42,7 @@ Data mining algorithms are broadly bifurcated into two primary paradigms:
 Modern data mining systems must handle:
 - **High Dimensionality (Curse of Dimensionality):** Exponential volume growth causing sparsity in metric spaces.
 - **Scalability & Latency:** Real-time stream processing where data arrives faster than batch disks can persist.
-- **Privacy & Security:** Preventing reconstruction attacks and complying with privacy mandates (GDPR, HIPAA).`,
+- **Privacy & Security:** Preventing reconstruction attacks and complying with privacy mandates (GDPR, HIPAA).` + formatMarkdownReferences(dataMiningCitations[1]),
       keyConcepts: [
         { term: 'KDD Process', definition: 'The end-to-end multi-step methodology for extracting valid, novel, useful, and understandable knowledge from data.' },
         { term: 'Predictive Modeling', definition: 'Supervised algorithmic techniques that predict target attribute values based on feature vectors.' },
@@ -51,7 +53,8 @@ Modern data mining systems must handle:
         'Review the sequential order and feedback loops in the 7-step KDD process.',
         'Understand why traditional relational SQL queries are insufficient for pattern discovery.',
         'Identify which data mining task applies to real-world scenarios (e.g., fraud detection vs. customer segmentation).'
-      ]
+      ],
+      citations: dataMiningCitations[1]
     },
     presentation: {
       title: 'Chapter 1: Introduction to Data Mining',
@@ -176,7 +179,7 @@ Disparate feature scales bias distance-based algorithms (such as k-Means and k-N
   $$v' = \\frac{v - min_A}{max_A - min_A}(new\\_max_A - new\\_min_A) + new\\_min_A$$
 - **Z-Score Standardization:** Center at mean 0 with standard deviation 1:
   $$v' = \\frac{v - \\bar{A}}{\\sigma_A}$$
-- **Principal Component Analysis (PCA):** Orthogonal linear transformation that projects correlated $d$-dimensional space into $k < d$ linearly uncorrelated dimensions (principal components) maximizing variance.`,
+- **Principal Component Analysis (PCA):** Orthogonal linear transformation that projects correlated $d$-dimensional space into $k < d$ linearly uncorrelated dimensions (principal components) maximizing variance.` + formatMarkdownReferences(dataMiningCitations[2]),
       keyConcepts: [
         { term: 'Z-Score Standardization', definition: 'Transforming numeric values so the resulting distribution has zero mean and unit variance.' },
         { term: 'Interquartile Range (IQR)', definition: 'The difference between the third and first quartiles (Q3 - Q1), representing the middle 50% of data.' },
@@ -187,7 +190,8 @@ Disparate feature scales bias distance-based algorithms (such as k-Means and k-N
         'Practice calculating Min-Max and Z-Score transformations on given numeric samples.',
         'Distinguish interval attributes from ratio attributes based on whether a true zero exists.',
         'Understand the mechanics of binning methods for noise smoothing.'
-      ]
+      ],
+      citations: dataMiningCitations[2]
     },
     presentation: {
       title: 'Chapter 2: Data, Measurements, and Preprocessing',
@@ -310,7 +314,7 @@ A data cube models data in multiple dimensions. At its foundation:
 - **Drill-Down:** Navigates from higher-level summary to lower-level granular detail.
 - **Slice:** Performs a selection on one dimension of a cube, resulting in a sub-cube.
 - **Dice:** Performs a selection on two or more dimensions simultaneously.
-- **Pivot (Rotate):** Rotates the data axes in visualization to provide alternative perspectives.`,
+- **Pivot (Rotate):** Rotates the data axes in visualization to provide alternative perspectives.` + formatMarkdownReferences(dataMiningCitations[3]),
       keyConcepts: [
         { term: 'Star Schema', definition: 'A relational schema containing a central fact table surrounded by denormalized dimension tables.' },
         { term: 'Data Cube', definition: 'A multidimensional array enabling fast aggregate queries across multiple dimensional hierarchies.' },
@@ -321,7 +325,8 @@ A data cube models data in multiple dimensions. At its foundation:
         'Be able to draw and differentiate a Star Schema from a Snowflake Schema.',
         'Identify which OLAP operation is performed when a user zooms from monthly sales to daily sales.',
         'Calculate the number of cuboids in an n-dimensional lattice.'
-      ]
+      ],
+      citations: dataMiningCitations[3]
     },
     presentation: {
       title: 'Chapter 3: Data Warehousing and OLAP',
@@ -452,7 +457,7 @@ Conversely, if an itemset is infrequent, all of its supersets are guaranteed to 
 Apriori requires up to $k$ database scans and generates millions of candidate combinations. **FP-Growth** solves this by compressing the transaction database into a compact **FP-Tree** (Frequent Pattern Tree) and mining it recursively:
 1. First scan: Count frequency of 1-items and sort in descending order.
 2. Second scan: Insert transactions into the prefix tree, sharing common prefixes.
-3. Mine FP-Tree using conditional pattern bases and conditional FP-trees without generating candidate itemsets.`,
+3. Mine FP-Tree using conditional pattern bases and conditional FP-trees without generating candidate itemsets.` + formatMarkdownReferences(dataMiningCitations[4]),
       keyConcepts: [
         { term: 'Support', definition: 'The fraction of transactions in the dataset that contain a specific itemset.' },
         { term: 'Confidence', definition: 'The conditional probability that transaction contains itemset B given that it contains A.' },
@@ -463,7 +468,8 @@ Apriori requires up to $k$ database scans and generates millions of candidate co
         'Calculate Support, Confidence, and Lift for a given transactional table.',
         'Apply candidate generation (join and prune step) to derive C3 from L2.',
         'Explain why FP-Growth is faster than Apriori on dense datasets.'
-      ]
+      ],
+      citations: dataMiningCitations[4]
     },
     presentation: {
       title: 'Chapter 4: Pattern Mining: Basic Concepts',
@@ -620,6 +626,7 @@ const advancedDataMiningChapters = [
 
 // Helper to generate rich curriculum records for remaining Data Mining chapters
 advancedDataMiningChapters.forEach(ch => {
+  const citations = dataMiningCitations[ch.chapterNumber] || [];
   dataMiningContent.push({
     chapterNumber: ch.chapterNumber,
     lesson: {
@@ -641,7 +648,7 @@ Real-world industrial applications include enterprise cyber-defense, autonomous 
 
 ## 4. Summary and Review Checklist
 - Review mathematical formulas, objective metrics, and trade-offs.
-- Understand failure modes, computational bottlenecks, and mitigation strategies.`,
+- Understand failure modes, computational bottlenecks, and mitigation strategies.` + formatMarkdownReferences(citations),
       keyConcepts: [
         { term: `${ch.title} Core`, definition: `Fundamental mechanism governing ${ch.title}.` },
         { term: 'Evaluation Benchmark', definition: 'Quantitative metric used to validate model quality and statistical significance.' },
@@ -651,7 +658,8 @@ Real-world industrial applications include enterprise cyber-defense, autonomous 
         `Understand the core terminology and mathematical intuition of ${ch.title}.`,
         'Analyze how parameter choices affect model bias, variance, and convergence.',
         'Review the corresponding 20-question quiz to verify technical mastery.'
-      ]
+      ],
+      citations
     },
     presentation: {
       title: `Chapter ${ch.chapterNumber}: ${ch.title}`,

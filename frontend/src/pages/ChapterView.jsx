@@ -29,7 +29,10 @@ import {
   FolderOpen,
   FileDown,
   Eye,
-  Cloud
+  Cloud,
+  ExternalLink,
+  Copy,
+  Check
 } from 'lucide-react';
 
 const formatFileSize = (bytes) => {
@@ -67,6 +70,15 @@ const ChapterView = () => {
   const [overrideData, setOverrideData] = useState({ studentId: '', status: 'available', reason: '' });
   const [overrideError, setOverrideError] = useState(null);
   const [overrideSuccess, setOverrideSuccess] = useState(null);
+  const [copiedCitationIndex, setCopiedCitationIndex] = useState(null);
+
+  const handleCopyCitation = (text, idx) => {
+    if (navigator?.clipboard?.writeText) {
+      navigator.clipboard.writeText(text);
+      setCopiedCitationIndex(idx);
+      setTimeout(() => setCopiedCitationIndex(null), 2500);
+    }
+  };
 
   const loadChapterData = async () => {
     try {
@@ -647,6 +659,159 @@ const ChapterView = () => {
             <div style={{ fontSize: '0.96rem', lineHeight: 1.85, color: '#e2e8f0', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
               {lesson.content}
             </div>
+
+            {/* Academic References & Citations (APA 7th Edition) */}
+            {lesson.citations && lesson.citations.length > 0 && (
+              <div
+                style={{
+                  marginTop: '2.5rem',
+                  padding: '1.75rem',
+                  backgroundColor: '#0a0f1d',
+                  border: '1px solid rgba(56, 189, 248, 0.25)',
+                  borderRadius: 'var(--radius-md)',
+                  boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)'
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <BookOpen size={20} color="#38bdf8" />
+                    <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc', margin: 0 }}>
+                      Academic References & Citations
+                    </h3>
+                  </div>
+                  <span
+                    className="badge"
+                    style={{
+                      backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                      color: '#38bdf8',
+                      border: '1px solid rgba(56, 189, 248, 0.35)',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.72rem',
+                      fontWeight: 700
+                    }}
+                  >
+                    APA 7th Edition Format
+                  </span>
+                </div>
+
+                <p style={{ fontSize: '0.85rem', color: '#94a3b8', marginBottom: '1.25rem', lineHeight: 1.6 }}>
+                  The instructional concepts, algorithms, and models presented in this chapter are drawn from peer-reviewed literature, official technical standards, and canonical textbooks. All citations are formatted according to APA 7th Edition guidelines with direct clickable references:
+                </p>
+
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                  {lesson.citations.map((cit, idx) => {
+                    const sourceTypeLabels = {
+                      book: 'Canonical Textbook',
+                      journal: 'Peer-Reviewed Journal',
+                      standard: 'Technical Standard / Spec',
+                      whitepaper: 'Technical Whitepaper',
+                      website: 'Authoritative Documentation'
+                    };
+
+                    return (
+                      <div
+                        key={idx}
+                        style={{
+                          padding: '1rem 1.25rem',
+                          backgroundColor: '#0c1322',
+                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          borderRadius: 'var(--radius-sm)',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          gap: '0.75rem',
+                          transition: 'all 0.2s ease'
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <span
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifySelf: 'center',
+                                width: '22px',
+                                height: '22px',
+                                borderRadius: '50%',
+                                backgroundColor: 'rgba(56, 189, 248, 0.15)',
+                                color: '#38bdf8',
+                                fontSize: '0.75rem',
+                                fontFamily: 'var(--font-mono)',
+                                fontWeight: 700
+                              }}
+                            >
+                              {idx + 1}
+                            </span>
+                            <span
+                              className="badge"
+                              style={{
+                                fontSize: '0.68rem',
+                                fontFamily: 'var(--font-mono)',
+                                backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                color: '#cbd5e1',
+                                border: '1px solid rgba(255, 255, 255, 0.1)'
+                              }}
+                            >
+                              {sourceTypeLabels[cit.sourceType] || 'Academic Source'}
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleCopyCitation(cit.citationText, idx)}
+                            className="btn btn-outline btn-sm"
+                            style={{ fontSize: '0.72rem', padding: '0.2rem 0.55rem', gap: '0.35rem' }}
+                            title="Copy APA 7th citation to clipboard"
+                          >
+                            {copiedCitationIndex === idx ? (
+                              <>
+                                <Check size={12} color="#4ade80" /> <span style={{ color: '#4ade80' }}>Copied!</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy size={12} /> <span>Copy Citation</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
+
+                        <div style={{ fontSize: '0.88rem', color: '#f1f5f9', lineHeight: 1.7, paddingLeft: '0.25rem' }}>
+                          {cit.citationText}
+                        </div>
+
+                        {cit.url && (
+                          <div style={{ paddingTop: '0.25rem' }}>
+                            <a
+                              href={cit.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                gap: '0.4rem',
+                                color: '#38bdf8',
+                                fontSize: '0.8rem',
+                                fontFamily: 'var(--font-mono)',
+                                textDecoration: 'none',
+                                wordBreak: 'break-all',
+                                padding: '0.3rem 0.65rem',
+                                backgroundColor: 'rgba(56, 189, 248, 0.08)',
+                                border: '1px solid rgba(56, 189, 248, 0.25)',
+                                borderRadius: '4px',
+                                transition: 'all 0.15s ease'
+                              }}
+                              title={`Open ${cit.url} in new tab`}
+                            >
+                              <ExternalLink size={12} />
+                              <span>{cit.url}</span>
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Key Concepts Sidebar */}
@@ -732,6 +897,49 @@ const ChapterView = () => {
                     <li key={i}>{sg}</li>
                   ))}
                 </ul>
+              </div>
+            )}
+
+            {/* Quick Academic Citations Sidebar Widget */}
+            {lesson.citations && lesson.citations.length > 0 && (
+              <div className="card" style={{ padding: '1.5rem', borderColor: 'rgba(56, 189, 248, 0.25)' }}>
+                <h4 style={{ fontSize: '0.95rem', fontWeight: 700, color: '#38bdf8', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                  <BookOpen size={16} /> Key Sources ({lesson.citations.length})
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  {lesson.citations.map((c, i) => (
+                    <a
+                      key={i}
+                      href={c.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        padding: '0.6rem 0.75rem',
+                        backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                        border: '1px solid rgba(255, 255, 255, 0.06)',
+                        borderRadius: 'var(--radius-sm)',
+                        textDecoration: 'none',
+                        color: '#f8fafc',
+                        fontSize: '0.78rem',
+                        gap: '0.25rem',
+                        transition: 'all 0.15s ease'
+                      }}
+                      title={c.citationText}
+                    >
+                      <div style={{ fontWeight: 600, color: '#e2e8f0', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.4rem' }}>
+                        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {c.title || `Source ${i + 1}`}
+                        </span>
+                        <ExternalLink size={12} color="#38bdf8" />
+                      </div>
+                      <div style={{ fontSize: '0.7rem', color: '#94a3b8', fontFamily: 'var(--font-mono)' }}>
+                        {c.authors ? `${c.authors.split(',')[0]} (${c.year || 'n.d.'})` : 'APA 7th Link'}
+                      </div>
+                    </a>
+                  ))}
+                </div>
               </div>
             )}
           </div>

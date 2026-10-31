@@ -4,6 +4,8 @@
  * Chapters 1 to 12
  */
 
+const { cloudComputingCitations, formatMarkdownReferences } = require('./academicCitations');
+
 const cloudComputingContent = [
   // CHAPTER 1
   {
@@ -33,7 +35,7 @@ Traditional enterprise IT required massive Capital Expenditures (**CapEx**) for 
 Cloud computing converts fixed CapEx into variable Operational Expenditures (**OpEx**):
 - **Utility Pricing:** Pay-as-you-go based on actual consumption.
 - **Elastic Scalability:** Dynamic scaling prevents over-provisioning and under-provisioning.
-- **Global Footprint:** Deploying infrastructure across worldwide availability zones in minutes.`,
+- **Global Footprint:** Deploying infrastructure across worldwide availability zones in minutes.` + formatMarkdownReferences(cloudComputingCitations[1]),
       keyConcepts: [
         { term: 'On-Demand Self-Service', definition: 'Provisioning compute and storage resources autonomously without human administrative intervention.' },
         { term: 'Rapid Elasticity', definition: 'The ability to dynamically scale resources up/out or down/in based on real-time load.' },
@@ -44,7 +46,8 @@ Cloud computing converts fixed CapEx into variable Operational Expenditures (**O
         'Memorize all 5 NIST essential characteristics.',
         'Understand the difference between vertical scaling (scaling up) and horizontal scaling (scaling out).',
         'Analyze the economic trade-offs between on-premises data centers and public cloud infrastructure.'
-      ]
+      ],
+      citations: cloudComputingCitations[1]
     },
     presentation: {
       title: 'Chapter 1: Introduction to Cloud Computing',
@@ -158,7 +161,7 @@ Cloud architectures favor loosely coupled microservices communicating via lightw
   * **Recovery Point Objective (RPO):** Maximum acceptable amount of data loss measured in time.
 - **Cloud Resiliency Patterns:**
   * *Circuit Breaker:* Prevents cascading failures when downstream microservices degrade.
-  * *Bulkhead:* Isolates critical resource pools to prevent one failed subsystem from crashing the entire application.`,
+  * *Bulkhead:* Isolates critical resource pools to prevent one failed subsystem from crashing the entire application.` + formatMarkdownReferences(cloudComputingCitations[2]),
       keyConcepts: [
         { term: 'Availability Zone (AZ)', definition: 'One or more discrete, physically separated data centers with independent power and cooling within a Region.' },
         { term: 'Circuit Breaker Pattern', definition: 'A software resilience design pattern that detects failures and halts cascading requests to failing services.' },
@@ -169,7 +172,8 @@ Cloud architectures favor loosely coupled microservices communicating via lightw
         'Differentiate between multi-tenancy at the VM level vs. database schema level.',
         'Explain why Availability Zones within a region have independent power supplies and flood plains.',
         'Contrast RTO and RPO in disaster recovery planning.'
-      ]
+      ],
+      citations: cloudComputingCitations[2]
     },
     presentation: {
       title: 'Chapter 2: Cloud Architecture and Core Concepts',
@@ -287,7 +291,7 @@ Cloud architectures favor loosely coupled microservices communicating via lightw
 ## 2. The Cloud Shared Responsibility Model
 Security and compliance in the cloud is a shared partnership:
 - **Security OF the Cloud (Provider Responsibility):** Physical security of data centers, hardware firmware, hypervisors, and core networking facilities.
-- **Security IN the Cloud (Customer Responsibility):** Customer data encryption, IAM user credentials, OS patch management (in IaaS), firewall configuration, and application security.`,
+- **Security IN the Cloud (Customer Responsibility):** Customer data encryption, IAM user credentials, OS patch management (in IaaS), firewall configuration, and application security.` + formatMarkdownReferences(cloudComputingCitations[3]),
       keyConcepts: [
         { term: 'IaaS', definition: 'Infrastructure as a Service: On-demand provisioning of raw virtual compute, storage, and networking.' },
         { term: 'PaaS', definition: 'Platform as a Service: Managed application runtime where developers deploy code without managing servers or OS.' },
@@ -298,7 +302,8 @@ Security and compliance in the cloud is a shared partnership:
         'Know who is responsible for operating system patching in IaaS vs. PaaS.',
         'Identify whether a service like Heroku or AWS EC2 is IaaS or PaaS.',
         'Map security responsibilities across the three service models.'
-      ]
+      ],
+      citations: cloudComputingCitations[3]
     },
     presentation: {
       title: 'Chapter 3: Cloud Service Models (IaaS, PaaS, SaaS)',
@@ -451,6 +456,7 @@ const advancedCloudChapters = [
 ];
 
 advancedCloudChapters.forEach(ch => {
+  const citations = cloudComputingCitations[ch.chapterNumber] || [];
   cloudComputingContent.push({
     chapterNumber: ch.chapterNumber,
     lesson: {
@@ -472,7 +478,7 @@ Top-tier hyper-scalers and global enterprises utilize these principles to sustai
 
 ## 4. Chapter Summary and Review Checklist
 - Review all technical terms, network protocols, and architectural trade-offs.
-- Prepare for the 20-question multiple-choice assessment.`,
+- Prepare for the 20-question multiple-choice assessment.` + formatMarkdownReferences(citations),
       keyConcepts: [
         { term: `${ch.title} Principle`, definition: `The foundational architecture governing ${ch.title}.` },
         { term: 'High Availability (HA)', definition: 'System design ensuring operational continuity during hardware or network failures.' },
@@ -482,7 +488,8 @@ Top-tier hyper-scalers and global enterprises utilize these principles to sustai
         `Master the core architectural components of ${ch.title}.`,
         'Understand the operational trade-offs between cost, latency, and security.',
         'Review the corresponding 20-question quiz to test conceptual mastery.'
-      ]
+      ],
+      citations
     },
     presentation: {
       title: `Chapter ${ch.chapterNumber}: ${ch.title}`,

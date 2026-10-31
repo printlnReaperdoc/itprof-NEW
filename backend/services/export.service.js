@@ -503,6 +503,28 @@ const generateChapterSummaryPDF = async ({ summaryData, requestedBy }) => {
           });
           doc.y += 6;
         }
+
+        if (lesson.citations && lesson.citations.length > 0) {
+          if (doc.y > 660) { doc.addPage(); doc.y = 40; }
+          doc.fillColor('#0f172a').fontSize(8).font('Helvetica-Bold').text('Academic References & Citations (APA 7th Edition):', 45, doc.y);
+          doc.y += 12;
+          lesson.citations.forEach(cit => {
+            if (doc.y > 740) { doc.addPage(); doc.y = 40; }
+            doc.fillColor('#0369a1').font('Helvetica-Bold').fontSize(7).text('[APA 7th] ', 48, doc.y, { continued: true });
+            doc.fillColor('#334155').font('Helvetica').fontSize(7).text(cit.citationText, { width: 490 });
+            doc.y += doc.heightOfString(cit.citationText, { width: 490 }) + 2;
+
+            if (cit.url) {
+              doc.fillColor('#0284c7').font('Helvetica').fontSize(6.5).text(cit.url, 58, doc.y, {
+                link: cit.url,
+                underline: true
+              });
+              doc.y += 10;
+            }
+            doc.y += 3;
+          });
+          doc.y += 6;
+        }
       }
 
       // Check page break

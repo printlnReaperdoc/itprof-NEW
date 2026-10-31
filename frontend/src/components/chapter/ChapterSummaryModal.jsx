@@ -18,7 +18,8 @@ import {
   Layers,
   ChevronDown,
   ChevronUp,
-  FolderOpen
+  FolderOpen,
+  ExternalLink
 } from 'lucide-react';
 
 const ChapterSummaryModal = ({ isOpen, onClose, chapterId, chapterNumber, chapterTitle }) => {
@@ -534,6 +535,77 @@ const ChapterSummaryModal = ({ isOpen, onClose, chapterId, chapterNumber, chapte
                           <li key={i}>{sg}</li>
                         ))}
                       </ul>
+                    </div>
+                  )}
+
+                  {/* Academic Citations (APA 7th Edition) */}
+                  {data.lesson.citations?.length > 0 && (
+                    <div
+                      style={{
+                        backgroundColor: '#070d19',
+                        border: '1px solid rgba(56, 189, 248, 0.25)',
+                        padding: '1.15rem 1.35rem',
+                        borderRadius: 'var(--radius-sm)'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <h4 style={{ fontSize: '0.88rem', fontWeight: 700, color: '#38bdf8', margin: 0, display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                          <BookOpen size={16} /> Academic References & Citations ({data.lesson.citations.length})
+                        </h4>
+                        <span
+                          className="badge"
+                          style={{
+                            fontSize: '0.68rem',
+                            backgroundColor: 'rgba(56, 189, 248, 0.12)',
+                            color: '#38bdf8',
+                            border: '1px solid rgba(56, 189, 248, 0.3)',
+                            fontFamily: 'var(--font-mono)'
+                          }}
+                        >
+                          APA 7th Edition
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                        {data.lesson.citations.map((c, i) => (
+                          <div
+                            key={i}
+                            style={{
+                              padding: '0.65rem 0.85rem',
+                              backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                              border: '1px solid rgba(255, 255, 255, 0.06)',
+                              borderRadius: 'var(--radius-sm)',
+                              display: 'flex',
+                              flexDirection: 'column',
+                              gap: '0.35rem'
+                            }}
+                          >
+                            <div style={{ fontSize: '0.8rem', color: '#f1f5f9', lineHeight: 1.6 }}>
+                              <span style={{ color: '#38bdf8', fontWeight: 700, marginRight: '0.4rem', fontFamily: 'var(--font-mono)' }}>[{i + 1}]</span>
+                              {c.citationText}
+                            </div>
+                            {c.url && (
+                              <a
+                                href={c.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.35rem',
+                                  color: '#38bdf8',
+                                  fontSize: '0.74rem',
+                                  fontFamily: 'var(--font-mono)',
+                                  textDecoration: 'none',
+                                  width: 'fit-content'
+                                }}
+                              >
+                                <ExternalLink size={11} /> {c.url}
+                              </a>
+                            )}
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
