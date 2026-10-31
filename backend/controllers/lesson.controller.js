@@ -75,6 +75,7 @@ const updateLesson = async (req, res, next) => {
       keyConcepts,
       studyGuide,
       citations,
+      videos,
       publicationStatus
     } = req.body;
 
@@ -95,6 +96,7 @@ const updateLesson = async (req, res, next) => {
         keyConcepts: keyConcepts || [],
         studyGuide: studyGuide || [],
         citations: citations || [],
+        videos: videos || [],
         publicationStatus: publicationStatus || 'published',
         createdBy: req.user._id,
         updatedBy: req.user._id
@@ -106,6 +108,7 @@ const updateLesson = async (req, res, next) => {
       if (keyConcepts !== undefined) lesson.keyConcepts = keyConcepts;
       if (studyGuide !== undefined) lesson.studyGuide = studyGuide;
       if (citations !== undefined) lesson.citations = citations;
+      if (videos !== undefined) lesson.videos = videos;
       if (publicationStatus !== undefined) lesson.publicationStatus = publicationStatus;
       lesson.updatedBy = req.user._id;
     }

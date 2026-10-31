@@ -62,6 +62,16 @@ describe('IT Professional Electives LMS Test Suite', () => {
     const lessons = await Lesson.find({ publicationStatus: 'published' });
     assert.strictEqual(lessons.length, 24, 'All 24 chapters must have published lessons');
 
+    for (const l of lessons) {
+      assert.ok(l.citations.length >= 4, `Lesson for chapter ${l.chapterId} must have at least 4 citations`);
+      const wikiCit = l.citations.find(c => c.sourceType === 'wikipedia');
+      assert.ok(wikiCit, `Lesson for chapter ${l.chapterId} must have an authoritative Wikipedia citation`);
+      assert.ok(wikiCit.url.includes('wikipedia.org'), 'Wikipedia citation must link to wikipedia.org');
+      assert.ok(l.videos && l.videos.length >= 1, `Lesson for chapter ${l.chapterId} must have at least 1 educational YouTube video`);
+      assert.ok(l.videos[0].youtubeId, 'Educational video must have a valid YouTube ID');
+      assert.ok(l.videos[0].youtubeUrl.includes('youtube.com'), 'Educational video must link to youtube.com');
+    }
+
     const presentations = await Presentation.find({ publicationStatus: 'published' });
     assert.strictEqual(presentations.length, 24, 'All 24 chapters must have published presentations');
 

@@ -525,6 +525,27 @@ const generateChapterSummaryPDF = async ({ summaryData, requestedBy }) => {
           });
           doc.y += 6;
         }
+
+        if (lesson.videos && lesson.videos.length > 0) {
+          if (doc.y > 680) { doc.addPage(); doc.y = 40; }
+          doc.fillColor('#0f172a').fontSize(8).font('Helvetica-Bold').text('Curated Educational Video Lectures (YouTube):', 45, doc.y);
+          doc.y += 12;
+          lesson.videos.forEach(vid => {
+            if (doc.y > 740) { doc.addPage(); doc.y = 40; }
+            doc.fillColor('#dc2626').font('Helvetica-Bold').fontSize(7).text('[YouTube Media] ', 48, doc.y, { continued: true });
+            doc.fillColor('#334155').font('Helvetica').fontSize(7).text(`${vid.title} (${vid.channel || 'Educational Resource'})`, { width: 490 });
+            doc.y += 10;
+            if (vid.youtubeUrl) {
+              doc.fillColor('#0284c7').font('Helvetica').fontSize(6.5).text(vid.youtubeUrl, 58, doc.y, {
+                link: vid.youtubeUrl,
+                underline: true
+              });
+              doc.y += 10;
+            }
+            doc.y += 2;
+          });
+          doc.y += 6;
+        }
       }
 
       // Check page break

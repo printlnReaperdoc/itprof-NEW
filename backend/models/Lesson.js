@@ -40,9 +40,18 @@ const lessonSchema = new mongoose.Schema(
         url: { type: String, required: true },
         sourceType: {
           type: String,
-          enum: ['book', 'journal', 'standard', 'whitepaper', 'website'],
+          enum: ['book', 'journal', 'standard', 'whitepaper', 'website', 'wikipedia'],
           default: 'book'
         }
+      }
+    ],
+    videos: [
+      {
+        title: { type: String, required: true },
+        youtubeUrl: { type: String, required: true },
+        youtubeId: { type: String, required: true },
+        channel: { type: String },
+        description: { type: String }
       }
     ],
     publicationStatus: {

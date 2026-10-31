@@ -19,7 +19,8 @@ import {
   ChevronDown,
   ChevronUp,
   FolderOpen,
-  ExternalLink
+  ExternalLink,
+  Play
 } from 'lucide-react';
 
 const ChapterSummaryModal = ({ isOpen, onClose, chapterId, chapterNumber, chapterTitle }) => {
@@ -567,7 +568,99 @@ const ChapterSummaryModal = ({ isOpen, onClose, chapterId, chapterNumber, chapte
                       </div>
 
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                        {data.lesson.citations.map((c, i) => (
+                        {data.lesson.citations.map((c, i) => {
+                          const isWiki = c.sourceType === 'wikipedia' || c.url?.includes('wikipedia.org');
+                          return (
+                            <div
+                              key={i}
+                              style={{
+                                padding: '0.65rem 0.85rem',
+                                backgroundColor: isWiki ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255, 255, 255, 0.02)',
+                                border: isWiki ? '1px solid rgba(255, 255, 255, 0.15)' : '1px solid rgba(255, 255, 255, 0.06)',
+                                borderRadius: 'var(--radius-sm)',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.35rem'
+                              }}
+                            >
+                              <div style={{ fontSize: '0.8rem', color: '#f1f5f9', lineHeight: 1.6 }}>
+                                <span style={{ color: isWiki ? '#ffffff' : '#38bdf8', fontWeight: 700, marginRight: '0.4rem', fontFamily: 'var(--font-mono)' }}>[{i + 1}]</span>
+                                {isWiki && (
+                                  <span
+                                    style={{
+                                      display: 'inline-block',
+                                      fontSize: '0.65rem',
+                                      padding: '0.1rem 0.35rem',
+                                      backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                                      color: '#ffffff',
+                                      borderRadius: '3px',
+                                      fontFamily: 'var(--font-mono)',
+                                      fontWeight: 700,
+                                      marginRight: '0.45rem'
+                                    }}
+                                  >
+                                    [Wikipedia APA 7th]
+                                  </span>
+                                )}
+                                {c.citationText}
+                              </div>
+                              {c.url && (
+                                <a
+                                  href={c.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  style={{
+                                    display: 'inline-flex',
+                                    alignItems: 'center',
+                                    gap: '0.35rem',
+                                    color: isWiki ? '#ffffff' : '#38bdf8',
+                                    fontSize: '0.74rem',
+                                    fontFamily: 'var(--font-mono)',
+                                    textDecoration: 'none',
+                                    width: 'fit-content'
+                                  }}
+                                >
+                                  <ExternalLink size={11} /> {c.url}
+                                </a>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Curated Video Lectures (YouTube) */}
+                  {data.lesson.videos?.length > 0 && (
+                    <div
+                      style={{
+                        backgroundColor: '#0a0f1d',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        padding: '1.15rem 1.35rem',
+                        borderRadius: 'var(--radius-sm)',
+                        marginTop: '1.25rem'
+                      }}
+                    >
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                        <h4 style={{ fontSize: '0.88rem', fontWeight: 700, color: '#f87171', margin: 0, display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                          <Play size={15} /> Curated Video Lectures ({data.lesson.videos.length})
+                        </h4>
+                        <span
+                          className="badge"
+                          style={{
+                            fontSize: '0.68rem',
+                            backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                            color: '#f87171',
+                            border: '1px solid rgba(239, 68, 68, 0.3)',
+                            fontFamily: 'var(--font-mono)'
+                          }}
+                        >
+                          YouTube Educational Media
+                        </span>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                        {data.lesson.videos.map((v, i) => (
                           <div
                             key={i}
                             style={{
@@ -580,27 +673,30 @@ const ChapterSummaryModal = ({ isOpen, onClose, chapterId, chapterNumber, chapte
                               gap: '0.35rem'
                             }}
                           >
-                            <div style={{ fontSize: '0.8rem', color: '#f1f5f9', lineHeight: 1.6 }}>
-                              <span style={{ color: '#38bdf8', fontWeight: 700, marginRight: '0.4rem', fontFamily: 'var(--font-mono)' }}>[{i + 1}]</span>
-                              {c.citationText}
+                            <div style={{ fontSize: '0.82rem', color: '#f1f5f9', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                              <span style={{ color: '#ef4444' }}>▶</span> {v.title}
                             </div>
-                            {c.url && (
+                            <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>
+                              Channel: <strong style={{ color: '#e2e8f0' }}>{v.channel || 'Educational Resource'}</strong>
+                              {v.description && <span> • {v.description}</span>}
+                            </div>
+                            {v.youtubeUrl && (
                               <a
-                                href={c.url}
+                                href={v.youtubeUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 style={{
                                   display: 'inline-flex',
                                   alignItems: 'center',
                                   gap: '0.35rem',
-                                  color: '#38bdf8',
+                                  color: '#fca5a5',
                                   fontSize: '0.74rem',
                                   fontFamily: 'var(--font-mono)',
                                   textDecoration: 'none',
                                   width: 'fit-content'
                                 }}
                               >
-                                <ExternalLink size={11} /> {c.url}
+                                <ExternalLink size={11} /> {v.youtubeUrl}
                               </a>
                             )}
                           </div>

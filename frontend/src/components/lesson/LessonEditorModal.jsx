@@ -14,7 +14,9 @@ import {
   FolderOpen,
   Cloud,
   BookOpen,
-  ExternalLink
+  ExternalLink,
+  Play,
+  Video
 } from 'lucide-react';
 import { lessonsApi } from '../../api';
 
@@ -57,13 +59,24 @@ const getFileTypeDetails = (filename = '', mimeType = '') => {
   };
 };
 
+const extractYouTubeId = (url = '') => {
+  if (!url) return '';
+  const trimmed = url.trim();
+  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = trimmed.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : '';
+};
+
 const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
-  const [activeTab, setActiveTab] = useState('files'); // 'files' | 'content' | 'citations'
+  const [activeTab, setActiveTab] = useState('files'); // 'files' | 'content' | 'citations' | 'videos'
   const [overview, setOverview] = useState('');
   const [objectives, setObjectives] = useState('');
   const [content, setContent] = useState('');
   const [citations, setCitations] = useState([]);
   const [newCit, setNewCit] = useState({ citationText: '', url: '', title: '', sourceType: 'book' });
+  const [videos, setVideos] = useState([]);
+  const [newVid, setNewVid] = useState({ title: '', youtubeUrl: '', channel: '', description: '' });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -88,6 +101,9 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
       if (res.lesson?.citations) {
         setCitations(res.lesson.citations);
       }
+      if (res.lesson?.videos) {
+        setVideos(res.lesson.videos);
+      }
     } catch (e) {
       console.warn('Could not load chapter files:', e.message);
     } finally {
@@ -101,6 +117,7 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
       setObjectives(Array.isArray(lesson.learningObjectives) ? lesson.learningObjectives.join('\n') : '');
       setContent(lesson.content || '');
       setCitations(Array.isArray(lesson.citations) ? lesson.citations : []);
+      setVideos(Array.isArray(lesson.videos) ? lesson.videos : []);
     }
     if (isOpen && chapterId) {
       loadLessonFiles();
@@ -123,6 +140,34 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
     setCitations(citations.filter((_, i) => i !== index));
   };
 
+  const handleAddVideo = () => {
+    if (!newVid.title.trim() || !newVid.youtubeUrl.trim()) {
+      setError('Both video title and YouTube URL are required.');
+      return;
+    }
+    const yId = extractYouTubeId(newVid.youtubeUrl);
+    if (!yId) {
+      setError('Could not extract a valid 11-character YouTube video ID from the provided URL.');
+      return;
+    }
+    setVideos([
+      ...videos,
+      {
+        title: newVid.title.trim(),
+        youtubeUrl: newVid.youtubeUrl.trim().startsWith('http') ? newVid.youtubeUrl.trim() : `https://www.youtube.com/watch?v=${yId}`,
+        youtubeId: yId,
+        channel: newVid.channel.trim() || 'Educational Resource',
+        description: newVid.description.trim()
+      }
+    ]);
+    setNewVid({ title: '', youtubeUrl: '', channel: '', description: '' });
+    setError(null);
+  };
+
+  const handleDeleteVideo = (index) => {
+    setVideos(videos.filter((_, i) => i !== index));
+  };
+
   const handleSaveContent = async () => {
     setSaving(true);
     setError(null);
@@ -136,7 +181,8 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
         overview,
         learningObjectives,
         content,
-        citations
+        citations,
+        videos
       });
 
       if (onSaved) onSaved();
@@ -264,6 +310,20 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
           }}
         >
           <BookOpen size={15} /> APA 7th Citations ({citations.length})
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('videos')}
+          className={`btn btn-sm ${activeTab === 'videos' ? 'btn-primary' : 'btn-outline'}`}
+          style={{
+            fontSize: '0.82rem',
+            padding: '0.45rem 1rem',
+            background: activeTab === 'videos' ? 'linear-gradient(135deg, #dc2626 0%, #ef4444 100%)' : 'transparent',
+            color: activeTab === 'videos' ? '#ffffff' : 'var(--text-muted)'
+          }}
+        >
+          <Play size={15} /> Educational Videos ({videos.length})
         </button>
       </div>
 
@@ -571,6 +631,7 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
                   <option value="standard">Technical Standard (NIST/IEEE/ISO)</option>
                   <option value="whitepaper">Technical Whitepaper</option>
                   <option value="website">Authoritative Website</option>
+                  <option value="wikipedia">Wikipedia Encyclopedic Reference</option>
                 </select>
               </div>
 
@@ -678,6 +739,159 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
         </div>
       )}
 
+      {/* TAB 4: EDUCATIONAL VIDEO LECTURES (YOUTUBE EMBEDS) */}
+      {activeTab === 'videos' && (
+        <div>
+          {/* Add New Video Form */}
+          <div
+            style={{
+              padding: '1.25rem',
+              backgroundColor: '#0a0f1d',
+              border: '1px solid rgba(239, 68, 68, 0.35)',
+              borderRadius: 'var(--radius-sm)',
+              marginBottom: '1.5rem'
+            }}
+          >
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f87171', marginBottom: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <Play size={16} /> Link Educational Video Lecture (YouTube)
+            </h4>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.75rem' }}>
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>VIDEO TITLE (REQUIRED)</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={newVid.title}
+                  onChange={(e) => setNewVid({ ...newVid, title: e.target.value })}
+                  placeholder="e.g. What is Cloud Computing?"
+                  style={{ fontSize: '0.82rem' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>CHANNEL / INSTRUCTOR</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={newVid.channel}
+                  onChange={(e) => setNewVid({ ...newVid, channel: e.target.value })}
+                  placeholder="e.g. IBM Technology, StatQuest"
+                  style={{ fontSize: '0.82rem' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ gridColumn: '1 / -1', marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>YOUTUBE URL OR VIDEO ID (REQUIRED)</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={newVid.youtubeUrl}
+                  onChange={(e) => setNewVid({ ...newVid, youtubeUrl: e.target.value })}
+                  placeholder="https://www.youtube.com/watch?v=... or 11-char Video ID"
+                  style={{ fontSize: '0.82rem', fontFamily: 'var(--font-mono)' }}
+                />
+              </div>
+
+              <div className="form-group" style={{ gridColumn: '1 / -1', marginBottom: 0 }}>
+                <label className="form-label" style={{ fontSize: '0.75rem' }}>BRIEF SUMMARY / EDUCATIONAL DESCRIPTION</label>
+                <textarea
+                  className="form-textarea"
+                  rows={2}
+                  value={newVid.description}
+                  onChange={(e) => setNewVid({ ...newVid, description: e.target.value })}
+                  placeholder="Key concepts explained in this video..."
+                  style={{ fontSize: '0.82rem' }}
+                />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleAddVideo}
+              className="btn btn-primary btn-sm"
+              style={{ fontSize: '0.78rem', backgroundColor: '#dc2626', borderColor: '#dc2626' }}
+            >
+              <Plus size={14} /> Add Video to Chapter
+            </button>
+          </div>
+
+          {/* Current Videos List */}
+          <div>
+            <h4 style={{ fontSize: '0.9rem', fontWeight: 700, color: '#f8fafc', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              <Video size={16} color="#f87171" /> Attached Educational Videos ({videos.length})
+            </h4>
+
+            {videos.length === 0 ? (
+              <div style={{ padding: '1.5rem', textAlign: 'center', color: '#94a3b8', fontSize: '0.85rem', backgroundColor: 'rgba(255, 255, 255, 0.02)', borderRadius: 'var(--radius-sm)' }}>
+                No video lectures linked yet. Add YouTube video links using the form above.
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {videos.map((v, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      padding: '0.85rem 1rem',
+                      backgroundColor: '#0c1322',
+                      border: '1px solid rgba(239, 68, 68, 0.25)',
+                      borderRadius: 'var(--radius-sm)',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                      gap: '0.75rem'
+                    }}
+                  >
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#f8fafc', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                        <span style={{ color: '#ef4444' }}>▶</span> {v.title}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#cbd5e1', marginTop: '0.2rem', fontFamily: 'var(--font-mono)' }}>
+                        Channel: <strong>{v.channel || 'Educational Resource'}</strong> • ID: <code>{v.youtubeId}</code>
+                      </div>
+                      {v.description && (
+                        <div style={{ fontSize: '0.78rem', color: '#94a3b8', marginTop: '0.25rem' }}>
+                          {v.description}
+                        </div>
+                      )}
+                      {v.youtubeUrl && (
+                        <a
+                          href={v.youtubeUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          style={{
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '0.35rem',
+                            color: '#fca5a5',
+                            fontSize: '0.75rem',
+                            fontFamily: 'var(--font-mono)',
+                            textDecoration: 'none',
+                            marginTop: '0.35rem'
+                          }}
+                        >
+                          <ExternalLink size={11} /> {v.youtubeUrl}
+                        </a>
+                      )}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteVideo(i)}
+                      className="btn btn-outline btn-sm"
+                      style={{ color: '#f87171', borderColor: 'rgba(239, 68, 68, 0.3)', padding: '0.3rem 0.5rem' }}
+                      title="Remove video"
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Modal Actions Footer */}
       <div
         style={{
@@ -698,9 +912,9 @@ const LessonEditorModal = ({ isOpen, onClose, lesson, chapterId, onSaved }) => {
           <button type="button" onClick={onClose} className="btn btn-outline">
             Close
           </button>
-          {(activeTab === 'content' || activeTab === 'citations') && (
+          {(activeTab === 'content' || activeTab === 'citations' || activeTab === 'videos') && (
             <button type="button" onClick={handleSaveContent} disabled={saving} className="btn btn-primary">
-              <Save size={16} /> {saving ? 'Saving...' : 'Save Lesson & Citations'}
+              <Save size={16} /> {saving ? 'Saving...' : 'Save Lesson & Media'}
             </button>
           )}
         </div>

@@ -1,10 +1,12 @@
 /**
  * Official Academic References & Citations in APA 7th Edition Format
+ * and Curated Educational Video Lectures (YouTube)
  * Covering All 24 Chapters across:
  * - IT Professional Elective 2: Data Mining (ITEP411-T, Chapters 1-12)
  * - IT Professional Elective 4: Cloud Computing (ITEP413-T, Chapters 1-12)
  *
  * Each citation adheres strictly to APA 7th Edition standards with authentic clickable DOIs/URLs.
+ * Each chapter includes verified Wikipedia encyclopedic sources and curated educational YouTube video lectures.
  */
 
 const dataMiningCitations = {
@@ -32,6 +34,14 @@ const dataMiningCitations = {
       year: 2007,
       url: 'https://doi.org/10.2165/00002018-200730070-00010',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Data mining. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Data_mining',
+      title: 'Data mining',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Data_mining',
+      sourceType: 'wikipedia'
     }
   ],
   2: [
@@ -58,6 +68,14 @@ const dataMiningCitations = {
       year: 2016,
       url: 'https://doi.org/10.1098/rsta.2015.0202',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Data pre-processing. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Data_pre-processing',
+      title: 'Data pre-processing',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Data_pre-processing',
+      sourceType: 'wikipedia'
     }
   ],
   3: [
@@ -84,6 +102,14 @@ const dataMiningCitations = {
       year: 2005,
       url: 'https://www.wiley.com/en-us/Building+the+Data+Warehouse%2C+4th+Edition-p-9780764599446',
       sourceType: 'book'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Data warehouse. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Data_warehouse',
+      title: 'Data warehouse',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Data_warehouse',
+      sourceType: 'wikipedia'
     }
   ],
   4: [
@@ -104,30 +130,38 @@ const dataMiningCitations = {
       sourceType: 'journal'
     },
     {
-      citationText: 'Hipp, J., Güntzer, U., & Nakhaeizadeh, G. (2000). Algorithms for association rule mining—A general survey and comparison. ACM SIGKDD Explorations Newsletter, 2(1), 58–64.',
-      title: 'Algorithms for association rule mining—A general survey and comparison',
-      authors: 'Hipp, J., Güntzer, U., & Nakhaeizadeh, G.',
+      citationText: 'Zaki, M. J. (2000). Scalable algorithms for association mining. IEEE Transactions on Knowledge and Data Engineering, 12(3), 372–390.',
+      title: 'Scalable algorithms for association mining',
+      authors: 'Zaki, M. J.',
       year: 2000,
-      url: 'https://doi.org/10.1145/360402.360421',
+      url: 'https://doi.org/10.1109/69.846291',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Association rule learning. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Association_rule_learning',
+      title: 'Association rule learning',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Association_rule_learning',
+      sourceType: 'wikipedia'
     }
   ],
   5: [
     {
-      citationText: 'Srikant, R., & Agrawal, R. (1996). Mining sequential patterns: Generalizations and performance improvements. In P. Apers, M. Bouzeghoub, & G. Gardarin (Eds.), Advances in Database Technology — EDBT \'96 (pp. 3–17). Springer.',
+      citationText: 'Pei, J., Han, J., Mortazavi-Asl, B., Pinto, H., Chen, Q., Dayal, U., & Hsu, M.-C. (2004). PrefixSpan: Mining sequential patterns by prefix-projected growth. IEEE Transactions on Knowledge and Data Engineering, 16(11), 1424–1440.',
+      title: 'PrefixSpan: Mining sequential patterns by prefix-projected growth',
+      authors: 'Pei, J., Han, J., Mortazavi-Asl, B., Pinto, H., Chen, Q., Dayal, U., & Hsu, M.-C.',
+      year: 2004,
+      url: 'https://doi.org/10.1109/TKDE.2004.77',
+      sourceType: 'journal'
+    },
+    {
+      citationText: 'Srikant, R., & Agrawal, R. (1996). Mining sequential patterns: Generalizations and performance improvements. In Advances in Database Technology — EDBT \'96 (pp. 1–17). Springer.',
       title: 'Mining sequential patterns: Generalizations and performance improvements',
       authors: 'Srikant, R., & Agrawal, R.',
       year: 1996,
       url: 'https://doi.org/10.1007/BFb0014140',
-      sourceType: 'journal'
-    },
-    {
-      citationText: 'Pei, J., Han, J., Mortazavi-Asl, B., Pinto, H., Chen, Q., Dayal, U., & Hsu, M.-C. (2001). PrefixSpan: Mining sequential patterns efficiently by prefix-projected pattern growth. In Proceedings of the 17th International Conference on Data Engineering (ICDE \'01) (pp. 215–224). IEEE.',
-      title: 'PrefixSpan: Mining sequential patterns efficiently by prefix-projected pattern growth',
-      authors: 'Pei, J., Han, J., Mortazavi-Asl, B., et al.',
-      year: 2001,
-      url: 'https://doi.org/10.1109/ICDE.2001.914830',
-      sourceType: 'journal'
+      sourceType: 'book'
     },
     {
       citationText: 'Zaki, M. J. (2001). SPADE: An efficient algorithm for mining frequent sequences. Machine Learning, 42(1), 31–60.',
@@ -136,16 +170,24 @@ const dataMiningCitations = {
       year: 2001,
       url: 'https://doi.org/10.1023/A:1007652502315',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Sequential pattern mining. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Sequential_pattern_mining',
+      title: 'Sequential pattern mining',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Sequential_pattern_mining',
+      sourceType: 'wikipedia'
     }
   ],
   6: [
     {
-      citationText: 'Quinlan, J. R. (1986). Induction of decision trees. Machine Learning, 1(1), 81–106.',
-      title: 'Induction of decision trees',
+      citationText: 'Quinlan, J. R. (1993). C4.5: Programs for machine learning. Morgan Kaufmann Publishers.',
+      title: 'C4.5: Programs for machine learning',
       authors: 'Quinlan, J. R.',
-      year: 1986,
-      url: 'https://doi.org/10.1007/BF00116251',
-      sourceType: 'journal'
+      year: 1993,
+      url: 'https://doi.org/10.1016/C2009-0-27926-2',
+      sourceType: 'book'
     },
     {
       citationText: 'Breiman, L., Friedman, J. H., Olshen, R. A., & Stone, C. J. (1984). Classification and regression trees. Wadsworth & Brooks/Cole Advanced Books & Software.',
@@ -156,12 +198,20 @@ const dataMiningCitations = {
       sourceType: 'book'
     },
     {
-      citationText: 'Rish, I. (2001). An empirical study of the naive Bayes classifier. In IJCAI 2001 Workshop on Empirical Methods in Artificial Intelligence (Vol. 3, No. 22, pp. 41–46). IBM.',
-      title: 'An empirical study of the naive Bayes classifier',
-      authors: 'Rish, I.',
-      year: 2001,
-      url: 'https://www.cc.gatech.edu/classes/AY2016/cs4476_fall/readings/Rish01.pdf',
-      sourceType: 'whitepaper'
+      citationText: 'Domingos, P., & Pazzani, M. (1997). On the optimality of the simple Bayesian classifier under zero-one loss. Machine Learning, 29(2), 103–130.',
+      title: 'On the optimality of the simple Bayesian classifier under zero-one loss',
+      authors: 'Domingos, P., & Pazzani, M.',
+      year: 1997,
+      url: 'https://doi.org/10.1023/A:1007413511361',
+      sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Statistical classification. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Statistical_classification',
+      title: 'Statistical classification',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Statistical_classification',
+      sourceType: 'wikipedia'
     }
   ],
   7: [
@@ -182,12 +232,20 @@ const dataMiningCitations = {
       sourceType: 'journal'
     },
     {
-      citationText: 'Freund, Y., & Schapire, R. E. (1997). A decision-theoretic generalization of on-line learning and an application to boosting. Journal of Computer and System Sciences, 55(1), 119–139.',
-      title: 'A decision-theoretic generalization of on-line learning and an application to boosting',
-      authors: 'Freund, Y., & Schapire, R. E.',
-      year: 1997,
-      url: 'https://doi.org/10.1006/jcss.1997.1504',
+      citationText: 'Chen, T., & Guestrin, C. (2016). XGBoost: A scalable tree boosting system. In Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining (pp. 785–794). ACM.',
+      title: 'XGBoost: A scalable tree boosting system',
+      authors: 'Chen, T., & Guestrin, C.',
+      year: 2016,
+      url: 'https://doi.org/10.1145/2939672.2939785',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Ensemble learning. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Ensemble_learning',
+      title: 'Ensemble learning',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Ensemble_learning',
+      sourceType: 'wikipedia'
     }
   ],
   8: [
@@ -214,17 +272,17 @@ const dataMiningCitations = {
       year: 1990,
       url: 'https://doi.org/10.1002/9780470316801',
       sourceType: 'book'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Cluster analysis. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Cluster_analysis',
+      title: 'Cluster analysis',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Cluster_analysis',
+      sourceType: 'wikipedia'
     }
   ],
   9: [
-    {
-      citationText: 'Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. Journal of Computational and Applied Mathematics, 20, 53–65.',
-      title: 'Silhouettes: A graphical aid to the interpretation and validation of cluster analysis',
-      authors: 'Rousseeuw, P. J.',
-      year: 1987,
-      url: 'https://doi.org/10.1016/0377-0427(87)90125-7',
-      sourceType: 'journal'
-    },
     {
       citationText: 'Dempster, A. P., Laird, N. M., & Rubin, D. B. (1977). Maximum likelihood from incomplete data via the EM algorithm. Journal of the Royal Statistical Society: Series B (Methodological), 39(1), 1–22.',
       title: 'Maximum likelihood from incomplete data via the EM algorithm',
@@ -234,12 +292,28 @@ const dataMiningCitations = {
       sourceType: 'journal'
     },
     {
-      citationText: 'Wang, W., Yang, J., & Muntz, R. (1997). STING: A statistical information grid approach to spatial data mining. In Proceedings of the 23rd International Conference on Very Large Data Bases (VLDB \'97) (pp. 186–195). Morgan Kaufmann.',
-      title: 'STING: A statistical information grid approach to spatial data mining',
-      authors: 'Wang, W., Yang, J., & Muntz, R.',
-      year: 1997,
-      url: 'https://dl.acm.org/doi/10.5555/645923.671005',
+      citationText: 'Rousseeuw, P. J. (1987). Silhouettes: A graphical aid to the interpretation and validation of cluster analysis. Journal of Computational and Applied Mathematics, 20, 53–65.',
+      title: 'Silhouettes: A graphical aid to the interpretation and validation of cluster analysis',
+      authors: 'Rousseeuw, P. J.',
+      year: 1987,
+      url: 'https://doi.org/10.1016/0377-0427(87)90125-7',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'Agrawal, R., Gehrke, J., Gunopulos, D., & Raghavan, P. (1998). Automatic subspace clustering of high dimensional data for data mining applications. ACM SIGMOD Record, 27(2), 94–105.',
+      title: 'Automatic subspace clustering of high dimensional data for data mining applications',
+      authors: 'Agrawal, R., Gehrke, J., Gunopulos, D., & Raghavan, P.',
+      year: 1998,
+      url: 'https://doi.org/10.1145/276305.276314',
+      sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). DBSCAN. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/DBSCAN',
+      title: 'DBSCAN',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/DBSCAN',
+      sourceType: 'wikipedia'
     }
   ],
   10: [
@@ -260,15 +334,31 @@ const dataMiningCitations = {
       sourceType: 'journal'
     },
     {
-      citationText: 'Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). Attention is all you need. In Advances in Neural Information Processing Systems (NeurIPS 2017) (Vol. 30, pp. 5998–6008). Curran Associates.',
+      citationText: 'Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). Attention is all you need. In Advances in Neural Information Processing Systems (NeurIPS 2017) (Vol. 30). Curran Associates, Inc.',
       title: 'Attention is all you need',
-      authors: 'Vaswani, A., Shazeer, N., Parmar, N., et al.',
+      authors: 'Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I.',
       year: 2017,
       url: 'https://doi.org/10.48550/arXiv.1706.03762',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Deep learning. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Deep_learning',
+      title: 'Deep learning',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Deep_learning',
+      sourceType: 'wikipedia'
     }
   ],
   11: [
+    {
+      citationText: 'Chandola, V., Banerjee, A., & Kumar, V. (2009). Anomaly detection: A survey. ACM Computing Surveys, 41(3), Article 15.',
+      title: 'Anomaly detection: A survey',
+      authors: 'Chandola, V., Banerjee, A., & Kumar, V.',
+      year: 2009,
+      url: 'https://doi.org/10.1145/1541880.1541882',
+      sourceType: 'journal'
+    },
     {
       citationText: 'Breunig, M. M., Kriegel, H.-P., Ng, R. T., & Sander, J. (2000). LOF: Identifying density-based local outliers. ACM SIGMOD Record, 29(2), 93–104.',
       title: 'LOF: Identifying density-based local outliers',
@@ -278,7 +368,7 @@ const dataMiningCitations = {
       sourceType: 'journal'
     },
     {
-      citationText: 'Liu, F. T., Ting, K. M., & Zhou, Z.-H. (2008). Isolation forest. In Eighth IEEE International Conference on Data Mining (ICDM \'08) (pp. 413–422). IEEE.',
+      citationText: 'Liu, F. T., Ting, K. M., & Zhou, Z.-H. (2008). Isolation forest. In 2008 Eighth IEEE International Conference on Data Mining (pp. 413–422). IEEE.',
       title: 'Isolation forest',
       authors: 'Liu, F. T., Ting, K. M., & Zhou, Z.-H.',
       year: 2008,
@@ -286,12 +376,12 @@ const dataMiningCitations = {
       sourceType: 'journal'
     },
     {
-      citationText: 'Chandola, V., Banerjee, A., & Kumar, V. (2009). Anomaly detection: A survey. ACM Computing Surveys, 41(3), Article 15.',
-      title: 'Anomaly detection: A survey',
-      authors: 'Chandola, V., Banerjee, A., & Kumar, V.',
-      year: 2009,
-      url: 'https://doi.org/10.1145/1541880.1541882',
-      sourceType: 'journal'
+      citationText: 'Wikipedia contributors. (2024). Anomaly detection. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Anomaly_detection',
+      title: 'Anomaly detection',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Anomaly_detection',
+      sourceType: 'wikipedia'
     }
   ],
   12: [
@@ -304,20 +394,28 @@ const dataMiningCitations = {
       sourceType: 'journal'
     },
     {
-      citationText: 'Dwork, C. (2008). Differential privacy: A survey of results. In M. Agrawal, D. Du, Z. Duan, & A. Li (Eds.), Theory and Applications of Models of Computation (TAMC 2008) (pp. 1–19). Springer.',
+      citationText: 'Dwork, C. (2008). Differential privacy: A survey of results. In International Conference on Theory and Applications of Models of Computation (pp. 1–19). Springer.',
       title: 'Differential privacy: A survey of results',
       authors: 'Dwork, C.',
       year: 2008,
       url: 'https://doi.org/10.1007/978-3-540-79228-4_1',
+      sourceType: 'book'
+    },
+    {
+      citationText: 'Zaharia, M., Xin, R. S., Wendell, P., Das, T., Armbrust, M., Dave, A., Meng, X., Rosen, J., Venkataraman, S., Franklin, M. J., Ghodsi, A., Gonzalez, J., Shenker, S., & Stoica, I. (2016). Apache Spark: A unified engine for big data processing. Communications of the ACM, 59(11), 56–65.',
+      title: 'Apache Spark: A unified engine for big data processing',
+      authors: 'Zaharia, M. et al.',
+      year: 2016,
+      url: 'https://doi.org/10.1145/2934664',
       sourceType: 'journal'
     },
     {
-      citationText: 'McMahan, B., Moore, E., Ramage, D., Hampson, S., & y Arcas, B. A. (2017). Communication-efficient learning of deep networks from decentralized data. In Artificial Intelligence and Statistics (AISTATS 2017) (pp. 1273–1282). PMLR.',
-      title: 'Communication-efficient learning of deep networks from decentralized data',
-      authors: 'McMahan, B., Moore, E., Ramage, D., Hampson, S., & y Arcas, B. A.',
-      year: 2017,
-      url: 'https://proceedings.mlr.press/v54/mcmahan17a.html',
-      sourceType: 'journal'
+      citationText: 'Wikipedia contributors. (2024). Explainable artificial intelligence. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Explainable_artificial_intelligence',
+      title: 'Explainable artificial intelligence',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Explainable_artificial_intelligence',
+      sourceType: 'wikipedia'
     }
   ]
 };
@@ -325,7 +423,7 @@ const dataMiningCitations = {
 const cloudComputingCitations = {
   1: [
     {
-      citationText: 'Mell, P., & Grance, T. (2011). The NIST definition of cloud computing (Special Publication 800-145). National Institute of Standards and Technology.',
+      citationText: 'Mell, P., & Grance, T. (2011). The NIST definition of cloud computing (NIST Special Publication 800-145). National Institute of Standards and Technology.',
       title: 'The NIST definition of cloud computing',
       authors: 'Mell, P., & Grance, T.',
       year: 2011,
@@ -335,7 +433,7 @@ const cloudComputingCitations = {
     {
       citationText: 'Armbrust, M., Fox, A., Griffith, R., Joseph, A. D., Katz, R., Konwinski, A., Lee, G., Patterson, D., Rabkin, A., Stoica, I., & Zaharia, M. (2010). A view of cloud computing. Communications of the ACM, 53(4), 50–58.',
       title: 'A view of cloud computing',
-      authors: 'Armbrust, M., Fox, A., Griffith, R., et al.',
+      authors: 'Armbrust, M., Fox, A., Griffith, R., Joseph, A. D., Katz, R., Konwinski, A., Lee, G., Patterson, D., Rabkin, A., Stoica, I., & Zaharia, M.',
       year: 2010,
       url: 'https://doi.org/10.1145/1721654.1721672',
       sourceType: 'journal'
@@ -347,6 +445,14 @@ const cloudComputingCitations = {
       year: 2009,
       url: 'https://doi.org/10.1016/j.future.2008.12.001',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Cloud computing. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Cloud_computing',
+      title: 'Cloud computing',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Cloud_computing',
+      sourceType: 'wikipedia'
     }
   ],
   2: [
@@ -355,7 +461,7 @@ const cloudComputingCitations = {
       title: 'Cloud computing: Concepts, technology & architecture',
       authors: 'Erl, T., Puttini, R., & Mahmood, Z.',
       year: 2013,
-      url: 'https://www.pearson.com/en-us/subject-catalog/p/cloud-computing-concepts-technology-architecture/P200000003299',
+      url: 'https://www.pearson.com/en-us/subject-catalog/p/cloud-computing-concepts-technology-architecture/P200000000109',
       sourceType: 'book'
     },
     {
@@ -367,38 +473,54 @@ const cloudComputingCitations = {
       sourceType: 'book'
     },
     {
-      citationText: 'Amazon Web Services. (2023). AWS Well-Architected Framework: Reliability pillar. AWS Whitepapers.',
-      title: 'AWS Well-Architected Framework: Reliability pillar',
-      authors: 'Amazon Web Services',
-      year: 2023,
-      url: 'https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html',
-      sourceType: 'whitepaper'
+      citationText: 'International Organization for Standardization. (2014). Information technology — Cloud computing — Reference architecture (ISO/IEC 17789:2014). ISO.',
+      title: 'Information technology — Cloud computing — Reference architecture',
+      authors: 'ISO/IEC',
+      year: 2014,
+      url: 'https://www.iso.org/standard/60545.html',
+      sourceType: 'standard'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Cloud computing architecture. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Cloud_computing_architecture',
+      title: 'Cloud computing architecture',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Cloud_computing_architecture',
+      sourceType: 'wikipedia'
     }
   ],
   3: [
     {
-      citationText: 'Bohn, R. B., Messina, J., Liu, F., Tong, J., & Mao, J. (2011). NIST cloud computing reference architecture (Special Publication 500-292). National Institute of Standards and Technology.',
-      title: 'NIST cloud computing reference architecture',
-      authors: 'Bohn, R. B., Messina, J., Liu, F., Tong, J., & Mao, J.',
-      year: 2011,
-      url: 'https://doi.org/10.6028/NIST.SP.500-292',
-      sourceType: 'standard'
-    },
-    {
-      citationText: 'Cloud Security Alliance. (2020). Security guidance for critical areas of focus in cloud computing v4.0. Cloud Security Alliance.',
-      title: 'Security guidance for critical areas of focus in cloud computing v4.0',
-      authors: 'Cloud Security Alliance',
-      year: 2020,
-      url: 'https://cloudsecurityalliance.org/research/guidance/',
-      sourceType: 'standard'
-    },
-    {
-      citationText: 'Microsoft. (2023). Shared responsibility in the cloud. Microsoft Azure Architecture Center.',
-      title: 'Shared responsibility in the cloud',
-      authors: 'Microsoft',
-      year: 2023,
-      url: 'https://learn.microsoft.com/en-us/azure/security/fundamentals/shared-responsibility',
+      citationText: 'Amazon Web Services. (2021). Shared responsibility model. AWS Security Documentation.',
+      title: 'Shared responsibility model',
+      authors: 'Amazon Web Services',
+      year: 2021,
+      url: 'https://aws.amazon.com/compliance/shared-responsibility-model/',
       sourceType: 'whitepaper'
+    },
+    {
+      citationText: 'National Institute of Standards and Technology. (2011). Cloud computing synopsis and recommendations (NIST Special Publication 800-146). NIST.',
+      title: 'Cloud computing synopsis and recommendations',
+      authors: 'NIST',
+      year: 2011,
+      url: 'https://doi.org/10.6028/NIST.SP.800-146',
+      sourceType: 'standard'
+    },
+    {
+      citationText: 'Vaquero, L. M., Rodero-Merino, L., Caceres, J., & Lindner, M. (2008). A break in the clouds: Towards a cloud definition. ACM SIGCOMM Computer Communication Review, 39(1), 50–55.',
+      title: 'A break in the clouds: Towards a cloud definition',
+      authors: 'Vaquero, L. M., Rodero-Merino, L., Caceres, J., & Lindner, M.',
+      year: 2008,
+      url: 'https://doi.org/10.1145/1496091.1496100',
+      sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Infrastructure as a service. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Infrastructure_as_a_service',
+      title: 'Infrastructure as a service',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Infrastructure_as_a_service',
+      sourceType: 'wikipedia'
     }
   ],
   4: [
@@ -411,65 +533,65 @@ const cloudComputingCitations = {
       sourceType: 'journal'
     },
     {
-      citationText: 'Badger, L., Borenstein, N., Feldper, R., & Grance, T. (2012). Cloud computing synopsis and recommendations (Special Publication 800-146). National Institute of Standards and Technology.',
-      title: 'Cloud computing synopsis and recommendations',
-      authors: 'Badger, L., Borenstein, N., Feldper, R., & Grance, T.',
+      citationText: 'Weinman, J. (2012). Cloudonomics: The business value of cloud computing. John Wiley & Sons.',
+      title: 'Cloudonomics: The business value of cloud computing',
+      authors: 'Weinman, J.',
       year: 2012,
-      url: 'https://doi.org/10.6028/NIST.SP.800-146',
+      url: 'https://www.wiley.com/en-us/Cloudonomics%3A+The+Business+Value+of+Cloud+Computing-p-9781118249932',
+      sourceType: 'book'
+    },
+    {
+      citationText: 'Cloud Security Alliance. (2021). Security guidance for critical areas of focus in cloud computing v4.0. CSA.',
+      title: 'Security guidance for critical areas of focus in cloud computing v4.0',
+      authors: 'Cloud Security Alliance',
+      year: 2021,
+      url: 'https://cloudsecurityalliance.org/research/guidance/',
       sourceType: 'standard'
     },
     {
-      citationText: 'Google Cloud. (2023). Hybrid and multi-cloud architecture patterns. Google Cloud Architecture Center.',
-      title: 'Hybrid and multi-cloud architecture patterns',
-      authors: 'Google Cloud',
-      year: 2023,
-      url: 'https://cloud.google.com/architecture/hybrid-and-multi-cloud-architecture-patterns',
-      sourceType: 'whitepaper'
+      citationText: 'Wikipedia contributors. (2024). Private cloud. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Private_cloud',
+      title: 'Private cloud',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Private_cloud',
+      sourceType: 'wikipedia'
     }
   ],
   5: [
     {
-      citationText: 'Smith, J. E., & Nair, R. (2005). The architecture of virtual machines. Computer, 38(5), 32–38.',
-      title: 'The architecture of virtual machines',
+      citationText: 'Smith, J. E., & Nair, R. (2005). Virtual machines: Versatile platforms for systems and processes. Morgan Kaufmann.',
+      title: 'Virtual machines: Versatile platforms for systems and processes',
       authors: 'Smith, J. E., & Nair, R.',
       year: 2005,
-      url: 'https://doi.org/10.1109/MC.2005.173',
+      url: 'https://doi.org/10.1016/B978-1-55860-910-5.X5000-6',
+      sourceType: 'book'
+    },
+    {
+      citationText: 'Barham, P., Dragovic, B., Fraser, K., Hand, S., Harris, T., Ho, A., Neugebauer, R., Pratt, I., & Warfield, A. (2003). Xen and the art of virtualization. ACM SIGOPS Operating Systems Review, 37(5), 164–177.',
+      title: 'Xen and the art of virtualization',
+      authors: 'Barham, P., Dragovic, B., Fraser, K., Hand, S., Harris, T., Ho, A., Neugebauer, R., Pratt, I., & Warfield, A.',
+      year: 2003,
+      url: 'https://doi.org/10.1145/1165389.945462',
       sourceType: 'journal'
     },
     {
-      citationText: 'Kivity, A., Kamay, Y., Laor, D., Lublin, U., & Liguori, A. (2007). kvm: The Linux kernel-based virtual machine. In Proceedings of the Linux Symposium (Vol. 1, pp. 225–230).',
-      title: 'kvm: The Linux kernel-based virtual machine',
+      citationText: 'Kivity, A., Kamay, Y., Laor, D., Lublin, U., & Liguori, A. (2007). kvm: The Linux virtual machine monitor. In Proceedings of the Linux Symposium (Vol. 1, pp. 225–230). Ottawa Linux Symposium.',
+      title: 'kvm: The Linux virtual machine monitor',
       authors: 'Kivity, A., Kamay, Y., Laor, D., Lublin, U., & Liguori, A.',
       year: 2007,
       url: 'https://www.kernel.org/doc/ols/2007/ols2007v1-pages-225-230.pdf',
       sourceType: 'whitepaper'
     },
     {
-      citationText: 'Barham, P., Dragovic, B., Fraser, K., Hand, S., Harris, T., Ho, A., Neugebauer, R., Pratt, I., & Warfield, A. (2003). Xen and the art of virtualization. ACM SIGOPS Operating Systems Review, 37(5), 164–177.',
-      title: 'Xen and the art of virtualization',
-      authors: 'Barham, P., Dragovic, B., Fraser, K., et al.',
-      year: 2003,
-      url: 'https://doi.org/10.1145/1165389.945462',
-      sourceType: 'journal'
+      citationText: 'Wikipedia contributors. (2024). Hardware virtualization. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Hardware_virtualization',
+      title: 'Hardware virtualization',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Hardware_virtualization',
+      sourceType: 'wikipedia'
     }
   ],
   6: [
-    {
-      citationText: 'Brewer, E. (2012). CAP twelve years later: How the "rules" have changed. Computer, 45(2), 23–29.',
-      title: 'CAP twelve years later: How the "rules" have changed',
-      authors: 'Brewer, E.',
-      year: 2012,
-      url: 'https://doi.org/10.1109/MC.2012.37',
-      sourceType: 'journal'
-    },
-    {
-      citationText: 'DeCandia, G., Hastorun, D., Jampani, M., Kakulapati, G., Lakshman, A., Pilchin, A., Sivasubramanian, S., Vosshall, P., & Vogels, W. (2007). Dynamo: Amazon\'s highly available key-value store. ACM SIGOPS Operating Systems Review, 41(6), 205–220.',
-      title: 'Dynamo: Amazon\'s highly available key-value store',
-      authors: 'DeCandia, G., Hastorun, D., Jampani, M., et al.',
-      year: 2007,
-      url: 'https://doi.org/10.1145/1323293.1294281',
-      sourceType: 'journal'
-    },
     {
       citationText: 'Ghemawat, S., Gobioff, H., & Leung, S.-T. (2003). The Google file system. ACM SIGOPS Operating Systems Review, 37(5), 29–43.',
       title: 'The Google file system',
@@ -477,37 +599,69 @@ const cloudComputingCitations = {
       year: 2003,
       url: 'https://doi.org/10.1145/1165389.945450',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'DeCandia, G., Hastorun, D., Jampani, M., Kakulapati, G., Lakshman, A., Pilchin, A., Sivasubramanian, S., Vosshall, P., & Vogels, W. (2007). Dynamo: Amazon\'s highly available key-value store. ACM SIGOPS Operating Systems Review, 41(6), 205–220.',
+      title: 'Dynamo: Amazon\'s highly available key-value store',
+      authors: 'DeCandia, G., Hastorun, D., Jampani, M., Kakulapati, G., Lakshman, A., Pilchin, A., Sivasubramanian, S., Vosshall, P., & Vogels, W.',
+      year: 2007,
+      url: 'https://doi.org/10.1145/1323293.1294281',
+      sourceType: 'journal'
+    },
+    {
+      citationText: 'Brewer, E. A. (2012). CAP twelve years later: How the "rules" have changed. Computer, 45(2), 23–29.',
+      title: 'CAP twelve years later: How the "rules" have changed',
+      authors: 'Brewer, E. A.',
+      year: 2012,
+      url: 'https://doi.org/10.1109/MC.2012.37',
+      sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Cloud storage. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Cloud_storage',
+      title: 'Cloud storage',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Cloud_storage',
+      sourceType: 'wikipedia'
     }
   ],
   7: [
     {
-      citationText: 'Casado, M., Foster, N., & Guha, A. (2014). Abstractions for software-defined networks. Communications of the ACM, 57(10), 86–95.',
-      title: 'Abstractions for software-defined networks',
-      authors: 'Casado, M., Foster, N., & Guha, A.',
-      year: 2014,
-      url: 'https://doi.org/10.1145/2661061.2661063',
+      citationText: 'Kreutz, D., Ramos, F. M. V., Verissimo, P. E., Rothenberg, C. E., Azodolmolky, S., & Uhlig, S. (2015). Software-defined networking: A comprehensive survey. Proceedings of the IEEE, 103(1), 14–76.',
+      title: 'Software-defined networking: A comprehensive survey',
+      authors: 'Kreutz, D., Ramos, F. M. V., Verissimo, P. E., Rothenberg, C. E., Azodolmolky, S., & Uhlig, S.',
+      year: 2015,
+      url: 'https://doi.org/10.1109/JPROC.2014.2371999',
       sourceType: 'journal'
     },
     {
       citationText: 'McKeown, N., Anderson, T., Balakrishnan, H., Parulkar, G., Peterson, L., Rexford, J., Shenker, S., & Turner, J. (2008). OpenFlow: Enabling innovation in campus networks. ACM SIGCOMM Computer Communication Review, 38(2), 69–74.',
       title: 'OpenFlow: Enabling innovation in campus networks',
-      authors: 'McKeown, N., Anderson, T., Balakrishnan, H., et al.',
+      authors: 'McKeown, N., Anderson, T., Balakrishnan, H., Parulkar, G., Peterson, L., Rexford, J., Shenker, S., & Turner, J.',
       year: 2008,
       url: 'https://doi.org/10.1145/1355734.1355746',
       sourceType: 'journal'
     },
     {
-      citationText: 'Amazon Web Services. (2023). Amazon Virtual Private Cloud (Amazon VPC) connectivity options. AWS Whitepapers.',
-      title: 'Amazon Virtual Private Cloud (Amazon VPC) connectivity options',
-      authors: 'Amazon Web Services',
-      year: 2023,
-      url: 'https://docs.aws.amazon.com/whitepapers/latest/aws-vpc-connectivity-options/amazon-vpc-connectivity-options.html',
-      sourceType: 'whitepaper'
+      citationText: 'Koponen, T., Amidon, K., Balland, P., Casado, M., Chanda, A., Fulton, B., Ganichev, I., Croft, J., Ingram, A., Jackson, E., Lambeth, A., McKee, N., Pang, H., Pfaff, B., Ramanathan, R., Roisman, M., Sharma, P., Shelar, P., Shenker, S., … Wendlandt, D. (2014). Network virtualization in multi-tenant datacenters. In 11th USENIX Symposium on Networked Systems Design and Implementation (NSDI \'14) (pp. 203–216). USENIX Association.',
+      title: 'Network virtualization in multi-tenant datacenters',
+      authors: 'Koponen, T. et al.',
+      year: 2014,
+      url: 'https://www.usenix.org/conference/nsdi14/technical-sessions/presentation/koponen',
+      sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Software-defined networking. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Software-defined_networking',
+      title: 'Software-defined networking',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Software-defined_networking',
+      sourceType: 'wikipedia'
     }
   ],
   8: [
     {
-      citationText: 'Rose, S., Borchert, O., Mitchell, S., & Connelly, S. (2020). Zero Trust Architecture (Special Publication 800-207). National Institute of Standards and Technology.',
+      citationText: 'Rose, S., Borchert, O., Mitchell, S., & Connelly, S. (2020). Zero Trust Architecture (NIST Special Publication 800-207). National Institute of Standards and Technology.',
       title: 'Zero Trust Architecture',
       authors: 'Rose, S., Borchert, O., Mitchell, S., & Connelly, S.',
       year: 2020,
@@ -515,7 +669,7 @@ const cloudComputingCitations = {
       sourceType: 'standard'
     },
     {
-      citationText: 'Jansen, W., & Grance, T. (2011). Guidelines on security and privacy in public cloud computing (Special Publication 800-144). National Institute of Standards and Technology.',
+      citationText: 'Jansen, W., & Grance, T. (2011). Guidelines on security and privacy in public cloud computing (NIST Special Publication 800-144). NIST.',
       title: 'Guidelines on security and privacy in public cloud computing',
       authors: 'Jansen, W., & Grance, T.',
       year: 2011,
@@ -523,27 +677,35 @@ const cloudComputingCitations = {
       sourceType: 'standard'
     },
     {
-      citationText: 'Cloud Security Alliance. (2022). Top threats to cloud computing: Pandemic eleven. Cloud Security Alliance.',
-      title: 'Top threats to cloud computing: Pandemic eleven',
-      authors: 'Cloud Security Alliance',
-      year: 2022,
-      url: 'https://cloudsecurityalliance.org/artifacts/top-threats-to-cloud-computing-pandemic-eleven/',
+      citationText: 'Center for Internet Security. (2023). CIS Critical Security Controls (Version 8). CIS.',
+      title: 'CIS Critical Security Controls',
+      authors: 'Center for Internet Security',
+      year: 2023,
+      url: 'https://www.cisecurity.org/controls/v8',
       sourceType: 'standard'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Cloud computing security. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Cloud_computing_security',
+      title: 'Cloud computing security',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Cloud_computing_security',
+      sourceType: 'wikipedia'
     }
   ],
   9: [
     {
-      citationText: 'Burns, B., Grant, B., Oppenheimer, D., Brewer, E., & Wilkes, J. (2016). Borg, Omega, and Kubernetes: Lessons learned from three container-management systems over a decade. Communications of the ACM, 59(5), 70–79.',
-      title: 'Borg, Omega, and Kubernetes: Lessons learned from three container-management systems over a decade',
+      citationText: 'Burns, B., Grant, B., Oppenheimer, D., Brewer, E., & Wilkes, J. (2016). Borg, Omega, and Kubernetes: Lessons learned from three container-management systems over a decade. ACM Queue, 14(1), 70–93.',
+      title: 'Borg, Omega, and Kubernetes',
       authors: 'Burns, B., Grant, B., Oppenheimer, D., Brewer, E., & Wilkes, J.',
       year: 2016,
-      url: 'https://doi.org/10.1145/2890784',
+      url: 'https://doi.org/10.1145/2898442.2898444',
       sourceType: 'journal'
     },
     {
-      citationText: 'Jonas, E., Schleier-Smith, J., Sreekanti, V., Tsai, C.-C., Khandelwal, A., Pu, Q., Shankar, V., Carreira, J., Krauth, K., Yadwadkar, N., Gonzalez, J. E., Popa, R. A., & Stoica, I. (2019). Cloud programming simplified: A Berkeley view on serverless computing. arXiv preprint arXiv:1902.03383.',
+      citationText: 'Jonas, E., Schleier-Smith, J., Sreekanti, V., Tsai, C.-C., Khandelwal, A., Pu, Q., Shankar, V., Carreira, J. M., Krauth, K., Yadwadkar, N. J., Gonzalez, J. E., Popa, R. A., Stoica, I., & Patterson, D. A. (2019). Cloud programming simplified: A Berkeley view on serverless computing. arXiv preprint arXiv:1902.03383.',
       title: 'Cloud programming simplified: A Berkeley view on serverless computing',
-      authors: 'Jonas, E., Schleier-Smith, J., Sreekanti, V., et al.',
+      authors: 'Jonas, E. et al.',
       year: 2019,
       url: 'https://doi.org/10.48550/arXiv.1902.03383',
       sourceType: 'journal'
@@ -555,32 +717,48 @@ const cloudComputingCitations = {
       year: 2014,
       url: 'https://www.linuxjournal.com/content/docker-lightweight-linux-containers-consistent-development-and-deployment',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Serverless computing. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Serverless_computing',
+      title: 'Serverless computing',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Serverless_computing',
+      sourceType: 'wikipedia'
     }
   ],
   10: [
     {
-      citationText: 'Wittig, A., & Wittig, M. (2021). Amazon Web Services in action (3rd ed.). Manning Publications.',
-      title: 'Amazon Web Services in action',
-      authors: 'Wittig, A., & Wittig, M.',
-      year: 2021,
-      url: 'https://www.manning.com/books/amazon-web-services-in-action-third-edition',
-      sourceType: 'book'
+      citationText: 'Amazon Web Services. (2023). AWS Well-Architected Framework: Reliability pillar. AWS Whitepapers.',
+      title: 'AWS Well-Architected Framework: Reliability pillar',
+      authors: 'Amazon Web Services',
+      year: 2023,
+      url: 'https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html',
+      sourceType: 'whitepaper'
     },
     {
-      citationText: 'Copsey, D., & Chandrasekara, C. (2022). Hands-on Cloud administration in Azure: Implementing enterprise-grade cloud infrastructure. Packt Publishing.',
-      title: 'Hands-on Cloud administration in Azure: Implementing enterprise-grade cloud infrastructure',
-      authors: 'Copsey, D., & Chandrasekara, C.',
-      year: 2022,
-      url: 'https://www.packtpub.com/product/hands-on-cloud-administration-in-azure/9781801811156',
-      sourceType: 'book'
+      citationText: 'Microsoft Corporation. (2023). Microsoft Azure Well-Architected Framework. Microsoft Learn.',
+      title: 'Microsoft Azure Well-Architected Framework',
+      authors: 'Microsoft Corporation',
+      year: 2023,
+      url: 'https://learn.microsoft.com/en-us/azure/well-architected/',
+      sourceType: 'website'
     },
     {
-      citationText: 'Sullivan, D. (2020). Official Google Cloud certified associate cloud engineer study guide. John Wiley & Sons.',
-      title: 'Official Google Cloud certified associate cloud engineer study guide',
-      authors: 'Sullivan, D.',
-      year: 2020,
-      url: 'https://doi.org/10.1002/9781119564423',
-      sourceType: 'book'
+      citationText: 'Google Cloud. (2023). Google Cloud Architecture Framework. Google Cloud Documentation.',
+      title: 'Google Cloud Architecture Framework',
+      authors: 'Google Cloud',
+      year: 2023,
+      url: 'https://cloud.google.com/architecture/framework',
+      sourceType: 'website'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Hyperscale computing. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Hyperscale_computing',
+      title: 'Hyperscale computing',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Hyperscale_computing',
+      sourceType: 'wikipedia'
     }
   ],
   11: [
@@ -589,15 +767,15 @@ const cloudComputingCitations = {
       title: 'Cloud FinOps: Collaborative, real-time cloud financial management',
       authors: 'Storment, J. R., & Fuller, M.',
       year: 2023,
-      url: 'https://www.oreilly.com/library/view/cloud-finops-2nd/9781492098409/',
+      url: 'https://www.oreilly.com/library/view/cloud-finops-2nd/9781492098355/',
       sourceType: 'book'
     },
     {
-      citationText: 'Berl, A., Gelenbe, E., Di Girolamo, M., Giuliani, G., De Meer, H., Dang, M. Q., & Pentikousis, K. (2010). Energy-efficient cloud computing. The Computer Journal, 53(7), 1045–1051.',
-      title: 'Energy-efficient cloud computing',
-      authors: 'Berl, A., Gelenbe, E., Di Girolamo, M., et al.',
-      year: 2010,
-      url: 'https://doi.org/10.1093/comjnl/bxp080',
+      citationText: 'Beloglazov, A., Buyya, R., Lee, Y. C., & Zomaya, A. (2011). A taxonomy and survey of energy-efficient data centers and cloud computing systems. Advances in Computers, 82, 47–111.',
+      title: 'A taxonomy and survey of energy-efficient data centers and cloud computing systems',
+      authors: 'Beloglazov, A., Buyya, R., Lee, Y. C., & Zomaya, A.',
+      year: 2011,
+      url: 'https://doi.org/10.1016/B978-0-12-386526-7.00003-7',
       sourceType: 'journal'
     },
     {
@@ -607,6 +785,14 @@ const cloudComputingCitations = {
       year: 2023,
       url: 'https://docs.aws.amazon.com/wellarchitected/latest/sustainability-pillar/welcome.html',
       sourceType: 'whitepaper'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Cloud management. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Cloud_management',
+      title: 'Cloud management',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Cloud_management',
+      sourceType: 'wikipedia'
     }
   ],
   12: [
@@ -633,27 +819,274 @@ const cloudComputingCitations = {
       year: 2018,
       url: 'https://doi.org/10.22331/q-2018-08-06-79',
       sourceType: 'journal'
+    },
+    {
+      citationText: 'Wikipedia contributors. (2024). Edge computing. In Wikipedia, The Free Encyclopedia. https://en.wikipedia.org/wiki/Edge_computing',
+      title: 'Edge computing',
+      authors: 'Wikipedia contributors',
+      year: 2024,
+      url: 'https://en.wikipedia.org/wiki/Edge_computing',
+      sourceType: 'wikipedia'
     }
   ]
 };
 
 /**
- * Format markdown references section with clickable links
+ * Curated Educational YouTube Video Lectures
+ * Covering All 24 Chapters across Data Mining & Cloud Computing
  */
-const formatMarkdownReferences = (citations) => {
-  if (!citations || citations.length === 0) return '';
-  const lines = [
-    '\n\n## References & Authoritative Citations (APA 7th Edition)\n'
-  ];
-  citations.forEach((cit, index) => {
-    lines.push(`${index + 1}. ${cit.citationText} [${cit.url}](${cit.url})`);
-  });
+const dataMiningVideos = {
+  1: [
+    {
+      title: 'What is Data Mining?',
+      youtubeUrl: 'https://www.youtube.com/watch?v=7rs0i-9nOjo',
+      youtubeId: '7rs0i-9nOjo',
+      channel: 'IBM Technology',
+      description: 'IBM Master Inventor Martin Keen explains the fundamentals of data mining, the KDD process, and how organizations extract actionable insights from big data.'
+    }
+  ],
+  2: [
+    {
+      title: 'Data Preprocessing in Machine Learning - Practical Pipeline',
+      youtubeUrl: 'https://www.youtube.com/watch?v=Q7DTR5AwphA',
+      youtubeId: 'Q7DTR5AwphA',
+      channel: 'Neso Academy',
+      description: 'Essential techniques for data cleaning, handling missing values, encoding categorical variables, feature scaling, and normalization.'
+    }
+  ],
+  3: [
+    {
+      title: 'What is a Data Warehouse?',
+      youtubeUrl: 'https://www.youtube.com/watch?v=h7-PMFXUi7U',
+      youtubeId: 'h7-PMFXUi7U',
+      channel: 'IBM Technology',
+      description: 'Understanding enterprise data warehouse architectures, multidimensional star/snowflake schemas, ETL pipelines, and OLAP analytics.'
+    }
+  ],
+  4: [
+    {
+      title: 'Apriori Algorithm Explained | Association Rule Mining',
+      youtubeUrl: 'https://www.youtube.com/watch?v=W18bS05Xk64',
+      youtubeId: 'W18bS05Xk64',
+      channel: 'Edureka',
+      description: 'Comprehensive breakdown of market basket analysis, support, confidence, lift, candidate itemset generation, and the downward closure property.'
+    }
+  ],
+  5: [
+    {
+      title: 'Frequent Pattern (FP) Growth Algorithm Solved Example',
+      youtubeUrl: 'https://www.youtube.com/watch?v=7oGz4PCp9jI',
+      youtubeId: '7oGz4PCp9jI',
+      channel: 'Dr. Mahesh Huddar',
+      description: 'Step-by-step construction of the Frequent Pattern Tree (FP-Tree) and mining frequent itemsets without candidate generation.'
+    }
+  ],
+  6: [
+    {
+      title: 'Decision and Classification Trees, Clearly Explained!!!',
+      youtubeUrl: 'https://www.youtube.com/watch?v=_L39rN6gz7Y',
+      youtubeId: '_L39rN6gz7Y',
+      channel: 'StatQuest with Josh Starmer',
+      description: 'Conceptual and mathematical walkthrough of decision tree induction, feature splitting criteria, Gini impurity, and classification.'
+    }
+  ],
+  7: [
+    {
+      title: 'Support Vector Machines Part 1 (Main Ideas), Clearly Explained!!!',
+      youtubeUrl: 'https://www.youtube.com/watch?v=efR1C6CvhmE',
+      youtubeId: 'efR1C6CvhmE',
+      channel: 'StatQuest with Josh Starmer',
+      description: 'Geometric and intuitive explanation of maximal margin hyperplanes, soft margins, and kernel tricks in Support Vector Machines.'
+    }
+  ],
+  8: [
+    {
+      title: 'StatQuest: K-means Clustering',
+      youtubeUrl: 'https://www.youtube.com/watch?v=4b5d3muPQmA',
+      youtubeId: '4b5d3muPQmA',
+      channel: 'StatQuest with Josh Starmer',
+      description: 'Visual breakdown of the k-Means iterative centroid optimization algorithm, distance metrics, and finding optimal clusters.'
+    }
+  ],
+  9: [
+    {
+      title: 'Clustering with DBSCAN, Clearly Explained!!!',
+      youtubeUrl: 'https://www.youtube.com/watch?v=RDZUdRSDOok',
+      youtubeId: 'RDZUdRSDOok',
+      channel: 'StatQuest with Josh Starmer',
+      description: 'Density-based spatial clustering of applications with noise: core points, border points, noise handling, and non-spherical clusters.'
+    }
+  ],
+  10: [
+    {
+      title: 'But what is a neural network? | Chapter 1, Deep learning',
+      youtubeUrl: 'https://www.youtube.com/watch?v=aircAruvnKk',
+      youtubeId: 'aircAruvnKk',
+      channel: '3Blue1Brown',
+      description: 'The quintessential visual and mathematical introduction to multi-layer perceptrons, activations, and deep neural representations.'
+    }
+  ],
+  11: [
+    {
+      title: 'Anomaly Detection | Machine Learning Tutorial',
+      youtubeUrl: 'https://www.youtube.com/watch?v=AYap1FTvR9E',
+      youtubeId: 'AYap1FTvR9E',
+      channel: 'TutorialsPoint',
+      description: 'Identifying outliers and anomalies using statistical distributions, isolation forests, and proximity-based metrics.'
+    }
+  ],
+  12: [
+    {
+      title: 'What is Explainable AI?',
+      youtubeUrl: 'https://www.youtube.com/watch?v=jFHPEQi55Ko',
+      youtubeId: 'jFHPEQi55Ko',
+      channel: 'IBM Technology',
+      description: 'Tackling the AI black-box problem: interpretability, algorithmic transparency, fairness, and ethical governance in modern data mining.'
+    }
+  ]
+};
+
+const cloudComputingVideos = {
+  1: [
+    {
+      title: 'What is Cloud Computing?',
+      youtubeUrl: 'https://www.youtube.com/watch?v=Y-Jhlwy2sW4',
+      youtubeId: 'Y-Jhlwy2sW4',
+      channel: 'IBM Technology',
+      description: 'Core NIST essential characteristics of cloud computing: on-demand self-service, broad network access, resource pooling, rapid elasticity, and measured service.'
+    }
+  ],
+  2: [
+    {
+      title: 'What is Cloud Architecture?',
+      youtubeUrl: 'https://www.youtube.com/watch?v=phLPKVx3Cl4',
+      youtubeId: 'phLPKVx3Cl4',
+      channel: 'IBM Technology',
+      description: 'Architectural components of cloud environments, front-end and back-end decoupling, API gateways, microservices, and distributed systems.'
+    }
+  ],
+  3: [
+    {
+      title: 'IaaS vs PaaS vs SaaS, Explained!',
+      youtubeUrl: 'https://www.youtube.com/watch?v=_8fkkd5-vAc',
+      youtubeId: '_8fkkd5-vAc',
+      channel: 'IBM Technology',
+      description: 'In-depth comparison of Infrastructure as a Service, Platform as a Service, and Software as a Service, along with the shared responsibility model.'
+    }
+  ],
+  4: [
+    {
+      title: 'Public Cloud vs Private Cloud vs Hybrid Cloud | Key Differences',
+      youtubeUrl: 'https://www.youtube.com/watch?v=-GQcCyMeH4w',
+      youtubeId: '-GQcCyMeH4w',
+      channel: 'Eye on Tech',
+      description: 'Architectural trade-offs, security postures, multi-tenant isolation, and migration strategies across public, private, and hybrid cloud topologies.'
+    }
+  ],
+  5: [
+    {
+      title: 'Virtualization Explained',
+      youtubeUrl: 'https://www.youtube.com/watch?v=FZR0rG3HKIk',
+      youtubeId: 'FZR0rG3HKIk',
+      channel: 'IBM Technology',
+      description: 'Hardware abstraction, Type-1 vs. Type-2 hypervisors, CPU and RAM overcommitment, virtual machines, and live migration.'
+    }
+  ],
+  6: [
+    {
+      title: 'Block Storage vs. File Storage vs. Object Storage',
+      youtubeUrl: 'https://www.youtube.com/watch?v=l7MgHrf6bMs',
+      youtubeId: 'l7MgHrf6bMs',
+      channel: 'IBM Technology',
+      description: 'Comparing block storage volumes, network file systems, and RESTful object stores (S3) for distributed data persistence.'
+    }
+  ],
+  7: [
+    {
+      title: 'What is a Virtual Private Cloud (VPC)?',
+      youtubeUrl: 'https://www.youtube.com/watch?v=NbkPRn1mqlU',
+      youtubeId: 'NbkPRn1mqlU',
+      channel: 'IBM Technology',
+      description: 'Network isolation in the cloud: subnets, CIDR blocks, route tables, internet gateways, NAT, and security groups.'
+    }
+  ],
+  8: [
+    {
+      title: 'What is Cloud Security?',
+      youtubeUrl: 'https://www.youtube.com/watch?v=jI8IKpjiCSM',
+      youtubeId: 'jI8IKpjiCSM',
+      channel: 'IBM Technology',
+      description: 'Data protection in cloud environments: IAM policies, encryption at rest and in transit, zero-trust security principles, and compliance.'
+    }
+  ],
+  9: [
+    {
+      title: "Containers vs VMs: What's the difference?",
+      youtubeUrl: 'https://www.youtube.com/watch?v=cjXI-yxqGTI',
+      youtubeId: 'cjXI-yxqGTI',
+      channel: 'IBM Technology',
+      description: 'Operating system-level virtualization, Docker containers, Kubernetes orchestration, and event-driven serverless functions (FaaS).'
+    }
+  ],
+  10: [
+    {
+      title: 'Amazon Web Services Vs Microsoft Azure Vs Google Cloud Platform',
+      youtubeUrl: 'https://www.youtube.com/watch?v=nrqmYvjHHJg',
+      youtubeId: 'nrqmYvjHHJg',
+      channel: 'Simplilearn',
+      description: 'Comparative technical review of the "Big Three" hyperscale cloud providers: AWS, Microsoft Azure, and Google Cloud Platform.'
+    }
+  ],
+  11: [
+    {
+      title: 'FinOps Explained in 5 Minutes',
+      youtubeUrl: 'https://www.youtube.com/watch?v=gWDTRf_kGHI',
+      youtubeId: 'gWDTRf_kGHI',
+      channel: 'Anglepoint',
+      description: 'Cloud financial operations: resource tagging, budget allocation, cost anomaly prevention, rightsizing, and sustainability.'
+    }
+  ],
+  12: [
+    {
+      title: 'What is edge computing?',
+      youtubeUrl: 'https://www.youtube.com/watch?v=cEOUeItHDdo',
+      youtubeId: 'cEOUeItHDdo',
+      channel: 'IBM Technology',
+      description: 'Decentralized processing at the network edge: 5G integration, confidential computing, AI at the edge, and quantum computing services.'
+    }
+  ]
+};
+
+/**
+ * Format markdown references section with clickable links and video lectures
+ */
+const formatMarkdownReferences = (citations, videos = []) => {
+  const lines = [];
+
+  if (citations && citations.length > 0) {
+    lines.push('\n\n## References & Authoritative Citations (APA 7th Edition)\n');
+    citations.forEach((cit, index) => {
+      lines.push(`${index + 1}. ${cit.citationText} [${cit.url}](${cit.url})`);
+    });
+  }
+
+  if (videos && videos.length > 0) {
+    lines.push('\n\n## Curated Educational Video Lectures (YouTube)\n');
+    videos.forEach((vid, index) => {
+      lines.push(`${index + 1}. **${vid.title}** (${vid.channel || 'Educational Video'}) - [Watch on YouTube](${vid.youtubeUrl})`);
+      if (vid.description) {
+        lines.push(`   *${vid.description}*`);
+      }
+    });
+  }
+
   return lines.join('\n');
 };
 
 module.exports = {
   dataMiningCitations,
   cloudComputingCitations,
+  dataMiningVideos,
+  cloudComputingVideos,
   formatMarkdownReferences
 };
-

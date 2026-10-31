@@ -32,8 +32,43 @@ import {
   Cloud,
   ExternalLink,
   Copy,
-  Check
+  Check,
+  Video,
+  Play
 } from 'lucide-react';
+
+const YouTubeIcon = ({ size = 18, color = '#ff0000' }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0 }}>
+    <path
+      fill={color}
+      d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814z"
+    />
+    <path fill="#ffffff" d="M9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+  </svg>
+);
+
+const WikipediaIcon = ({ size = 15 }) => (
+  <span
+    style={{
+      display: 'inline-flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: size,
+      height: size,
+      borderRadius: '3px',
+      backgroundColor: '#f8fafc',
+      color: '#0f172a',
+      fontFamily: 'Georgia, serif',
+      fontWeight: 900,
+      fontSize: `${Math.round(size * 0.75)}px`,
+      lineHeight: 1,
+      userSelect: 'none',
+      flexShrink: 0
+    }}
+  >
+    W
+  </span>
+);
 
 const formatFileSize = (bytes) => {
   if (!bytes || bytes === 0) return '0 B';
@@ -71,6 +106,7 @@ const ChapterView = () => {
   const [overrideError, setOverrideError] = useState(null);
   const [overrideSuccess, setOverrideSuccess] = useState(null);
   const [copiedCitationIndex, setCopiedCitationIndex] = useState(null);
+  const [selectedVideoIndex, setSelectedVideoIndex] = useState(0);
 
   const handleCopyCitation = (text, idx) => {
     if (navigator?.clipboard?.writeText) {
@@ -368,7 +404,7 @@ const ChapterView = () => {
               fontWeight: 600
             }}
           >
-            <BookOpen size={16} /> Lesson & Materials {lessonFiles?.length > 0 ? `(${lessonFiles.length} files)` : ''}
+            <BookOpen size={16} /> Lesson, Materials & Video {lessonFiles?.length > 0 ? `(${lessonFiles.length} files)` : ''}
           </button>
           <button
             onClick={() => setActiveTab('quiz')}
@@ -653,6 +689,181 @@ const ChapterView = () => {
               ))}
             </ul>
 
+            {/* Curated Educational Video Lecture & Media (Embedded YouTube Stream) */}
+            {lesson.videos && lesson.videos.length > 0 && (
+              <div
+                style={{
+                  marginBottom: '2.5rem',
+                  padding: '1.75rem',
+                  backgroundColor: '#0a0f1d',
+                  border: '1px solid rgba(239, 68, 68, 0.35)',
+                  borderRadius: 'var(--radius-md)',
+                  boxShadow: '0 8px 30px rgba(0, 0, 0, 0.45)'
+                }}
+              >
+                {/* Video Section Header */}
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                    <span
+                      style={{
+                        width: '38px',
+                        height: '38px',
+                        borderRadius: '10px',
+                        backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                        border: '1px solid rgba(239, 68, 68, 0.35)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}
+                    >
+                      <YouTubeIcon size={22} />
+                    </span>
+                    <div>
+                      <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: '#f8fafc', margin: 0 }}>
+                        Curated Video Lecture & Media
+                      </h3>
+                      <p style={{ fontSize: '0.8rem', color: '#94a3b8', margin: 0 }}>
+                        High-yield instructional video lecture supporting Chapter {chapter.chapterNumber} concepts
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+                    <span
+                      className="badge"
+                      style={{
+                        backgroundColor: 'rgba(239, 68, 68, 0.12)',
+                        color: '#f87171',
+                        border: '1px solid rgba(239, 68, 68, 0.3)',
+                        fontFamily: 'var(--font-mono)',
+                        fontSize: '0.72rem',
+                        fontWeight: 700,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.35rem'
+                      }}
+                    >
+                      <PlayCircle size={13} /> YouTube Embedded Stream
+                    </span>
+
+                    {lesson.videos[selectedVideoIndex]?.youtubeUrl && (
+                      <a
+                        href={lesson.videos[selectedVideoIndex].youtubeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-outline btn-sm"
+                        style={{
+                          fontSize: '0.75rem',
+                          padding: '0.28rem 0.65rem',
+                          borderColor: 'rgba(239, 68, 68, 0.4)',
+                          color: '#fca5a5',
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          gap: '0.4rem'
+                        }}
+                        title="Watch on official YouTube channel in new tab"
+                      >
+                        <YouTubeIcon size={14} /> <span>Watch on YouTube</span> <ExternalLink size={12} />
+                      </a>
+                    )}
+                  </div>
+                </div>
+
+                {/* Video Selector Tabs if multiple */}
+                {lesson.videos.length > 1 && (
+                  <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                    {lesson.videos.map((vid, vIdx) => (
+                      <button
+                        key={vIdx}
+                        type="button"
+                        onClick={() => setSelectedVideoIndex(vIdx)}
+                        className={`btn btn-sm ${selectedVideoIndex === vIdx ? 'btn-primary' : 'btn-outline'}`}
+                        style={{
+                          fontSize: '0.75rem',
+                          padding: '0.3rem 0.75rem',
+                          borderColor: selectedVideoIndex === vIdx ? '#ef4444' : 'rgba(255, 255, 255, 0.12)',
+                          backgroundColor: selectedVideoIndex === vIdx ? '#ef4444' : 'transparent',
+                          color: '#f8fafc'
+                        }}
+                      >
+                        <Play size={12} /> {vid.title.length > 35 ? vid.title.substring(0, 35) + '...' : vid.title}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* 16:9 Responsive Embedded Video Player Container */}
+                <div
+                  style={{
+                    position: 'relative',
+                    width: '100%',
+                    paddingBottom: '56.25%', // 16:9 aspect ratio
+                    height: 0,
+                    borderRadius: 'var(--radius-md)',
+                    overflow: 'hidden',
+                    backgroundColor: '#000000',
+                    border: '1px solid rgba(255, 255, 255, 0.12)',
+                    boxShadow: '0 8px 30px rgba(0, 0, 0, 0.6)'
+                  }}
+                >
+                  <iframe
+                    src={`https://www.youtube-nocookie.com/embed/${lesson.videos[selectedVideoIndex]?.youtubeId || lesson.videos[0]?.youtubeId}?rel=0&modestbranding=1`}
+                    title={lesson.videos[selectedVideoIndex]?.title || 'Chapter Video Lecture'}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: '100%',
+                      border: 'none'
+                    }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                  />
+                </div>
+
+                {/* Video Details Card */}
+                <div
+                  style={{
+                    marginTop: '1rem',
+                    padding: '0.85rem 1.15rem',
+                    backgroundColor: '#0c1322',
+                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderRadius: 'var(--radius-sm)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.35rem'
+                  }}
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <h4 style={{ fontSize: '0.98rem', fontWeight: 700, color: '#f8fafc', margin: 0 }}>
+                      {lesson.videos[selectedVideoIndex]?.title}
+                    </h4>
+                    {lesson.videos[selectedVideoIndex]?.channel && (
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          color: '#cbd5e1',
+                          fontFamily: 'var(--font-mono)',
+                          backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                          padding: '0.2rem 0.55rem',
+                          borderRadius: '4px'
+                        }}
+                      >
+                        Channel: <strong>{lesson.videos[selectedVideoIndex].channel}</strong>
+                      </span>
+                    )}
+                  </div>
+
+                  {lesson.videos[selectedVideoIndex]?.description && (
+                    <p style={{ fontSize: '0.82rem', color: '#94a3b8', margin: 0, lineHeight: 1.5 }}>
+                      {lesson.videos[selectedVideoIndex].description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            )}
+
             <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)', borderTop: '1px solid var(--border-color)', paddingTop: '1.75rem', marginBottom: '1.25rem' }}>
               Detailed Instructional Content
             </h3>
@@ -705,8 +916,10 @@ const ChapterView = () => {
                       journal: 'Peer-Reviewed Journal',
                       standard: 'Technical Standard / Spec',
                       whitepaper: 'Technical Whitepaper',
-                      website: 'Authoritative Documentation'
+                      website: 'Authoritative Documentation',
+                      wikipedia: 'Wikipedia Encyclopedic Reference'
                     };
+                    const isWiki = cit.sourceType === 'wikipedia' || cit.url?.includes('wikipedia.org');
 
                     return (
                       <div
@@ -714,7 +927,7 @@ const ChapterView = () => {
                         style={{
                           padding: '1rem 1.25rem',
                           backgroundColor: '#0c1322',
-                          border: '1px solid rgba(255, 255, 255, 0.08)',
+                          border: isWiki ? '1px solid rgba(255, 255, 255, 0.2)' : '1px solid rgba(255, 255, 255, 0.08)',
                           borderRadius: 'var(--radius-sm)',
                           display: 'flex',
                           flexDirection: 'column',
@@ -728,12 +941,12 @@ const ChapterView = () => {
                               style={{
                                 display: 'inline-flex',
                                 alignItems: 'center',
-                                justifySelf: 'center',
+                                justifyContent: 'center',
                                 width: '22px',
                                 height: '22px',
                                 borderRadius: '50%',
-                                backgroundColor: 'rgba(56, 189, 248, 0.15)',
-                                color: '#38bdf8',
+                                backgroundColor: isWiki ? 'rgba(255, 255, 255, 0.15)' : 'rgba(56, 189, 248, 0.15)',
+                                color: isWiki ? '#ffffff' : '#38bdf8',
                                 fontSize: '0.75rem',
                                 fontFamily: 'var(--font-mono)',
                                 fontWeight: 700
@@ -741,18 +954,36 @@ const ChapterView = () => {
                             >
                               {idx + 1}
                             </span>
-                            <span
-                              className="badge"
-                              style={{
-                                fontSize: '0.68rem',
-                                fontFamily: 'var(--font-mono)',
-                                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                                color: '#cbd5e1',
-                                border: '1px solid rgba(255, 255, 255, 0.1)'
-                              }}
-                            >
-                              {sourceTypeLabels[cit.sourceType] || 'Academic Source'}
-                            </span>
+                            {isWiki ? (
+                              <span
+                                className="badge"
+                                style={{
+                                  fontSize: '0.68rem',
+                                  fontFamily: 'var(--font-mono)',
+                                  backgroundColor: 'rgba(255, 255, 255, 0.12)',
+                                  color: '#ffffff',
+                                  border: '1px solid rgba(255, 255, 255, 0.35)',
+                                  display: 'inline-flex',
+                                  alignItems: 'center',
+                                  gap: '0.35rem'
+                                }}
+                              >
+                                <WikipediaIcon size={13} /> Wikipedia Reference
+                              </span>
+                            ) : (
+                              <span
+                                className="badge"
+                                style={{
+                                  fontSize: '0.68rem',
+                                  fontFamily: 'var(--font-mono)',
+                                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                  color: '#cbd5e1',
+                                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                                }}
+                              >
+                                {sourceTypeLabels[cit.sourceType] || 'Academic Source'}
+                              </span>
+                            )}
                           </div>
 
                           <button
@@ -788,20 +1019,20 @@ const ChapterView = () => {
                                 display: 'inline-flex',
                                 alignItems: 'center',
                                 gap: '0.4rem',
-                                color: '#38bdf8',
+                                color: isWiki ? '#ffffff' : '#38bdf8',
                                 fontSize: '0.8rem',
                                 fontFamily: 'var(--font-mono)',
                                 textDecoration: 'none',
                                 wordBreak: 'break-all',
                                 padding: '0.3rem 0.65rem',
-                                backgroundColor: 'rgba(56, 189, 248, 0.08)',
-                                border: '1px solid rgba(56, 189, 248, 0.25)',
+                                backgroundColor: isWiki ? 'rgba(255, 255, 255, 0.08)' : 'rgba(56, 189, 248, 0.08)',
+                                border: isWiki ? '1px solid rgba(255, 255, 255, 0.3)' : '1px solid rgba(56, 189, 248, 0.25)',
                                 borderRadius: '4px',
                                 transition: 'all 0.15s ease'
                               }}
                               title={`Open ${cit.url} in new tab`}
                             >
-                              <ExternalLink size={12} />
+                              {isWiki ? <WikipediaIcon size={13} /> : <ExternalLink size={12} />}
                               <span>{cit.url}</span>
                             </a>
                           </div>
@@ -816,6 +1047,40 @@ const ChapterView = () => {
 
           {/* Key Concepts Sidebar */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+            {/* Quick Video Lecture Sidebar Widget */}
+            {lesson.videos && lesson.videos.length > 0 && (
+              <div className="card" style={{ padding: '1.25rem', borderColor: 'rgba(239, 68, 68, 0.35)' }}>
+                <h4 style={{ fontSize: '0.92rem', fontWeight: 700, color: '#f87171', marginBottom: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+                  <YouTubeIcon size={16} /> Video Lecture ({lesson.videos.length})
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {lesson.videos.map((vid, vIdx) => (
+                    <div
+                      key={vIdx}
+                      style={{
+                        padding: '0.6rem 0.75rem',
+                        backgroundColor: selectedVideoIndex === vIdx ? 'rgba(239, 68, 68, 0.12)' : 'rgba(255, 255, 255, 0.02)',
+                        border: selectedVideoIndex === vIdx ? '1px solid rgba(239, 68, 68, 0.4)' : '1px solid rgba(255, 255, 255, 0.06)',
+                        borderRadius: 'var(--radius-sm)',
+                        cursor: 'pointer',
+                        transition: 'all 0.15s ease'
+                      }}
+                      onClick={() => setSelectedVideoIndex(vIdx)}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
+                        <span style={{ fontSize: '0.8rem', fontWeight: 600, color: '#f8fafc', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {vid.title}
+                        </span>
+                        <Play size={12} color="#ef4444" />
+                      </div>
+                      <div style={{ fontSize: '0.72rem', color: '#94a3b8', marginTop: '0.2rem' }}>
+                        {vid.channel || 'YouTube'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {/* Quick Materials Sidebar Widget */}
             {lessonFiles && lessonFiles.length > 0 && (
               <div className="card" style={{ padding: '1.5rem', borderColor: 'rgba(56, 189, 248, 0.3)' }}>

@@ -248,6 +248,7 @@ async function getChapterSummaryData(chapterId, { sortBy = 'surname', sortOrder 
       keyConcepts: lesson.keyConcepts || [],
       studyGuide: lesson.studyGuide || [],
       citations: lesson.citations || [],
+      videos: lesson.videos || [],
       content: lesson.content
     } : null,
     lessonFiles: (lessonFiles || []).map(f => ({
