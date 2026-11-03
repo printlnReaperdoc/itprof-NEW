@@ -78,11 +78,14 @@ const register = async (req, res, next) => {
       req.session.userRole = user.role;
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
 
-      const isProduction = process.env.NODE_ENV === 'production';
+      const isProduction = process.env.NODE_ENV === 'production' || 
+                           process.env.RENDER === 'true' || 
+                           Boolean(process.env.RENDER_SERVICE_ID);
       res.cookie('XSRF-TOKEN', req.session.csrfToken, {
         httpOnly: false,
         secure: isProduction,
         sameSite: isProduction ? 'none' : 'lax',
+        partitioned: isProduction,
         path: '/'
       });
       res.setHeader('X-CSRF-Token', req.session.csrfToken);
@@ -96,17 +99,22 @@ const register = async (req, res, next) => {
         req
       });
 
-      return res.status(201).json({
-        success: true,
-        message: 'Registration successful. Welcome to IT Professional Electives LMS!',
-        user: {
-          id: user._id,
-          username: user.username,
-          firstName: user.firstName,
-          surname: user.surname,
-          role: user.role
-        },
-        csrfToken: req.session.csrfToken
+      // Explicitly persist session in MongoStore before responding to eliminate race conditions
+      req.session.save((saveErr) => {
+        if (saveErr) return next(saveErr);
+
+        return res.status(201).json({
+          success: true,
+          message: 'Registration successful. Welcome to IT Professional Electives LMS!',
+          user: {
+            id: user._id,
+            username: user.username,
+            firstName: user.firstName,
+            surname: user.surname,
+            role: user.role
+          },
+          csrfToken: req.session.csrfToken
+        });
       });
     });
   } catch (err) {
@@ -195,11 +203,14 @@ const login = async (req, res, next) => {
       req.session.userRole = user.role;
       req.session.csrfToken = crypto.randomBytes(32).toString('hex');
 
-      const isProduction = process.env.NODE_ENV === 'production';
+      const isProduction = process.env.NODE_ENV === 'production' || 
+                           process.env.RENDER === 'true' || 
+                           Boolean(process.env.RENDER_SERVICE_ID);
       res.cookie('XSRF-TOKEN', req.session.csrfToken, {
         httpOnly: false,
         secure: isProduction,
         sameSite: isProduction ? 'none' : 'lax',
+        partitioned: isProduction,
         path: '/'
       });
       res.setHeader('X-CSRF-Token', req.session.csrfToken);
@@ -213,17 +224,22 @@ const login = async (req, res, next) => {
         req
       });
 
-      return res.json({
-        success: true,
-        message: `Welcome back, ${user.firstName}!`,
-        user: {
-          id: user._id,
-          username: user.username,
-          firstName: user.firstName,
-          surname: user.surname,
-          role: user.role
-        },
-        csrfToken: req.session.csrfToken
+      // Explicitly persist session in MongoStore before responding to eliminate race conditions
+      req.session.save((saveErr) => {
+        if (saveErr) return next(saveErr);
+
+        return res.json({
+          success: true,
+          message: `Welcome back, ${user.firstName}!`,
+          user: {
+            id: user._id,
+            username: user.username,
+            firstName: user.firstName,
+            surname: user.surname,
+            role: user.role
+          },
+          csrfToken: req.session.csrfToken
+        });
       });
     });
   } catch (err) {
@@ -249,14 +265,18 @@ const logout = async (req, res, next) => {
 
     req.session.destroy((err) => {
       if (err) return next(err);
-      const isProduction = process.env.NODE_ENV === 'production';
+      const isProduction = process.env.NODE_ENV === 'production' || 
+                           process.env.RENDER === 'true' || 
+                           Boolean(process.env.RENDER_SERVICE_ID);
       res.clearCookie('itprof.sid', {
         secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax'
+        sameSite: isProduction ? 'none' : 'lax',
+        partitioned: isProduction
       });
       res.clearCookie('XSRF-TOKEN', {
         secure: isProduction,
-        sameSite: isProduction ? 'none' : 'lax'
+        sameSite: isProduction ? 'none' : 'lax',
+        partitioned: isProduction
       });
       return res.json({
         success: true,
@@ -317,11 +337,14 @@ const getCsrfToken = (req, res) => {
   }
   const token = req.session?.csrfToken || '';
   if (token) {
-    const isProduction = process.env.NODE_ENV === 'production';
+    const isProduction = process.env.NODE_ENV === 'production' || 
+                         process.env.RENDER === 'true' || 
+                         Boolean(process.env.RENDER_SERVICE_ID);
     res.cookie('XSRF-TOKEN', token, {
       httpOnly: false,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
+      partitioned: isProduction,
       path: '/'
     });
     res.setHeader('X-CSRF-Token', token);

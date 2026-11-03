@@ -1,4 +1,10 @@
 require('dotenv').config();
+
+// Auto-detect Render deployment environment and enforce production settings
+if (process.env.RENDER === 'true' || process.env.RENDER_SERVICE_ID) {
+  process.env.NODE_ENV = 'production';
+}
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');

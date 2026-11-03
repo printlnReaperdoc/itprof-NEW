@@ -2,7 +2,9 @@ const crypto = require('crypto');
 
 // Generate CSRF token, set cookie, and expose via response header
 const csrfProtection = (req, res, next) => {
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isProduction = process.env.NODE_ENV === 'production' || 
+                       process.env.RENDER === 'true' || 
+                       Boolean(process.env.RENDER_SERVICE_ID);
 
   if (req.session) {
     if (!req.session.csrfToken) {
@@ -15,6 +17,7 @@ const csrfProtection = (req, res, next) => {
       httpOnly: false, // Must be readable by Axios/Fetch if same-origin
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
+      partitioned: isProduction,
       path: '/'
     });
 

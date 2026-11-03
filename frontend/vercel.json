@@ -1,9 +1,16 @@
 {
   "rewrites": [
     {
+      "source": "/api/:match*",
+      "destination": "https://itprof-lms-api.onrender.com/api/:match*"
+    },
+    {
+      "source": "/storage/:match*",
+      "destination": "https://itprof-lms-api.onrender.com/storage/:match*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
 }
-
