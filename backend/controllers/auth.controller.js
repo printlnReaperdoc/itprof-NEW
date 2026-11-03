@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const User = require('../models/User');
 const Course = require('../models/Course');
 const Enrollment = require('../models/Enrollment');
@@ -75,6 +76,16 @@ const register = async (req, res, next) => {
 
       req.session.userId = user._id;
       req.session.userRole = user.role;
+      req.session.csrfToken = crypto.randomBytes(32).toString('hex');
+
+      const isProduction = process.env.NODE_ENV === 'production';
+      res.cookie('XSRF-TOKEN', req.session.csrfToken, {
+        httpOnly: false,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        path: '/'
+      });
+      res.setHeader('X-CSRF-Token', req.session.csrfToken);
 
       createAuditLog({
         actorUserId: user._id,
@@ -94,7 +105,8 @@ const register = async (req, res, next) => {
           firstName: user.firstName,
           surname: user.surname,
           role: user.role
-        }
+        },
+        csrfToken: req.session.csrfToken
       });
     });
   } catch (err) {
@@ -181,6 +193,16 @@ const login = async (req, res, next) => {
 
       req.session.userId = user._id;
       req.session.userRole = user.role;
+      req.session.csrfToken = crypto.randomBytes(32).toString('hex');
+
+      const isProduction = process.env.NODE_ENV === 'production';
+      res.cookie('XSRF-TOKEN', req.session.csrfToken, {
+        httpOnly: false,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        path: '/'
+      });
+      res.setHeader('X-CSRF-Token', req.session.csrfToken);
 
       createAuditLog({
         actorUserId: user._id,
@@ -200,7 +222,8 @@ const login = async (req, res, next) => {
           firstName: user.firstName,
           surname: user.surname,
           role: user.role
-        }
+        },
+        csrfToken: req.session.csrfToken
       });
     });
   } catch (err) {
@@ -226,7 +249,15 @@ const logout = async (req, res, next) => {
 
     req.session.destroy((err) => {
       if (err) return next(err);
-      res.clearCookie('itprof.sid');
+      const isProduction = process.env.NODE_ENV === 'production';
+      res.clearCookie('itprof.sid', {
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax'
+      });
+      res.clearCookie('XSRF-TOKEN', {
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax'
+      });
       return res.json({
         success: true,
         message: 'Successfully logged out.'
@@ -281,9 +312,23 @@ const getCurrentUser = async (req, res, next) => {
  * Get CSRF token endpoint
  */
 const getCsrfToken = (req, res) => {
+  if (req.session && !req.session.csrfToken) {
+    req.session.csrfToken = crypto.randomBytes(32).toString('hex');
+  }
+  const token = req.session?.csrfToken || '';
+  if (token) {
+    const isProduction = process.env.NODE_ENV === 'production';
+    res.cookie('XSRF-TOKEN', token, {
+      httpOnly: false,
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/'
+    });
+    res.setHeader('X-CSRF-Token', token);
+  }
   return res.json({
     success: true,
-    csrfToken: req.session?.csrfToken || ''
+    csrfToken: token
   });
 };
 

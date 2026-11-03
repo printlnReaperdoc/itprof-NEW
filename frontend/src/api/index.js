@@ -1,5 +1,7 @@
 import api from './client';
 
+export const API_BASE_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '');
+
 export const triggerBlobDownload = (blob, defaultFilename) => {
   const url = window.URL.createObjectURL(blob);
   const a = document.createElement('a');
@@ -64,7 +66,7 @@ export const lessonsApi = {
     const blob = await api.get(`/lessons/files/${fileId}/download`, { responseType: 'blob' });
     triggerBlobDownload(blob, filename || 'chapter-material');
   },
-  getFileDownloadUrl: (fileId, inline = false) => `/api/lessons/files/${fileId}/download${inline ? '?inline=true' : ''}`,
+  getFileDownloadUrl: (fileId, inline = false) => `${API_BASE_URL}/lessons/files/${fileId}/download${inline ? '?inline=true' : ''}`,
   deleteFile: (fileId) => api.delete(`/lessons/files/${fileId}`)
 };
 
@@ -116,12 +118,12 @@ export const auditApi = {
 
 // Export URLs
 export const exportUrls = {
-  masterXLSX: (courseId) => `/api/exports/master/${courseId}?format=xlsx`,
-  masterCSV: (courseId) => `/api/exports/master/${courseId}?format=csv`,
-  masterPDF: (courseId) => `/api/exports/master/${courseId}?format=pdf`,
-  topicXLSX: (chapterId) => `/api/exports/topic/${chapterId}?format=xlsx`,
-  answerKeysPDF: (courseId) => courseId ? `/api/exports/quizzes/answer-keys/pdf?courseId=${courseId}` : '/api/exports/quizzes/answer-keys/pdf',
-  chapterSummaryPDF: (chapterId, sortBy = 'surname', sortOrder = 'asc') => `/api/exports/chapter/${chapterId}/summary/pdf?sortBy=${sortBy}&sortOrder=${sortOrder}`,
-  chapterSummaryXLSX: (chapterId, sortBy = 'surname', sortOrder = 'asc') => `/api/exports/chapter/${chapterId}/summary/xlsx?sortBy=${sortBy}&sortOrder=${sortOrder}`,
-  chapterSummaryCSV: (chapterId, sortBy = 'surname', sortOrder = 'asc') => `/api/exports/chapter/${chapterId}/summary/csv?sortBy=${sortBy}&sortOrder=${sortOrder}`
+  masterXLSX: (courseId) => `${API_BASE_URL}/exports/master/${courseId}?format=xlsx`,
+  masterCSV: (courseId) => `${API_BASE_URL}/exports/master/${courseId}?format=csv`,
+  masterPDF: (courseId) => `${API_BASE_URL}/exports/master/${courseId}?format=pdf`,
+  topicXLSX: (chapterId) => `${API_BASE_URL}/exports/topic/${chapterId}?format=xlsx`,
+  answerKeysPDF: (courseId) => courseId ? `${API_BASE_URL}/exports/quizzes/answer-keys/pdf?courseId=${courseId}` : `${API_BASE_URL}/exports/quizzes/answer-keys/pdf`,
+  chapterSummaryPDF: (chapterId, sortBy = 'surname', sortOrder = 'asc') => `${API_BASE_URL}/exports/chapter/${chapterId}/summary/pdf?sortBy=${sortBy}&sortOrder=${sortOrder}`,
+  chapterSummaryXLSX: (chapterId, sortBy = 'surname', sortOrder = 'asc') => `${API_BASE_URL}/exports/chapter/${chapterId}/summary/xlsx?sortBy=${sortBy}&sortOrder=${sortOrder}`,
+  chapterSummaryCSV: (chapterId, sortBy = 'surname', sortOrder = 'asc') => `${API_BASE_URL}/exports/chapter/${chapterId}/summary/csv?sortBy=${sortBy}&sortOrder=${sortOrder}`
 };

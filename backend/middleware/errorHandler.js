@@ -46,6 +46,16 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
+  // Handle CORS rejection
+  if (err.message && err.message.includes('CORS')) {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied: origin not allowed by CORS policy.',
+      code: 'CORS_NOT_ALLOWED',
+      requestId: req.id
+    });
+  }
+
   // Log unexpected errors
   if (statusCode >= 500) {
     console.error(`[ERROR] [${req.id}] ${req.method} ${req.originalUrl}:`, err);

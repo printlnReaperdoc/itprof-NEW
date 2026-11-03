@@ -39,25 +39,63 @@ app.use(
 );
 
 // CORS configuration
-const allowedOrigins = [
+// Supports single or comma-separated CLIENT_URL values alongside standard local dev origins
+const rawClientUrl = process.env.CLIENT_URL || '';
+const configuredOrigins = rawClientUrl
+  .split(',')
+  .map((url) => url.trim().replace(/\/+$/, ''))
+  .filter(Boolean);
+
+const defaultOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'http://127.0.0.1:5173',
-  process.env.CLIENT_URL
-].filter(Boolean);
+  'http://127.0.0.1:3000'
+];
+
+const allowedOrigins = Array.from(new Set([...defaultOrigins, ...configuredOrigins]));
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (like mobile apps, curl, or same-origin)
-      if (!origin || allowedOrigins.includes(origin)) {
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server, automated tests)
+      if (!origin) {
         return callback(null, true);
       }
-      return callback(null, true); // Dev convenience
+
+      const normalizedOrigin = origin.trim().replace(/\/+$/, '');
+
+      // Exact match against allowed origins
+      if (allowedOrigins.includes(normalizedOrigin)) {
+        return callback(null, true);
+      }
+
+      // Support Vercel preview deployments if configured or matching Vercel domain pattern
+      const isAllowedVercelOrigin = configuredOrigins.some((allowed) => 
+        (allowed.includes('.vercel.app') || process.env.ALLOW_VERCEL_PREVIEWS === 'true') &&
+        normalizedOrigin.endsWith('.vercel.app')
+      );
+
+      if (isAllowedVercelOrigin) {
+        return callback(null, true);
+      }
+
+      // Reject unauthorized origins strictly (no wildcard origins with credentials)
+      return callback(new Error(`Origin ${origin} not allowed by CORS`));
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-CSRF-Token', 'X-XSRF-TOKEN', 'X-Request-Id']
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-CSRF-Token',
+      'x-csrf-token',
+      'X-XSRF-TOKEN',
+      'x-xsrf-token',
+      'X-Request-Id'
+    ],
+    exposedHeaders: ['X-CSRF-Token', 'x-csrf-token', 'X-Request-Id'],
+    maxAge: 86400
   })
 );
 

@@ -12,6 +12,7 @@ const createSessionConfig = () => {
     resave: false,
     saveUninitialized: false,
     rolling: true,
+    proxy: true, // Trust reverse proxy headers (e.g. Render / Cloudflare SSL termination)
     store: MongoStore.create({
       mongoUrl: mongoUri,
       collectionName: 'sessions',
@@ -21,7 +22,7 @@ const createSessionConfig = () => {
     cookie: {
       httpOnly: true,
       secure: isProduction,
-      sameSite: 'lax',
+      sameSite: isProduction ? 'none' : 'lax', // 'none' required for cross-domain cookie sending (Vercel <-> Render)
       maxAge: 24 * 60 * 60 * 1000 // 24 hours
     }
   });
