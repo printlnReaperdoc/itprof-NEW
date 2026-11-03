@@ -38,8 +38,13 @@ api.interceptors.request.use(async (config) => {
   if (!isSafeMethod) {
     let token = inMemoryCsrfToken || getCookie('XSRF-TOKEN');
 
+    // Skip pre-fetching CSRF token for login, register, and csrf-token endpoints (they are exempt on backend)
+    const isAuthExempt = config.url?.includes('/auth/login') || 
+                         config.url?.includes('/auth/register') ||
+                         config.url?.includes('/auth/csrf-token');
+
     // If token is not cached yet, proactively fetch it from the server
-    if (!token && !config.url?.includes('/auth/csrf-token')) {
+    if (!token && !isAuthExempt) {
       try {
         const baseURL = config.baseURL || import.meta.env.VITE_API_URL || '/api';
         const cleanBase = baseURL.replace(/\/+$/, '');

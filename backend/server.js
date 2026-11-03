@@ -34,12 +34,14 @@ app.set('trust proxy', 1);
 app.use(
   helmet({
     contentSecurityPolicy: false, // Managed or relaxed for local development / Vite integration
-    crossOriginEmbedderPolicy: false
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginOpenerPolicy: false
   })
 );
 
 // CORS configuration
-// Supports single or comma-separated CLIENT_URL values alongside standard local dev origins
+// Supports single or comma-separated CLIENT_URL values alongside standard local dev origins and production Vercel frontend
 const rawClientUrl = process.env.CLIENT_URL || '';
 const configuredOrigins = rawClientUrl
   .split(',')
@@ -50,7 +52,8 @@ const defaultOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   'http://127.0.0.1:5173',
-  'http://127.0.0.1:3000'
+  'http://127.0.0.1:3000',
+  'https://itprof-new.vercel.app'
 ];
 
 const allowedOrigins = Array.from(new Set([...defaultOrigins, ...configuredOrigins]));
@@ -65,18 +68,13 @@ app.use(
 
       const normalizedOrigin = origin.trim().replace(/\/+$/, '');
 
-      // Exact match against allowed origins
+      // Exact match against allowed origins (including itprof-new.vercel.app and configured CLIENT_URL)
       if (allowedOrigins.includes(normalizedOrigin)) {
         return callback(null, true);
       }
 
-      // Support Vercel preview deployments if configured or matching Vercel domain pattern
-      const isAllowedVercelOrigin = configuredOrigins.some((allowed) => 
-        (allowed.includes('.vercel.app') || process.env.ALLOW_VERCEL_PREVIEWS === 'true') &&
-        normalizedOrigin.endsWith('.vercel.app')
-      );
-
-      if (isAllowedVercelOrigin) {
+      // Allow any Vercel deployment of the app (e.g. itprof-new.vercel.app, preview branches)
+      if (normalizedOrigin.endsWith('.vercel.app')) {
         return callback(null, true);
       }
 
